@@ -1,0 +1,71 @@
+{
+	"objects":
+	[
+		{
+			"x_position": 0.0,
+			"y_position": 0.0,
+			"components":
+			[
+				{
+					"type": "Animated_graphics_component",
+					"animations":
+					[
+						{
+							"name": "Idle",
+							"animation":
+							{
+								"texture": "Player",
+								"frames": 4,
+								"rows": 8,
+								"frame_rate": 4
+							}
+						}
+					]
+				},
+				{
+					"type": "Movement_component",
+					"max_speed": 3.0
+				},
+				{
+					"type": "Player_input_component"
+				},
+				{
+					"type": "Collider_component",
+					"shape":
+					{
+						"type": "Circle",
+						"x_position": 0.0,
+						"y_position": 0.0,
+						"radius": 1.28
+					},
+					"layers": ["solid", "player"],
+					"check_layers": ["solid", "triggers"]
+				}
+			]
+		},
+		{
+			"x_position": 6.0,
+			"y_position": 6.0,
+			"components":
+			[
+				{
+					"type": "Static_graphics_component",
+					"texture": "Grej"
+				},
+				{
+					"type": "Collider_component",
+					"shape":
+					{
+						"type": "Rectangle",
+						"x_position": 6.0,
+						"y_position": 6.0,
+						"width": 5.0,
+						"height": 5.0
+					},
+					"layers": ["solid"],
+					"check_layers": ["solid"]
+				}
+			]
+		}
+	]
+}

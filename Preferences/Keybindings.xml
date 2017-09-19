@@ -1,0 +1,64 @@
+<!-- See https://wiki.libsdl.org/SDL_Keycode for a list of all key names -->
+<contexts>
+	<game>
+		<!-- Keyboard and mouse mappings -->
+		<mapping>
+			<key type="key">W</key>
+			<value type="state">movement_up</value>
+		</mapping>
+		<mapping>
+			<key type="key">A</key>
+			<value type="state">movement_left</value>
+		</mapping>
+		<mapping>
+			<key type="key">S</key>
+			<value type="state">movement_down</value>
+		</mapping>
+		<mapping>
+			<key type="key">D</key>
+			<value type="state">movement_right</value>
+		</mapping>
+		<mapping>
+			<key type="key">Up</key>
+			<value type="state">movement_up</value>
+		</mapping>
+		<mapping>
+			<key type="key">Left</key>
+			<value type="state">movement_left</value>
+		</mapping>
+		<mapping>
+			<key type="key">Down</key>
+			<value type="state">movement_down</value>
+		</mapping>
+		<mapping>
+			<key type="key">Right</key>
+			<value type="state">movement_right</value>
+		</mapping>
+		
+		<!-- Game controller mappings -->
+		<mapping>
+			<key type="controller_axis">Left_x</key>
+			<value type="range">movement_x</value>
+		</mapping>
+		<mapping>
+			<key type="controller_axis">Left_y</key>
+			<value type="range">movement_y</value>
+		</mapping>
+		<mapping>
+			<key type="controller_button">dpup</key>
+			<value type="state">movement_up</value>
+		</mapping>
+		<mapping>
+			<key type="controller_button">dpleft</key>
+			<value type="state">movement_left</value>
+		</mapping>
+		<mapping>
+			<key type="controller_button">dpdown</key>
+			<value type="state">movement_down</value>
+		</mapping>
+		<mapping>
+			<key type="controller_button">dpright</key>
+			<value type="state">movement_right</value>
+		</mapping>
+	</game>
+</contexts>
