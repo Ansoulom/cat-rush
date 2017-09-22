@@ -28,8 +28,8 @@ namespace Game
 			void remove_component(Objects::Graphics_component& gc);
 
 		private:
-			std::unordered_map<Geometry::Vector<int>, std::list<Objects::Graphics_component*>> grid;
-			const double grid_cell_size = 10.0; // Very temporary and random number for now
+			std::unordered_map<Geometry::Vector<int>, std::list<Objects::Graphics_component*>> grid_;
+			const double grid_cell_size_ = 10.0; // Very temporary and random number for now
 		};
 	}
 }

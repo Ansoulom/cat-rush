@@ -36,7 +36,7 @@ namespace Game
 		Camera camera; // ONLY TEMOPORARILY PUBLIC
 
 	private:
-		std::vector<std::unique_ptr<Objects::Game_object>> objects;
+		std::vector<std::unique_ptr<Objects::Game_object>> objects_;
 	};
 
 

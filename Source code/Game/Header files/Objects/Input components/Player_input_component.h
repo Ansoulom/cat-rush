@@ -25,12 +25,12 @@ namespace Game
 		private:
 			void update_rotation(Geometry::Vector<double> input, Timer::Seconds time_passed, Game_object& object);
 
-			Geometry::Vector<double> smooth_input;
-			double angle, last_input_angle;
-			int direction;
+			Geometry::Vector<double> smooth_input_;
+			double angle_, last_input_angle_;
+			int direction_;
 
-			const Timer::Seconds max_rotation_time = Timer::Seconds{0.2}; // The time it takes to rotate 180 degrees
-			const Timer::Seconds rotation_input_smoothing_time = Timer::Seconds{0.1}; // The time it takes for rotation input to move from 0 to 1
+			const Timer::Seconds max_rotation_time_ = Timer::Seconds{0.2}; // The time it takes to rotate 180 degrees
+			const Timer::Seconds rotation_input_smoothing_time_ = Timer::Seconds{0.1}; // The time it takes for rotation input to move from 0 to 1
 		};
 	}
 }

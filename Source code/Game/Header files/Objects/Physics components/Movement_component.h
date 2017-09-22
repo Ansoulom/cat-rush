@@ -31,8 +31,8 @@ namespace Game
 			void handle_event(const T& message){}
 			void handle_event(const Events::Change_velocity_normalized& message);
 
-			Geometry::Vector<double> velocity{ 0, 0 };
-			double max_speed;
+			Geometry::Vector<double> velocity_{ 0, 0 };
+			double max_speed_;
 		};
 	}
 }

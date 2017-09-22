@@ -78,10 +78,10 @@ namespace Game
 			bool operator==(const Button& other) const;
 
 		private:
-			Type type;
-			SDL_Keycode keyboard_button;
-			Uint8 mouse_button;
-			SDL_GameControllerButton gamepad_button;
+			Type type_;
+			SDL_Keycode keyboard_button_;
+			Uint8 mouse_button_;
+			SDL_GameControllerButton gamepad_button_;
 
 			friend size_t std::hash<Button>::operator()(const Button& button) const;
 		};
@@ -113,10 +113,10 @@ namespace std
 
 	inline size_t hash<Game::Input::Button>::operator()(const Game::Input::Button& button) const
 	{
-		auto type_hash = hash<Game::Input::Button::Type>()(button.type);
-		auto keyboard_button_hash = hash<SDL_Keycode>()(button.keyboard_button);
-		auto mouse_button_hash = hash<Uint8>()(button.mouse_button);
-		auto gamepad_button_hash = hash<SDL_GameControllerButton>()(button.gamepad_button);
+		auto type_hash = hash<Game::Input::Button::Type>()(button.type_);
+		auto keyboard_button_hash = hash<SDL_Keycode>()(button.keyboard_button_);
+		auto mouse_button_hash = hash<Uint8>()(button.mouse_button_);
+		auto gamepad_button_hash = hash<SDL_GameControllerButton>()(button.gamepad_button_);
 
 		return ((((type_hash ^ (keyboard_button_hash << 1)) >> 1) ^ (mouse_button_hash << 1)) >> 1) ^ (gamepad_button_hash << 1);
 	}

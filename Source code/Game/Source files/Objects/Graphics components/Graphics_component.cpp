@@ -12,7 +12,7 @@ namespace Game
 
 		Graphics_component::~Graphics_component()
 		{
-			destroy_event.notify(*this);
+			destroy_event_.notify(*this);
 			// TODO: Make sure to unregister from renderer, also make sure that move works correctly
 		}
 
@@ -25,7 +25,7 @@ namespace Game
 
 		void Graphics_component::add_destroy_listener(std::function<void(Graphics_component&)> function)
 		{
-			destroy_event.add_listener(function);
+			destroy_event_.add_listener(function);
 		}
 	}
 }

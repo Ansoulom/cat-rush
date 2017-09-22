@@ -37,9 +37,9 @@ namespace Game
 			nlohmann::json to_json() const;
 
 		private:
-			Geometry::Vector<double> position;
-			std::vector<std::unique_ptr<Component>> components;
-			Communication::Event<Game_object&> destroyed_event;
+			Geometry::Vector<double> position_;
+			std::vector<std::unique_ptr<Component>> components_;
+			Communication::Event<Game_object&> destroyed_event_;
 		};
 	}
 }

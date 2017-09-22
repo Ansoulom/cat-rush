@@ -8,7 +8,7 @@
 
 namespace Game
 {
-	World::World() : camera {{0.0, 0.0}}, objects{}
+	World::World() : camera {{0.0, 0.0}}, objects_{}
 	{
 	}
 
@@ -29,7 +29,7 @@ namespace Game
 
 	void World::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
 	{
-		for(auto& object : objects)
+		for(auto& object : objects_)
 		{
 			object->handle_input(time_passed, input);
 		}
@@ -38,7 +38,7 @@ namespace Game
 
 	void World::update(Timer::Seconds time_passed)
 	{
-		for(auto& object : objects)
+		for(auto& object : objects_)
 		{
 			object->update(time_passed);
 		}
@@ -62,7 +62,7 @@ namespace Game
 	nlohmann::json World::to_json() const
 	{
 		auto objects_json = IO::json{};
-		for(auto& object : objects)
+		for(auto& object : objects_)
 		{
 			objects_json.push_back(object->to_json());
 		}
@@ -72,7 +72,7 @@ namespace Game
 
 	void World::add_object(std::unique_ptr<Objects::Game_object>&& object)
 	{
-		objects.push_back(move(object));
+		objects_.push_back(move(object));
 	}
 
 

@@ -13,8 +13,8 @@ namespace Game
 		int get_framerate() const; // Returns a new value once every second.
 
 	private:
-		int framerate, frames;
-		std::chrono::nanoseconds time_passed, delta_time;
-		std::chrono::time_point<std::chrono::high_resolution_clock> previous_time;
+		int framerate_, frames_;
+		std::chrono::nanoseconds time_passed_, delta_time_;
+		std::chrono::time_point<std::chrono::high_resolution_clock> previous_time_;
 	};
 }

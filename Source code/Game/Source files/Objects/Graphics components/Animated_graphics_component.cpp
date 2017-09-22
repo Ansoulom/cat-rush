@@ -3,8 +3,6 @@
 #include "Game_object.h"
 #include "Camera.h"
 
-using nlohmann::json;
-
 
 namespace Game
 {
@@ -12,8 +10,8 @@ namespace Game
 	{
 		Animated_graphics_component::Animated_graphics_component(Game_object* game_object,
 																 std::unordered_map<std::string, Graphics::Animation> animations) : Graphics_component{game_object},
-																																	animations{animations},
-																																	current_animation{animations.size() > 0 ? animations.begin()->first : ""} { }
+																																	animations_{animations},
+																																	current_animation_{animations.size() > 0 ? animations.begin()->first : ""} { }
 
 
 		Animated_graphics_component::~Animated_graphics_component() { }
@@ -26,8 +24,8 @@ namespace Game
 
 		void Animated_graphics_component::update(Timer::Seconds time_passed)
 		{
-			auto iter = animations.find(current_animation);
-			if(iter != animations.end())
+			auto iter = animations_.find(current_animation_);
+			if(iter != animations_.end())
 			{
 				iter->second.update(time_passed);
 			}
@@ -44,20 +42,20 @@ namespace Game
 
 		void Animated_graphics_component::set_row(int row)
 		{
-			auto iter = animations.find(current_animation);
-			if(iter != animations.end())
+			auto iter = animations_.find(current_animation_);
+			if(iter != animations_.end())
 			{
 				iter->second.set_row(row);
 			}
 		}
 
 
-		json Animated_graphics_component::to_json() const
+		IO::json Animated_graphics_component::to_json() const
 		{
-			auto animations_json = json{};
-			for(const auto& animation_pair : animations)
+			auto animations_json = IO::json{};
+			for(const auto& animation_pair : animations_)
 			{
-				animations_json.emplace_back(json{{"name", animation_pair.first}, {"animation", animation_pair.second.to_json()}});
+				animations_json.emplace_back(IO::json{{"name", animation_pair.first}, {"animation", animation_pair.second.to_json()}});
 			}
 			return {{"type", "animated"}, {"animations", animations_json}};
 		}
@@ -70,7 +68,7 @@ namespace Game
 		}
 
 
-		Animated_graphics_component* Animated_graphics_component::from_json(const json& json, Game_object* game_object,
+		Animated_graphics_component* Animated_graphics_component::from_json(const IO::json& json, Game_object* game_object,
 																			const Component_loader& loader)
 		{
 			auto animations = std::unordered_map<std::string, Graphics::Animation>{};
@@ -90,10 +88,10 @@ namespace Game
 		Graphics::Render_instance Animated_graphics_component::get_render_instance(
 			const Graphics::Texture_manager& tm, const Camera& camera) const
 		{
-			auto frame = animations.at(current_animation).get_current_frame(tm);
+			auto frame = animations_.at(current_animation_).get_current_frame(tm);
 			auto clip = frame.get_clip();
 			return {
-				&frame.get_texture(), {camera.get_coordinates_on_screen(game_object->get_position()), clip.width(), clip.height()},
+				&frame.get_texture(), {camera.get_coordinates_on_screen(game_object_->get_position()), clip.width(), clip.height()},
 				&clip
 			};
 		}

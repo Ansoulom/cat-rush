@@ -24,12 +24,12 @@ namespace Game
 			void reset();
 
 		private:
-			std::unordered_map<Button, Action> action_mappings;
-			std::unordered_map<Button, State> state_mappings;
-			std::unordered_map<Axis, Range> range_mappings;
-			std::unordered_map<Action, bool> actions;
-			std::unordered_map<State, bool> states;
-			std::unordered_map<Range, double> ranges;
+			std::unordered_map<Button, Action> action_mappings_;
+			std::unordered_map<Button, State> state_mappings_;
+			std::unordered_map<Axis, Range> range_mappings_;
+			std::unordered_map<Action, bool> actions_;
+			std::unordered_map<State, bool> states_;
+			std::unordered_map<Range, double> ranges_;
 		};
 	}
 }

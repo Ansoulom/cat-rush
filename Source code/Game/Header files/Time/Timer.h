@@ -16,7 +16,7 @@ namespace Game
 		void reset(); // Completely resets the timer to zero.
 
 	private:
-		Seconds time_passed;
-		const Seconds target_time;
+		Seconds time_passed_;
+		const Seconds target_time_;
 	};
 }

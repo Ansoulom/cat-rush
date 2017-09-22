@@ -15,7 +15,7 @@ namespace Game
 		public:
 			Texture(SDL_Renderer& renderer, std::string file_path);
 			Texture(SDL_Renderer& renderer, std::string text, SDL_Color text_color, TTF_Font& font);
-			Texture(std::unique_ptr<SDL_Surface, SDL_deleter> surface, SDL_Renderer& renderer);
+			Texture(std::unique_ptr<SDL_Surface, Sdl_deleter> surface, SDL_Renderer& renderer);
 			~Texture();
 
 			void set_color(Uint8 red, Uint8 green, Uint8 blue);
@@ -25,10 +25,10 @@ namespace Game
 			int get_height() const;
 
 		private:
-			SDL_Renderer* renderer;
-			std::unique_ptr<SDL_Texture, SDL_deleter> texture;
-			int width;
-			int height;
+			SDL_Renderer* renderer_;
+			std::unique_ptr<SDL_Texture, Sdl_deleter> texture_;
+			int width_;
+			int height_;
 
 			friend class Renderer;
 		};

@@ -6,7 +6,7 @@
 
 namespace Game
 {
-	class SDL_deleter
+	class Sdl_deleter
 	{
 	public:
 		void operator()(SDL_Window* window) const;

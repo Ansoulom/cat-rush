@@ -18,8 +18,8 @@ namespace Game
 				for(auto y = start.get_y(); y <= end.get_y(); ++y)
 				{
 					auto cell_pos = Geometry::Vector<int>{x, y};
-					auto iter = grid.find(cell_pos);
-					if(iter != grid.end())
+					auto iter = grid_.find(cell_pos);
+					if(iter != grid_.end())
 					{
 						auto& layers = collider.get_check_layers();
 						for(auto& layer : layers)
@@ -74,15 +74,15 @@ namespace Game
 		{
 			for(auto& layer : comp.get_layers())
 			{
-				grid[grid_cell_pos][layer].push_back(&comp);
+				grid_[grid_cell_pos][layer].push_back(&comp);
 			}
 		}
 
 
 		void Collision_system::remove_component(Objects::Collider_component& comp, Geometry::Vector<int> grid_cell_pos)
 		{
-			auto iter = grid.find(grid_cell_pos);
-			if(iter != grid.end())
+			auto iter = grid_.find(grid_cell_pos);
+			if(iter != grid_.end())
 			{
 				auto& layers = comp.get_layers();
 				for(auto& layer : layers)
@@ -99,12 +99,12 @@ namespace Game
 
 		Geometry::Vector<int> Collision_system::get_grid_cell_position(Geometry::Vector<double> object_position)
 		{
-			auto cell_x = static_cast<int>(object_position.get_x() / grid_cell_size);
-			auto cell_y = static_cast<int>(object_position.get_y() / grid_cell_size);
+			auto cell_x = static_cast<int>(object_position.get_x() / grid_cell_size_);
+			auto cell_y = static_cast<int>(object_position.get_y() / grid_cell_size_);
 			return {cell_x, cell_y};
 		}
 
 
-		const double Collision_system::grid_cell_size{10.0}; // VERY TEMPORARY VALUE
+		const double Collision_system::grid_cell_size_{10.0}; // VERY TEMPORARY VALUE
 	}
 }

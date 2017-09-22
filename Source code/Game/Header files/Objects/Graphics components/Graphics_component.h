@@ -35,7 +35,7 @@ namespace Game
 			void add_destroy_listener(std::function<void(Graphics_component&)> function);
 
 		private:
-			Communication::Event<Graphics_component&> destroy_event;
+			Communication::Event<Graphics_component&> destroy_event_;
 		};
 	}
 }

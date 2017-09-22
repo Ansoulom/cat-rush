@@ -7,30 +7,30 @@
 
 namespace Game
 {
-	Game_core::Game_core(std::string name) : sdl_wrapper{}, renderer{}, collisions{}, name {name}, running{false}, input{},
-											 window{}, sdl_renderer{}, font{}, use_vsync{true}, texture_manager{}, world{}
+	Game_core::Game_core(std::string name) : sdl_wrapper_{}, renderer_{}, collisions_{}, name_ {name}, running_{false}, input_{},
+											 window_{}, sdl_renderer_{}, font_{}, use_vsync_{true}, texture_manager_{}, world_{}
 	{
-		window = std::unique_ptr<SDL_Window, SDL_deleter>{
+		window_ = std::unique_ptr<SDL_Window, Sdl_deleter>{
 			SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screen_width, screen_height,
 							 SDL_WINDOW_HIDDEN),
-			SDL_deleter{}
+			Sdl_deleter{}
 		};
-		if(!window)
+		if(!window_)
 		{
 			throw std::runtime_error{std::string{"Window could not be created: "} + SDL_GetError()};
 		}
 
-		sdl_renderer = std::unique_ptr<SDL_Renderer, SDL_deleter>{
-			SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_ACCELERATED | (use_vsync ? SDL_RENDERER_PRESENTVSYNC : 0)),
-			SDL_deleter{}
+		sdl_renderer_ = std::unique_ptr<SDL_Renderer, Sdl_deleter>{
+			SDL_CreateRenderer(window_.get(), -1, SDL_RENDERER_ACCELERATED | (use_vsync_ ? SDL_RENDERER_PRESENTVSYNC : 0)),
+			Sdl_deleter{}
 		};
-		if(!sdl_renderer)
+		if(!sdl_renderer_)
 		{
 			throw std::runtime_error{std::string{"Renderer could not be created! SDL Error: "} + SDL_GetError()};
 		}
 
-		font = std::unique_ptr<TTF_Font, SDL_deleter>{TTF_OpenFont("Resources/Fonts/zsynorEBO.ttf", 72), SDL_deleter{}};
-		texture_manager.load_all_textures(boost::filesystem::path{"Resources/Textures/"}, *sdl_renderer);
+		font_ = std::unique_ptr<TTF_Font, Sdl_deleter>{TTF_OpenFont("Resources/Fonts/zsynorEBO.ttf", 72), Sdl_deleter{}};
+		texture_manager_.load_all_textures(boost::filesystem::path{"Resources/Textures/"}, *sdl_renderer_);
 	}
 
 
@@ -39,19 +39,19 @@ namespace Game
 
 	void Game_core::run()
 	{
-		SDL_ShowWindow(window.get());
+		SDL_ShowWindow(window_.get());
 
-		auto loader = Objects::Component_loader{renderer, collisions};
-		world = std::unique_ptr<World>{load_world("LevelFileTest", loader)};
+		auto loader = Objects::Component_loader{renderer_, collisions_};
+		world_ = std::unique_ptr<World>{load_world("LevelFileTest", loader)};
 
-		running = true;
+		running_ = true;
 
 		auto frame_timer = Frame_timer{};
-		while(running)
+		while(running_)
 		{
 			auto time_passed = frame_timer.update();
 			auto fps = frame_timer.get_framerate();
-			SDL_SetWindowTitle(window.get(), (std::string{"Projekt Tidshax    FPS: "} + std::to_string(fps)).c_str());
+			SDL_SetWindowTitle(window_.get(), (std::string{"Projekt Tidshax    FPS: "} + std::to_string(fps)).c_str());
 
 			handle_events(time_passed);
 			update(time_passed);
@@ -62,7 +62,7 @@ namespace Game
 
 	TTF_Font& Game_core::get_font() const
 	{
-		return *font.get();
+		return *font_.get();
 	}
 
 
@@ -80,17 +80,17 @@ namespace Game
 
 	void Game_core::handle_events(Timer::Seconds time_passed)
 	{
-		input.update(time_passed);
+		input_.update(time_passed);
 		auto event = SDL_Event{};
 		while(SDL_PollEvent(&event))
 		{
 			switch(event.type)
 			{
 				case SDL_QUIT:
-					running = false;
+					running_ = false;
 					break;
 				default:
-					input.handle_event(event);
+					input_.handle_event(event);
 					break;
 			}
 		}
@@ -99,26 +99,26 @@ namespace Game
 
 	void Game_core::update(Timer::Seconds time_passed)
 	{
-		world->handle_input(time_passed, input);
-		world->update(time_passed);
+		world_->handle_input(time_passed, input_);
+		world_->update(time_passed);
 	}
 
 
 	void Game_core::render()
 	{
-		SDL_SetRenderDrawColor(sdl_renderer.get(), 0x00, 0x00, 0x00, 0xff);
-		SDL_RenderClear(sdl_renderer.get());
+		SDL_SetRenderDrawColor(sdl_renderer_.get(), 0x00, 0x00, 0x00, 0xff);
+		SDL_RenderClear(sdl_renderer_.get());
 
 		// TODO: Not sure if this is the best way to do this, look up alternatives.
-		SDL_RenderSetScale(sdl_renderer.get(), screen_width / static_cast<float>(source_width),
+		SDL_RenderSetScale(sdl_renderer_.get(), screen_width / static_cast<float>(source_width),
 						   screen_height / static_cast<float>(source_height));
 
-		renderer.render(texture_manager, world->camera, *sdl_renderer);
+		renderer_.render(texture_manager_, world_->camera, *sdl_renderer_);
 
-		SDL_RenderSetScale(sdl_renderer.get(), 1, 1);
+		SDL_RenderSetScale(sdl_renderer_.get(), 1, 1);
 
 		// Render GUI here maybe?
 
-		SDL_RenderPresent(sdl_renderer.get());
+		SDL_RenderPresent(sdl_renderer_.get());
 	}
 }

@@ -30,18 +30,18 @@ namespace Game
 			void set_magnitude(T magnitude); // Sets the length of the vector.
 			void normalize(); // Set the length to a value between 0 and 1.
 		private:
-			T x, y;
+			T x_, y_;
 		};
 
 
 		template<typename T>
-		Vector<T>::Vector() : x{}, y{}
+		Vector<T>::Vector() : x_{}, y_{}
 		{
 		}
 
 
 		template<typename T>
-		Vector<T>::Vector(T x, T y) : x{ x }, y{ y }
+		Vector<T>::Vector(T x, T y) : x_{ x }, y_{ y }
 		{
 		}
 
@@ -55,8 +55,8 @@ namespace Game
 		template<typename T>
 		Vector<T>& Vector<T>::operator+=(const Vector<T>& other)
 		{
-			x += other.x;
-			y += other.y;
+			x_ += other.x_;
+			y_ += other.y_;
 			return *this;
 		}
 
@@ -64,8 +64,8 @@ namespace Game
 		template<typename T>
 		Vector<T>& Vector<T>::operator-=(const Vector<T>& other)
 		{
-			x -= other.x;
-			y -= other.y;
+			x_ -= other.x_;
+			y_ -= other.y_;
 			return *this;
 		}
 
@@ -73,8 +73,8 @@ namespace Game
 		template<typename T>
 		Vector<T>& Vector<T>::operator*=(T other)
 		{
-			x *= other;
-			y *= other;
+			x_ *= other;
+			y_ *= other;
 			return *this;
 		}
 
@@ -82,42 +82,42 @@ namespace Game
 		template<typename T>
 		T Vector<T>::get_magnitude() const
 		{
-			return sqrt(x * x + y * y);
+			return sqrt(x_ * x_ + y_ * y_);
 		}
 
 
 		template<typename T>
 		T Vector<T>::get_angle() const
 		{
-			return Math::rad_to_deg(atan2(y, x));
+			return Math::rad_to_deg(atan2(y_, x_));
 		}
 
 
 		template<typename T>
 		T Vector<T>::get_x() const
 		{
-			return x;
+			return x_;
 		}
 
 
 		template<typename T>
 		T Vector<T>::get_y() const
 		{
-			return y;
+			return y_;
 		}
 
 
 		template<typename T>
 		void Vector<T>::set_x(T x)
 		{
-			this->x = x;
+			this->x_ = x;
 		}
 
 
 		template<typename T>
 		void Vector<T>::set_y(T y)
 		{
-			this->y = y;
+			this->y_ = y;
 		}
 
 
@@ -125,8 +125,8 @@ namespace Game
 		void Vector<T>::set_magnitude(T magnitude)
 		{
 			auto rad = Math::deg_to_rad(get_angle());
-			x = cos(rad) * magnitude;
-			y = sin(rad) * magnitude;
+			x_ = cos(rad) * magnitude;
+			y_ = sin(rad) * magnitude;
 		}
 
 

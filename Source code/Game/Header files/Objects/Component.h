@@ -84,7 +84,7 @@ namespace Game
 			virtual nlohmann::json to_json() const = 0;
 
 		protected:
-			Game_object* game_object;
+			Game_object* game_object_;
 		};
 
 
@@ -98,7 +98,7 @@ namespace Game
 
 				void register_component(Collider_component& comp) const;
 			private:
-				Physics::Collision_system& collision_system;
+				Physics::Collision_system& collision_system_;
 
 				friend class Collider_component;
 			};
@@ -110,8 +110,8 @@ namespace Game
 			void register_component(Collider_component& comp) const;
 
 		private:
-			Graphics::Renderer& renderer;
-			Physics_loader phys_loader;
+			Graphics::Renderer& renderer_;
+			Physics_loader phys_loader_;
 		};
 	}
 }

@@ -6,16 +6,16 @@
 
 namespace Game
 {
-	class SDL_wrapper
+	class Sdl_wrapper
 	{
 	public:
-		SDL_wrapper();
-		~SDL_wrapper();
+		Sdl_wrapper();
+		~Sdl_wrapper();
 
 		static SDL_Rect get_rect(const Geometry::Rectangle<int>& rect);
 		static SDL_Point get_point(const Geometry::Vector<int>& point);
 
 	private:
-		static int count;
+		static int count_;
 	};
 }

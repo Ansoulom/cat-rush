@@ -2,24 +2,24 @@
 
 namespace Game
 {
-	Frame_timer::Frame_timer(): framerate{0}, frames{0}, time_passed{}, previous_time{std::chrono::high_resolution_clock::now()}
+	Frame_timer::Frame_timer(): framerate_{0}, frames_{0}, time_passed_{}, previous_time_{std::chrono::high_resolution_clock::now()}
 	{
 	}
 
 	std::chrono::nanoseconds Frame_timer::update()
 	{
 		auto current_time = std::chrono::high_resolution_clock::now();
-		auto delta_time = current_time - previous_time;
-		previous_time = current_time;
-		this->delta_time = delta_time;
+		auto delta_time = current_time - previous_time_;
+		previous_time_ = current_time;
+		this->delta_time_ = delta_time;
 
-		++frames;
-		this->time_passed += delta_time;
-		if(this->time_passed >= std::chrono::seconds{1})
+		++frames_;
+		this->time_passed_ += delta_time;
+		if(this->time_passed_ >= std::chrono::seconds{1})
 		{
-			this->time_passed -= std::chrono::seconds{1};
-			framerate = frames;
-			frames = 0;
+			this->time_passed_ -= std::chrono::seconds{1};
+			framerate_ = frames_;
+			frames_ = 0;
 		}
 
 		return delta_time;
@@ -27,11 +27,11 @@ namespace Game
 
 	std::chrono::nanoseconds Frame_timer::get_delta_time() const
 	{
-		return delta_time;
+		return delta_time_;
 	}
 
 	int Frame_timer::get_framerate() const
 	{
-		return framerate;
+		return framerate_;
 	}
 }

@@ -37,17 +37,17 @@ namespace Game
 		void update(Timer::Seconds time_passed); // Should handle all game logic.
 		void render(); // Render all game objects and GUI to the screen.
 
-		SDL_wrapper sdl_wrapper;
-		Graphics::Renderer renderer;
-		Physics::Collision_system collisions;
-		const std::string name;
-		bool running;
-		Input::Input_handler input;
-		std::unique_ptr<SDL_Window, SDL_deleter> window;
-		std::unique_ptr<SDL_Renderer, SDL_deleter> sdl_renderer;
-		std::unique_ptr<TTF_Font, SDL_deleter> font;
-		bool use_vsync;
-		Graphics::Texture_manager texture_manager;
-		std::unique_ptr<World> world;
+		Sdl_wrapper sdl_wrapper_;
+		Graphics::Renderer renderer_;
+		Physics::Collision_system collisions_;
+		const std::string name_;
+		bool running_;
+		Input::Input_handler input_;
+		std::unique_ptr<SDL_Window, Sdl_deleter> window_;
+		std::unique_ptr<SDL_Renderer, Sdl_deleter> sdl_renderer_;
+		std::unique_ptr<TTF_Font, Sdl_deleter> font_;
+		bool use_vsync_;
+		Graphics::Texture_manager texture_manager_;
+		std::unique_ptr<World> world_;
 	};
 }

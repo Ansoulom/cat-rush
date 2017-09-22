@@ -19,7 +19,7 @@ namespace Game
 			bool load_all_textures(const boost::filesystem::path& texture_path, SDL_Renderer& renderer);
 			std::shared_ptr<Texture> get_texture(std::string texture_name) const;
 		private:
-			std::unordered_map<std::string, std::shared_ptr<Texture>> textures;
+			std::unordered_map<std::string, std::shared_ptr<Texture>> textures_;
 		};
 	}
 }

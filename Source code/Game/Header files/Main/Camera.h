@@ -26,7 +26,7 @@ namespace Game
 		Geometry::Rectangle<double> bounding_box() const;
 
 	private:
-		Objects::Game_object* focus; // TODO: Make sure that focus can't be a dangling pointer.
-		Geometry::Vector<double> position;
+		Objects::Game_object* focus_; // TODO: Make sure that focus can't be a dangling pointer.
+		Geometry::Vector<double> position_;
 	};
 }

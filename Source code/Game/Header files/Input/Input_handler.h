@@ -35,12 +35,12 @@ namespace Game
 			void reset_controller_contexts();
 			void reset_keyboard_contexts();
 
-			std::unordered_map<std::string, Context> keyboard_contexts, controller_contexts;
-			std::vector<std::string> active_contexts;
-			std::vector<std::unique_ptr<SDL_GameController, SDL_deleter>> controllers;
-			SDL_GameController* active_controller;
-			bool controller_mode;
-			Timer::Seconds time_passed;
+			std::unordered_map<std::string, Context> keyboard_contexts_, controller_contexts_;
+			std::vector<std::string> active_contexts_;
+			std::vector<std::unique_ptr<SDL_GameController, Sdl_deleter>> controllers_;
+			SDL_GameController* active_controller_;
+			bool controller_mode_;
+			Timer::Seconds time_passed_;
 
 			static Uint8 get_mouse_button_from_name(std::string name);
 			static Axis get_controller_axis_from_name(std::string name);

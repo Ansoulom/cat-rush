@@ -6,7 +6,7 @@ namespace Game
 {
 	namespace Graphics
 	{
-		Texture_manager::Texture_manager() : textures{}
+		Texture_manager::Texture_manager() : textures_{}
 		{
 		}
 
@@ -28,7 +28,7 @@ namespace Game
 					{
 						auto texture = std::make_shared<Texture>(renderer, x.path().string());
 						auto filename = x.path().stem().string();
-						textures.emplace(filename, texture);
+						textures_.emplace(filename, texture);
 					}
 				}
 			}
@@ -38,7 +38,7 @@ namespace Game
 
 		std::shared_ptr<Texture> Texture_manager::get_texture(std::string texture_name) const
 		{
-			return textures.at(texture_name); // TODO: Decide what to do if texture does not exist
+			return textures_.at(texture_name); // TODO: Decide what to do if texture does not exist
 		}
 	}
 }

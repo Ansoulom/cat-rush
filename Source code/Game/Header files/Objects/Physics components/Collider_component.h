@@ -49,9 +49,9 @@ namespace Game
 			void handle_event(const Events::Object_moved& message);
 			void handle_event(const Events::Position_changed& message);
 
-			std::unique_ptr<Geometry::Shape<double>> shape;
-			std::vector<std::string> layers, check_layers;
-			Physics::Collision_system& collision_system; // Should maybe be const, but have to use events in that case
+			std::unique_ptr<Geometry::Shape<double>> shape_;
+			std::vector<std::string> layers_, check_layers_;
+			Physics::Collision_system& collision_system_; // Should maybe be const, but have to use events in that case
 
 			friend bool Physics::intersects(const Collider_component& first, const Collider_component& second);
 			friend Geometry::Vector<double> Physics::intersection(const Collider_component& first, const Collider_component& second, Geometry::Vector<double> direction);

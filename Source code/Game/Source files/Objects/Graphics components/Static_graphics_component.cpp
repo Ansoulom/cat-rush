@@ -16,12 +16,12 @@ namespace Game
 	{
 		Static_graphics_component::
 			Static_graphics_component(Game_object* container, std::string texture) : Graphics_component{container},
-																					 texture_name{texture} { }
+																					 texture_name_{texture} { }
 
 
 		json Static_graphics_component::to_json() const
 		{
-			return {{"type", "static"}, {"texture", texture_name}};
+			return {{"type", "static"}, {"texture", texture_name_}};
 		}
 
 
@@ -51,10 +51,10 @@ namespace Game
 		Graphics::Render_instance Static_graphics_component::get_render_instance(
 			const Graphics::Texture_manager& tm, const Camera& camera) const
 		{
-			auto texture = tm.get_texture(texture_name);
+			auto texture = tm.get_texture(texture_name_);
 			return {
 				texture.get(),
-				{camera.get_coordinates_on_screen(game_object->get_position()),texture->get_width(), texture->get_height()}
+				{camera.get_coordinates_on_screen(game_object_->get_position()),texture->get_width(), texture->get_height()}
 			};
 		}
 	}

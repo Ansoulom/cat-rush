@@ -34,7 +34,7 @@ namespace Game
 		private:
 			nlohmann::json to_json() const override;
 
-			std::string texture_name;;
+			std::string texture_name_;;
 		};
 	}
 }

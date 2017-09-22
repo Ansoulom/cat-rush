@@ -9,7 +9,7 @@ namespace Game
 {
 	namespace Input
 	{
-		Input_handler::Input_handler() : keyboard_contexts{}, controller_contexts{}, active_contexts{}, controllers{}, active_controller{}, controller_mode{}, time_passed{}
+		Input_handler::Input_handler() : keyboard_contexts_{}, controller_contexts_{}, active_contexts_{}, controllers_{}, active_controller_{}, controller_mode_{}, time_passed_{}
 		{
 			for (auto i = 0; i < SDL_NumJoysticks(); ++i)
 			{
@@ -19,7 +19,7 @@ namespace Game
 				}
 			}
 			initialize_contexts();
-			active_contexts.emplace_back(std::string{ "game" });
+			active_contexts_.emplace_back(std::string{ "game" });
 		}
 
 		Input_handler::~Input_handler()
@@ -42,7 +42,7 @@ namespace Game
 				break;
 			case SDL_CONTROLLERBUTTONUP:
 			{
-				if (controller_mode && SDL_GameControllerFromInstanceID(event.cbutton.which) == active_controller)
+				if (controller_mode_ && SDL_GameControllerFromInstanceID(event.cbutton.which) == active_controller_)
 				{
 					forward_event(event);
 				}
@@ -55,7 +55,7 @@ namespace Game
 				{
 					activate_controller(controller);
 				}
-				if (controller_mode && controller == active_controller)
+				if (controller_mode_ && controller == active_controller_)
 				{
 					forward_event(event);
 				}
@@ -70,17 +70,17 @@ namespace Game
 				break;
 			case SDL_KEYUP: // Same effect, pass through
 			case SDL_MOUSEBUTTONUP:
-				if (!controller_mode)
+				if (!controller_mode_)
 				{
 					forward_event(event);
 				}
 				break;
 			case SDL_MOUSEMOTION:
-				if (abs(event.motion.xrel) >= hard_mouse_deadzone * time_passed.count() || abs(event.motion.yrel) >= hard_mouse_deadzone * time_passed.count())
+				if (abs(event.motion.xrel) >= hard_mouse_deadzone * time_passed_.count() || abs(event.motion.yrel) >= hard_mouse_deadzone * time_passed_.count())
 				{
 					activate_keyboard();
 				}
-				if (!controller_mode)
+				if (!controller_mode_)
 				{
 					forward_event(event);
 				}
@@ -92,26 +92,26 @@ namespace Game
 
 		void Input_handler::update(Timer::Seconds time_passed)
 		{
-			for (auto context_name : active_contexts)
+			for (auto context_name : active_contexts_)
 			{
-				(controller_mode ? controller_contexts : keyboard_contexts).at(context_name).clear_actions();
+				(controller_mode_ ? controller_contexts_ : keyboard_contexts_).at(context_name).clear_actions();
 			}
-			this->time_passed = time_passed;
+			this->time_passed_ = time_passed;
 		}
 
 		bool Input_handler::get_action(Action action, std::string context) const
 		{
-			return (controller_mode ? controller_contexts : keyboard_contexts).at(context).get_action(action);
+			return (controller_mode_ ? controller_contexts_ : keyboard_contexts_).at(context).get_action(action);
 		}
 
 		bool Input_handler::get_state(State state, std::string context) const
 		{
-			return (controller_mode ? controller_contexts : keyboard_contexts).at(context).get_state(state);
+			return (controller_mode_ ? controller_contexts_ : keyboard_contexts_).at(context).get_state(state);
 		}
 
 		double Input_handler::get_range(Range range, std::string context) const
 		{
-			return (controller_mode ? controller_contexts : keyboard_contexts).at(context).get_range(range);
+			return (controller_mode_ ? controller_contexts_ : keyboard_contexts_).at(context).get_range(range);
 		}
 
 
@@ -165,35 +165,35 @@ namespace Game
 											if (key_type == std::string{ "key" })
 											{
 												auto button = Button{ SDL_GetKeyFromName(key_name) };
-												if (value_type == std::string{ "action" }) keyboard_contexts[context_name].add_mapping(button, get_action_from_name(value_name));
-												else if (value_type == std::string{ "state" }) keyboard_contexts[context_name].add_mapping(button, get_state_from_name(value_name));
+												if (value_type == std::string{ "action" }) keyboard_contexts_[context_name].add_mapping(button, get_action_from_name(value_name));
+												else if (value_type == std::string{ "state" }) keyboard_contexts_[context_name].add_mapping(button, get_state_from_name(value_name));
 											}
 											else if (key_type == std::string{ "mouse_button" })
 											{
 												auto button = Button{ get_mouse_button_from_name(key_name) };
-												if (value_type == std::string{ "action" }) keyboard_contexts[context_name].add_mapping(button, get_action_from_name(value_name));
-												else if (value_type == std::string{ "state" }) keyboard_contexts[context_name].add_mapping(button, get_state_from_name(value_name));
+												if (value_type == std::string{ "action" }) keyboard_contexts_[context_name].add_mapping(button, get_action_from_name(value_name));
+												else if (value_type == std::string{ "state" }) keyboard_contexts_[context_name].add_mapping(button, get_state_from_name(value_name));
 											}
 											else if (key_type == std::string{ "controller_button" })
 											{
 												auto button = Button{ SDL_GameControllerGetButtonFromString(key_name) };
-												if (value_type == std::string{ "action" }) controller_contexts[context_name].add_mapping(button, get_action_from_name(value_name));
-												else if (value_type == std::string{ "state" }) controller_contexts[context_name].add_mapping(button, get_state_from_name(value_name));
+												if (value_type == std::string{ "action" }) controller_contexts_[context_name].add_mapping(button, get_action_from_name(value_name));
+												else if (value_type == std::string{ "state" }) controller_contexts_[context_name].add_mapping(button, get_state_from_name(value_name));
 											}
 											else if (key_type == std::string{ "mouse_axis" })
 											{
 												auto axis = get_mouse_axis_from_name(key_name);
-												if (value_type == std::string{ "range" }) keyboard_contexts[context_name].add_mapping(axis, get_range_from_name(value_name));
+												if (value_type == std::string{ "range" }) keyboard_contexts_[context_name].add_mapping(axis, get_range_from_name(value_name));
 											}
 											else if (key_type == std::string{ "mouse_wheel" })
 											{
 												auto axis = get_mouse_wheel_axis_from_name(key_name);
-												if (value_type == std::string{ "range" }) keyboard_contexts[context_name].add_mapping(axis, get_range_from_name(value_name));
+												if (value_type == std::string{ "range" }) keyboard_contexts_[context_name].add_mapping(axis, get_range_from_name(value_name));
 											}
 											else if (key_type == std::string{ "controller_axis" })
 											{
 												auto axis = get_controller_axis_from_name(key_name);
-												if (value_type == std::string{ "range" }) controller_contexts[context_name].add_mapping(axis, get_range_from_name(value_name));
+												if (value_type == std::string{ "range" }) controller_contexts_[context_name].add_mapping(axis, get_range_from_name(value_name));
 											}
 										}
 									}
@@ -227,10 +227,10 @@ namespace Game
 
 		void Input_handler::add_controller(int index)
 		{
-			auto controller = std::unique_ptr<SDL_GameController, SDL_deleter>{ SDL_GameControllerOpen(index) };
+			auto controller = std::unique_ptr<SDL_GameController, Sdl_deleter>{ SDL_GameControllerOpen(index) };
 			if (controller)
 			{
-				controllers.emplace_back(move(controller));
+				controllers_.emplace_back(move(controller));
 			}
 			else
 			{
@@ -243,55 +243,55 @@ namespace Game
 			auto controller = SDL_GameControllerFromInstanceID(id);
 			if (controller)
 			{
-				if (active_controller == controller)
+				if (active_controller_ == controller)
 				{
-					active_controller = nullptr;
+					active_controller_ = nullptr;
 					activate_keyboard();
 				}
-				controllers.erase(std::remove_if(controllers.begin(), controllers.end(), [controller](std::unique_ptr<SDL_GameController, SDL_deleter>& c) { return c.get() == controller; }));
+				controllers_.erase(std::remove_if(controllers_.begin(), controllers_.end(), [controller](std::unique_ptr<SDL_GameController, Sdl_deleter>& c) { return c.get() == controller; }));
 			}
 		}
 
 		void Input_handler::activate_controller(SDL_GameController* controller)
 		{
-			if (!controller_mode || active_controller != controller)
+			if (!controller_mode_ || active_controller_ != controller)
 			{
 				reset_controller_contexts();
-				active_controller = controller;
-				controller_mode = true;
+				active_controller_ = controller;
+				controller_mode_ = true;
 			}
 		}
 
 		void Input_handler::activate_keyboard()
 		{
-			if (controller_mode)
+			if (controller_mode_)
 			{
 				reset_keyboard_contexts();
-				controller_mode = false;
+				controller_mode_ = false;
 			}
 		}
 
 		void Input_handler::forward_event(const SDL_Event& event)
 		{
-			for (auto context : active_contexts)
+			for (auto context : active_contexts_)
 			{
-				(controller_mode ? controller_contexts : keyboard_contexts).at(context).handle_event(event);
+				(controller_mode_ ? controller_contexts_ : keyboard_contexts_).at(context).handle_event(event);
 			}
 		}
 
 		void Input_handler::reset_controller_contexts()
 		{
-			for (auto context_name : active_contexts)
+			for (auto context_name : active_contexts_)
 			{
-				controller_contexts.at(context_name).reset();
+				controller_contexts_.at(context_name).reset();
 			}
 		}
 
 		void Input_handler::reset_keyboard_contexts()
 		{
-			for (auto context_name : active_contexts)
+			for (auto context_name : active_contexts_)
 			{
-				keyboard_contexts.at(context_name).reset();
+				keyboard_contexts_.at(context_name).reset();
 			}
 		}
 

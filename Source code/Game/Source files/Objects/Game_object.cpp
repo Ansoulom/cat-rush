@@ -9,14 +9,14 @@ namespace Game
 {
 	namespace Objects
 	{
-		Game_object::Game_object(Geometry::Vector<double> position) : position{position}
+		Game_object::Game_object(Geometry::Vector<double> position) : position_{position}
 		{
 		}
 
 
 		Game_object::~Game_object()
 		{
-			destroyed_event.notify(*this);
+			destroyed_event_.notify(*this);
 		}
 
 
@@ -57,7 +57,7 @@ namespace Game
 
 		void Game_object::update(Timer::Seconds time_passed)
 		{
-			for(auto& component : components)
+			for(auto& component : components_)
 			{
 				component->update(time_passed);
 			}
@@ -66,7 +66,7 @@ namespace Game
 
 		void Game_object::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
 		{
-			for (auto& component : components)
+			for (auto& component : components_)
 			{
 				component->handle_input(time_passed, input);
 			}
@@ -75,19 +75,19 @@ namespace Game
 
 		Geometry::Vector<double> Game_object::get_position() const
 		{
-			return position;
+			return position_;
 		}
 
 
 		void Game_object::set_position(Geometry::Vector<double> position)
 		{
-			this->position = position;
+			this->position_ = position;
 		}
 
 
 		void Game_object::send(const Events::Message& message)
 		{
-			for(auto& component : components)
+			for(auto& component : components_)
 			{
 				component->receive(message);
 			}
@@ -96,13 +96,13 @@ namespace Game
 
 		void Game_object::add_component(std::unique_ptr<Component>&& component)
 		{
-			components.emplace_back(move(component));
+			components_.emplace_back(move(component));
 		}
 
 
 		void Game_object::add_destroy_listener(std::function<void(Game_object&)> function)
 		{
-			destroyed_event.add_listener(function);
+			destroyed_event_.add_listener(function);
 		}
 
 
@@ -125,11 +125,11 @@ namespace Game
 		IO::json Game_object::to_json() const
 		{
 			auto components_json = nlohmann::json{};
-			for(auto& component : components)
+			for(auto& component : components_)
 			{
 				components_json.emplace_back(component->to_json());
 			}
-			return {{"x_position", position.get_x()}, {"y_position", position.get_y()}, {"components", components_json}};
+			return {{"x_position", position_.get_x()}, {"y_position", position_.get_y()}, {"components", components_json}};
 		}
 	}
 }

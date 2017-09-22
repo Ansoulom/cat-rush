@@ -20,11 +20,11 @@ namespace Game
 			Render_instance& operator=(Render_instance&& other) noexcept;
 
 		private:
-			Texture* texture;
-			Geometry::Rectangle<int> destination, source;
-			double angle;
-			Geometry::Vector<int> pivot;
-			bool flipped_x, flipped_y;
+			Texture* texture_;
+			Geometry::Rectangle<int> destination_, source_;
+			double angle_;
+			Geometry::Vector<int> pivot_;
+			bool flipped_x_, flipped_y_;
 
 			friend class Renderer;
 		};

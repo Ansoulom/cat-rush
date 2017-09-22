@@ -25,8 +25,8 @@ namespace Game
 				Geometry::Rectangle<int> get_clip() const;
 
 			private:
-				Texture& texture;
-				Geometry::Rectangle<int> clip;
+				Texture& texture_;
+				Geometry::Rectangle<int> clip_;
 			};
 
 
@@ -41,10 +41,13 @@ namespace Game
 			IO::json to_json() const;
 
 		private:
-			std::string texture_name;
-			int frames, rows, current_frame, current_row;
-			double frame_rate;
-			Timer timer;
+			std::string texture_name_;
+			int frames_;
+			int rows_;
+			int current_frame_;
+			int current_row_;
+			double frame_rate_;
+			Timer timer_;
 		};
 	}
 }

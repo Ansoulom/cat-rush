@@ -89,8 +89,8 @@ namespace Game
 		private:
 			void correct_center(Pivot_point pivot);
 
-			Vector<T> pos;
-			T w, h;
+			Vector<T> pos_;
+			T w_, h_;
 		};
 
 
@@ -121,8 +121,8 @@ namespace Game
 			IO::json to_json() const override;
 
 		private:
-			Vector<T> pos;
-			T r;
+			Vector<T> pos_;
+			T r_;
 		};
 
 
@@ -338,7 +338,7 @@ namespace Game
 
 
 		template<typename T>
-		Rectangle<T>::Rectangle(Vector<T> center_position, T width, T height, Pivot_point pivot) : pos{center_position}, w{width}, h{height}
+		Rectangle<T>::Rectangle(Vector<T> center_position, T width, T height, Pivot_point pivot) : pos_{center_position}, w_{width}, h_{height}
 		{
 			correct_center(pivot);
 		}
@@ -347,63 +347,63 @@ namespace Game
 		template<typename T>
 		Vector<T> Rectangle<T>::center() const
 		{
-			return pos;
+			return pos_;
 		}
 
 
 		template<typename T>
 		T Rectangle<T>::width() const
 		{
-			return w;
+			return w_;
 		}
 
 
 		template<typename T>
 		T Rectangle<T>::height() const
 		{
-			return h;
+			return h_;
 		}
 
 
 		template<typename T>
 		T Rectangle<T>::right() const
 		{
-			return pos.get_x() + w / 2;
+			return pos_.get_x() + w_ / 2;
 		}
 
 
 		template<typename T>
 		T Rectangle<T>::left() const
 		{
-			return pos.get_x() - w / 2;
+			return pos_.get_x() - w_ / 2;
 		}
 
 
 		template<typename T>
 		T Rectangle<T>::top() const
 		{
-			return pos.get_y() - h / 2;
+			return pos_.get_y() - h_ / 2;
 		}
 
 
 		template<typename T>
 		T Rectangle<T>::bottom() const
 		{
-			return pos.get_y() + h / 2;
+			return pos_.get_y() + h_ / 2;
 		}
 
 
 		template<typename T>
 		void Rectangle<T>::set_position(Vector<T> position)
 		{
-			pos = position;
+			pos_ = position;
 		}
 
 
 		template<typename T>
 		void Rectangle<T>::set_position(Vector<T> position, Pivot_point pivot)
 		{
-			pos = position;
+			pos_ = position;
 			correct_center(pivot);
 		}
 
@@ -411,14 +411,14 @@ namespace Game
 		template<typename T>
 		void Rectangle<T>::set_width(T width)
 		{
-			w = width;
+			w_ = width;
 		}
 
 
 		template<typename T>
 		void Rectangle<T>::set_height(T height)
 		{
-			h = height;
+			h_ = height;
 		}
 
 
@@ -495,7 +495,7 @@ namespace Game
 		template<typename T>
 		IO::json Rectangle<T>::to_json() const
 		{
-			return IO::json{{"type", "rectangle"}, {"x_position", pos.get_x()}, {"y_position", pos.get_y()}, {"width", w}, {"height", h}};
+			return IO::json{{"type", "rectangle"}, {"x_position", pos_.get_x()}, {"y_position", pos_.get_y()}, {"width", w_}, {"height", h_}};
 		}
 
 
@@ -507,35 +507,35 @@ namespace Game
 				case Pivot_point::center:
 					return;
 				case Pivot_point::top_left:
-					pos += Vector<T>{w / 2, h / 2};
+					pos_ += Vector<T>{w_ / 2, h_ / 2};
 					break;
 				case Pivot_point::top_center:
-					pos += Vector<T>{0, h / 2};
+					pos_ += Vector<T>{0, h_ / 2};
 					break;
 				case Pivot_point::top_right:
-					pos += Vector<T>{-w / 2, h / 2};
+					pos_ += Vector<T>{-w_ / 2, h_ / 2};
 					break;
 				case Pivot_point::center_right:
-					pos += Vector<T>{-w / 2, 0};
+					pos_ += Vector<T>{-w_ / 2, 0};
 					break;
 				case Pivot_point::bottom_right:
-					pos += Vector<T>{-w / 2, -h / 2};
+					pos_ += Vector<T>{-w_ / 2, -h_ / 2};
 					break;
 				case Pivot_point::bottom_center:
-					pos += Vector<T>{0, -h / 2};
+					pos_ += Vector<T>{0, -h_ / 2};
 					break;
 				case Pivot_point::bottom_left:
-					pos += Vector<T>{w / 2, -h / 2};
+					pos_ += Vector<T>{w_ / 2, -h_ / 2};
 					break;
 				case Pivot_point::center_left:
-					pos += Vector<T>{w / 2, 0};
+					pos_ += Vector<T>{w_ / 2, 0};
 					break;
 			}
 		}
 
 
 		template<typename T>
-		Circle<T>::Circle(Vector<T> position, T radius) : pos{position}, r{radius}
+		Circle<T>::Circle(Vector<T> position, T radius) : pos_{position}, r_{radius}
 		{
 		}
 
@@ -543,28 +543,28 @@ namespace Game
 		template<typename T>
 		Vector<T> Circle<T>::center() const
 		{
-			return pos;
+			return pos_;
 		}
 
 
 		template<typename T>
 		T Circle<T>::radius() const
 		{
-			return r;
+			return r_;
 		}
 
 
 		template<typename T>
 		void Circle<T>::set_position(Vector<T> position)
 		{
-			pos = position;
+			pos_ = position;
 		}
 
 
 		template<typename T>
 		void Circle<T>::set_radius(T radius)
 		{
-			r = radius;
+			r_ = radius;
 		}
 
 
@@ -641,7 +641,7 @@ namespace Game
 		template<typename T>
 		IO::json Circle<T>::to_json() const
 		{
-			return IO::json{{"type", "circle"},{"x_position", pos.get_x()},{"y_position", pos.get_y()},{"radius", r}};
+			return IO::json{{"type", "circle"},{"x_position", pos_.get_x()},{"y_position", pos_.get_y()},{"radius", r_}};
 		}
 	}
 }

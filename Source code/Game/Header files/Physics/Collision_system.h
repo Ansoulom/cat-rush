@@ -27,9 +27,9 @@ namespace Game
 			void remove_component(Objects::Collider_component& comp, Geometry::Vector<int> grid_cell_pos);
 			static Geometry::Vector<int> get_grid_cell_position(Geometry::Vector<double> object_position);
 			
-			std::unordered_map<Geometry::Vector<int>, std::unordered_map<std::string, std::list<Objects::Collider_component*>>> grid; // Consider using some kind of IDs instead of pointers
+			std::unordered_map<Geometry::Vector<int>, std::unordered_map<std::string, std::list<Objects::Collider_component*>>> grid_; // Consider using some kind of IDs instead of pointers
 
-			static const double grid_cell_size;
+			static const double grid_cell_size_;
 		};
 	}
 }

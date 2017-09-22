@@ -13,7 +13,7 @@ namespace Game
 {
 	namespace Objects
 	{
-		Component::Component(Game_object* container) : game_object{container}
+		Component::Component(Game_object* container) : game_object_{container}
 		{
 		}
 
@@ -40,7 +40,7 @@ namespace Game
 
 		Geometry::Vector<double> Component::get_position() const
 		{
-			return game_object ? game_object->get_position() : Geometry::Vector<double>{};
+			return game_object_ ? game_object_->get_position() : Geometry::Vector<double>{};
 		}
 
 
@@ -71,37 +71,37 @@ namespace Game
 		}
 
 
-		Component_loader::Component_loader(Graphics::Renderer& renderer, Physics::Collision_system& collision_system) : renderer{renderer}, phys_loader{collision_system}
+		Component_loader::Component_loader(Graphics::Renderer& renderer, Physics::Collision_system& collision_system) : renderer_{renderer}, phys_loader_{collision_system}
 		{
 		}
 
 
 		const Component_loader::Physics_loader& Component_loader::physics_loader() const
 		{
-			return phys_loader;
+			return phys_loader_;
 		}
 
 
 		void Component_loader::register_component(Graphics_component& comp) const
 		{
-			renderer.register_component(comp);
+			renderer_.register_component(comp);
 		}
 
 
 		void Component_loader::register_component(Collider_component& comp) const
 		{
-			phys_loader.register_component(comp);
+			phys_loader_.register_component(comp);
 		}
 
 
-		Component_loader::Physics_loader::Physics_loader(Physics::Collision_system& collision_system) : collision_system{collision_system}
+		Component_loader::Physics_loader::Physics_loader(Physics::Collision_system& collision_system) : collision_system_{collision_system}
 		{
 		}
 
 
 		void Component_loader::Physics_loader::register_component(Collider_component& comp) const
 		{
-			collision_system.register_component(comp);
+			collision_system_.register_component(comp);
 		}
 	}
 }

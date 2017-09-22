@@ -10,7 +10,7 @@ namespace Game
 	namespace Objects
 	{
 		Player_input_component::Player_input_component(Game_object* container) : Component{container},
-																				smooth_input{Geometry::Vector<double>(0, 0)}, angle{0}, last_input_angle{0}, direction{0}
+																				smooth_input_{Geometry::Vector<double>(0, 0)}, angle_{0}, last_input_angle_{0}, direction_{0}
 		{
 		}
 
@@ -27,9 +27,9 @@ namespace Game
 			};
 			input_vector.normalize();
 
-			game_object->send(Events::Change_velocity_normalized{input_vector});
+			game_object_->send(Events::Change_velocity_normalized{input_vector});
 
-			update_rotation(input_vector, time_passed, *game_object);
+			update_rotation(input_vector, time_passed, *game_object_);
 		}
 
 
@@ -42,35 +42,35 @@ namespace Game
 		void Player_input_component::update_rotation(Geometry::Vector<double> input, Timer::Seconds time_passed,
 													Game_object& object)
 		{
-			auto input_smoothing_movement = 1.0 / rotation_input_smoothing_time.count() * time_passed.count();
-			auto input_smoothing_direction = input - smooth_input;
+			auto input_smoothing_movement = 1.0 / rotation_input_smoothing_time_.count() * time_passed.count();
+			auto input_smoothing_direction = input - smooth_input_;
 			if(input_smoothing_movement > input_smoothing_direction.get_magnitude())
 				input_smoothing_movement =
 					input_smoothing_direction.get_magnitude();
 			input_smoothing_direction.set_magnitude(1.0);
-			smooth_input += input_smoothing_direction * input_smoothing_movement;
+			smooth_input_ += input_smoothing_direction * input_smoothing_movement;
 
 			if(input.get_magnitude() > 0.0)
 			{
-				last_input_angle = smooth_input.get_angle();
+				last_input_angle_ = smooth_input_.get_angle();
 			}
 
-			auto rotation_angle = last_input_angle - angle;
+			auto rotation_angle = last_input_angle_ - angle_;
 			if(rotation_angle > 180.0 || rotation_angle < -180.0)
 			{
 				rotation_angle += 360.0;
 			}
 
-			auto rotation_speed = 180.0 / max_rotation_time.count() * Math::sign(rotation_angle) * time_passed.count();
+			auto rotation_speed = 180.0 / max_rotation_time_.count() * Math::sign(rotation_angle) * time_passed.count();
 			if(abs(rotation_speed) > abs(rotation_angle))
 			{
 				rotation_speed = rotation_angle;
 			}
 
-			angle += rotation_speed;
-			angle = Math::clamp_angle(angle);
+			angle_ += rotation_speed;
+			angle_ = Math::clamp_angle(angle_);
 
-			game_object->send(Events::Rotation_changed{angle});
+			game_object_->send(Events::Rotation_changed{angle_});
 		}
 
 

@@ -17,21 +17,21 @@ namespace Game
 
 			void notify(Args ... args);
 		private:
-			std::vector<std::function<void(Args...)>> listeners;
+			std::vector<std::function<void(Args...)>> listeners_;
 		};
 
 
 		template<typename... Args>
 		void Event<Args...>::add_listener(std::function<void(Args...)> function)
 		{
-			listeners.emplace_back(function);
+			listeners_.emplace_back(function);
 		}
 
 
 		template<typename... Args>
 		void Event<Args...>::notify(Args ... args)
 		{
-			for(auto& function : listeners)
+			for(auto& function : listeners_)
 			{
 				function(args...);
 			}
