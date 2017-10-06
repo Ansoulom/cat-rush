@@ -7,11 +7,12 @@
 
 namespace Game
 {
-	Game_core::Game_core(std::string name) : sdl_wrapper_{}, renderer_{}, collisions_{}, name_ {name}, running_{false}, input_{},
+	Game_core::Game_core(std::string name) : sdl_wrapper_{}, settings_{load_settings(settings_file)}, renderer_{settings_}, collisions_{}, name_{ name }, running_{ false },
+											 input_{},
 											 window_{}, sdl_renderer_{}, font_{}, use_vsync_{true}, texture_manager_{}, world_{}
 	{
 		window_ = std::unique_ptr<SDL_Window, Sdl_deleter>{
-			SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screen_width, screen_height,
+			SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, settings_.resolution_width, settings_.resolution_height,
 							 SDL_WINDOW_HIDDEN),
 			Sdl_deleter{}
 		};
@@ -42,7 +43,7 @@ namespace Game
 		SDL_ShowWindow(window_.get());
 
 		auto loader = Objects::Component_loader{renderer_, collisions_};
-		world_ = std::unique_ptr<World>{load_world("LevelFileTest", loader)};
+		world_ = std::unique_ptr<World>{load_world("LevelFileTest",, loader)};
 
 		running_ = true;
 
@@ -60,21 +61,9 @@ namespace Game
 	}
 
 
-	TTF_Font& Game_core::get_font() const
+	const Settings& Game_core::settings() const
 	{
-		return *font_.get();
-	}
-
-
-	int Game_core::convert_meters_to_pixels(double meters)
-	{
-		return static_cast<int>(round(meters * pixels_per_meter));
-	}
-
-
-	double Game_core::convert_pixels_to_meters(int pixels)
-	{
-		return pixels / static_cast<double>(pixels_per_meter);
+		return settings_;
 	}
 
 
@@ -110,10 +99,10 @@ namespace Game
 		SDL_RenderClear(sdl_renderer_.get());
 
 		// TODO: Not sure if this is the best way to do this, look up alternatives.
-		SDL_RenderSetScale(sdl_renderer_.get(), screen_width / static_cast<float>(source_width),
-						   screen_height / static_cast<float>(source_height));
+		SDL_RenderSetScale(sdl_renderer_.get(), settings_.resolution_width / static_cast<float>(settings_.source_width),
+						   settings_.resolution_height / static_cast<float>(settings_.source_height));
 
-		renderer_.render(texture_manager_, world_->camera, *sdl_renderer_);
+		renderer_.render(texture_manager_, world_->camera_, *sdl_renderer_);
 
 		SDL_RenderSetScale(sdl_renderer_.get(), 1, 1);
 
@@ -121,4 +110,7 @@ namespace Game
 
 		SDL_RenderPresent(sdl_renderer_.get());
 	}
+
+
+	const std::string Game_core::settings_file{"Preferences/settings.ini"};
 }

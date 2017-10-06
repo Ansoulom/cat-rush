@@ -2,25 +2,23 @@
 #include "Renderer.h"
 #include "Game_object.h"
 #include "Camera.h"
+#include "Component.h"
 
 
 namespace Game
 {
 	namespace Objects
 	{
-		Animated_graphics_component::Animated_graphics_component(Game_object* game_object,
-																 std::unordered_map<std::string, Graphics::Animation> animations) : Graphics_component{game_object},
-																																	animations_{animations},
-																																	current_animation_{animations.size() > 0 ? animations.begin()->first : ""} { }
+		Animated_graphics_component::Animated_graphics_component(
+			Game_object& game_object,
+			std::unordered_map<std::string, Graphics::Animation> animations)
+			: Graphics_component{game_object},
+			  animations_{animations},
+			  current_animation_{animations.size() > 0 ? animations.begin()->first : ""} { }
 
 
 		Animated_graphics_component::~Animated_graphics_component() { }
 
-
-		/*Animated_graphics_component* Animated_graphics_component::clone()
-		{
-			return new Animated_graphics_component{*this};
-		}/**/
 
 		void Animated_graphics_component::update(Timer::Seconds time_passed)
 		{
@@ -55,7 +53,8 @@ namespace Game
 			auto animations_json = IO::json{};
 			for(const auto& animation_pair : animations_)
 			{
-				animations_json.emplace_back(IO::json{{"name", animation_pair.first}, {"animation", animation_pair.second.to_json()}});
+				animations_json.emplace_back(
+					IO::json{{"name", animation_pair.first}, {"animation", animation_pair.second.to_json()}});
 			}
 			return {{"type", "animated"}, {"animations", animations_json}};
 		}
@@ -68,31 +67,35 @@ namespace Game
 		}
 
 
-		Animated_graphics_component* Animated_graphics_component::from_json(const IO::json& json, Game_object* game_object,
-																			const Component_loader& loader)
+		Animated_graphics_component* Animated_graphics_component::from_json(
+			const IO::json& json,
+			Game_object& game_object)
 		{
 			auto animations = std::unordered_map<std::string, Graphics::Animation>{};
 			for(auto animation : json.at("animations"))
 			{
-				animations.emplace(animation.at("name").get<std::string>(),
-								   Graphics::Animation::from_json(animation.at("animation")));
+				animations.emplace(
+					animation.at("name").get<std::string>(),
+					Graphics::Animation::from_json(animation.at("animation")));
 			}
 
-			auto component = new Animated_graphics_component{game_object, animations};
-			loader.register_component(*component);
+			const auto component = new Animated_graphics_component{game_object, animations};
+			game_object.world().component_loader().register_component(*component);
 
 			return component;
 		}
 
 
 		Graphics::Render_instance Animated_graphics_component::get_render_instance(
-			const Graphics::Texture_manager& tm, const Camera& camera) const
+			const Graphics::Texture_manager& tm,
+			const Camera& camera) const
 		{
 			auto frame = animations_.at(current_animation_).get_current_frame(tm);
 			auto clip = frame.get_clip();
-			return {
-				&frame.get_texture(), {camera.get_coordinates_on_screen(game_object_->get_position()), clip.width(), clip.height()},
-				&clip
+			return Graphics::Render_instance{
+				&frame.get_texture(),
+				camera.get_coordinates_on_screen(game_object_->get_position()),
+				clip
 			};
 		}
 	}

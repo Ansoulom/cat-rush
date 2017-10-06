@@ -9,8 +9,7 @@ namespace Game
 {
 	namespace Objects
 	{
-		Player_input_component::Player_input_component(Game_object* container) : Component{container},
-																				smooth_input_{Geometry::Vector<double>(0, 0)}, angle_{0}, last_input_angle_{0}, direction_{0}
+		Player_input_component::Player_input_component(Game_object& container) : Component{container}, direction_{Direction::right}
 		{
 		}
 
@@ -19,13 +18,8 @@ namespace Game
 		{
 			const auto x_state_input = input.get_state(Input::State::movement_left, "game") * -1 + input.get_state(
 				Input::State::movement_right, "game");
-			const auto y_state_input = input.get_state(Input::State::movement_up, "game") * -1 + input.get_state(
-				Input::State::movement_down, "game");
 			auto range_input = input.get_processed_vector(Input::Range::movement_x, Input::Range::movement_y, "game");
-			auto input_vector = Geometry::Vector<double>{
-				x_state_input + range_input.get_x(), y_state_input + range_input.get_y()
-			};
-			input_vector.normalize();
+			auto input_vector = Math::clamp_value(x_state_input + range_input.get_x(), -1.0, 1.0);
 
 			game_object_->send(Events::Change_velocity_normalized{input_vector});
 
@@ -74,8 +68,7 @@ namespace Game
 		}
 
 
-		Player_input_component* Player_input_component::from_json(const IO::json& json, Game_object* game_object,
-																const Component_loader& loader)
+		Player_input_component* Player_input_component::from_json(const IO::json& json, Game_object& game_object)
 		{
 			return new Player_input_component{game_object};
 		}

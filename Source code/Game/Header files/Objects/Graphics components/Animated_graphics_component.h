@@ -15,7 +15,7 @@ namespace Game
 			public Graphics_component
 		{
 		public:
-			explicit Animated_graphics_component(Game_object* game_object, std::unordered_map<std::string, Graphics::Animation> animations = {}); // TODO: Make it possible to change active animation and make sure to avoid problems with empty map arguments
+			explicit Animated_graphics_component(Game_object& game_object, std::unordered_map<std::string, Graphics::Animation> animations = {}); // TODO: Make it possible to change active animation and make sure to avoid problems with empty map arguments
 			virtual ~Animated_graphics_component();
 
 			void update(Timer::Seconds time_passed) override; // The object passed is the owner of the component.
@@ -23,7 +23,7 @@ namespace Game
 			Graphics::Render_instance get_render_instance(const Graphics::Texture_manager& tm, const Camera& camera) const override;
 			void set_row(int row); // The row of sprites, e.g. direction or state. Must be valid for the current animation.
 
-			static Animated_graphics_component* from_json(const IO::json& json, Game_object* game_object, const Component_loader& loader);
+			static Animated_graphics_component* from_json(const IO::json& json, Game_object& game_object);
 			IO::json to_json() const override;
 
 		private:

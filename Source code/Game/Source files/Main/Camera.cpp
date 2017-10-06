@@ -5,22 +5,22 @@
 
 namespace Game
 {
-	Camera::Camera(Geometry::Vector<double> position) : focus_{nullptr}, position_{position}
-	{
-	}
+	Camera::Camera(Geometry::Vector<double> position, Graphics::Aspect_ratio aspect_ratio)
+		: aspect_ratio_{aspect_ratio},
+		  zoom_{1.0},
+		  focus_{nullptr},
+		  position_{position} { }
 
 
-	Camera::Camera(Objects::Game_object* focus) : focus_{focus}
+	Camera::Camera(Objects::Game_object* focus, Graphics::Aspect_ratio aspect_ratio)
+		: aspect_ratio_{aspect_ratio},
+		  zoom_{1.0},
+		  focus_{focus}
 	{
 		if(focus)
 		{
 			position_ = focus->get_position();
 		}
-	}
-
-
-	Camera::~Camera()
-	{
 	}
 
 
@@ -40,18 +40,26 @@ namespace Game
 	}
 
 
-	Geometry::Vector<int> Camera::get_coordinates_on_screen(Geometry::Vector<double> position_in_world) const
+	Geometry::Vector<double> Camera::get_coordinates_on_screen(Geometry::Vector<double> position_in_world) const
 	{
-		auto x_render = Game_core::convert_meters_to_pixels(position_in_world.get_x() - position_.get_x()) + Game_core::source_width / 2;
-		auto y_render = Game_core::convert_meters_to_pixels(position_in_world.get_y() - position_.get_y()) + Game_core::source_height / 2;
+		const auto x_render = (position_in_world.get_x() - position_.get_x() + aspect_ratio_.x_multiplier() / 2) * zoom_;
+		const auto y_render = (position_in_world.get_y() - position_.get_y() + aspect_ratio_.y_multiplier() / 2) * zoom_;
+
 		return {x_render, y_render};
 	}
 
 
 	Geometry::Rectangle<double> Camera::bounding_box() const
 	{
-		auto w = Game_core::convert_pixels_to_meters(Game_core::source_width);
-		auto h = Game_core::convert_pixels_to_meters(Game_core::source_height);
+		const auto w = aspect_ratio_.x_multiplier() / zoom_;
+		const auto h = aspect_ratio_.y_multiplier() / zoom_;
+
 		return {position_, w, h};
+	}
+
+
+	void Camera::set_aspect_ratio(Graphics::Aspect_ratio aspect_ratio)
+	{
+		aspect_ratio_ = aspect_ratio;
 	}
 }

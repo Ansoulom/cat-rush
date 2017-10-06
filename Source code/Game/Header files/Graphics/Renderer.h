@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include "SDL.h"
 #include <Graphics_component.h>
+#include "Settings.h"
 
 
 namespace Game
@@ -20,7 +21,7 @@ namespace Game
 		class Renderer
 		{
 		public:
-			Renderer();
+			explicit Renderer(const Settings& settings);
 
 			void render(const Texture_manager& tm, const Camera& camera, SDL_Renderer& sdl_renderer) const;
 			void render(const Render_instance& instance, SDL_Renderer& sdl_renderer) const;
@@ -30,6 +31,21 @@ namespace Game
 		private:
 			std::unordered_map<Geometry::Vector<int>, std::list<Objects::Graphics_component*>> grid_;
 			const double grid_cell_size_ = 10.0; // Very temporary and random number for now
+			const Settings& settings_;
+		};
+
+
+		class Aspect_ratio
+		{
+		public:
+			Aspect_ratio(int x, int y);
+			int x() const;
+			int y() const;
+			double x_multiplier() const;
+			double y_multiplier() const;
+
+		private:
+			int x_, y_;
 		};
 	}
 }

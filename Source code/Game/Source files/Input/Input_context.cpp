@@ -132,18 +132,19 @@ namespace Game
 				}
 				case SDL_MOUSEMOTION:
 				{
-					auto x_axis = Axis::mouse_x;
-					auto x_iter = range_mappings_.find(x_axis);
+					auto window_width = 0;
+					auto window_height = 0;
+					SDL_GetWindowSize(SDL_GetWindowFromID(event.motion.windowID), &window_width, &window_height);
+					const auto x_iter = range_mappings_.find(Axis::mouse_x);
 					if(x_iter != range_mappings_.end())
 					{
-						auto normalized = (event.motion.x - Game_core::screen_width / 2) / (Game_core::screen_width / 2.0);
+						const auto normalized = (event.motion.x - window_width / 2) / (window_width / 2.0); // Should coordinates be from -1 to 1 or 0 to ~1.78?
 						ranges_[x_iter->second] = normalized;
 					}
-					auto y_axis = Axis::mouse_y;
-					auto y_iter = range_mappings_.find(y_axis);
+					const auto y_iter = range_mappings_.find(Axis::mouse_y);
 					if(y_iter != range_mappings_.end())
 					{
-						auto normalized = (event.motion.y - Game_core::screen_height / 2) / (Game_core::screen_height / 2.0);
+						const auto normalized = (event.motion.y - window_height / 2) / (window_height / 2.0);
 						ranges_[x_iter->second] = normalized;
 					}
 					break;

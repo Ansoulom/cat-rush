@@ -4,6 +4,7 @@
 #include <Timer.h>
 #include <Vector.h>
 #include <variant>
+#include "Collision_system.h"
 
 
 namespace Game
@@ -65,7 +66,7 @@ namespace Game
 		class Component
 		{
 		public:
-			explicit Component(Game_object* container);
+			explicit Component(Game_object& game_object);
 			virtual ~Component();
 
 			Component(const Component&) = delete;
@@ -73,17 +74,18 @@ namespace Game
 			Component& operator=(const Component&) = delete;
 			Component& operator=(Component&&) = delete;
 
-			//virtual Component* clone() = 0; // The pointer is owned by and needs to be destroyed by the caller.
+			Game_object& game_object();
+			// Receive a message from the enclosing game object
+			virtual void receive(const Events::Message& message);
 
+			// Only call from enclosing game object
 			virtual void handle_input(Timer::Seconds time_passed, const Input::Input_handler& input);
 			virtual void update(Timer::Seconds time_passed);
-			virtual void receive(const Events::Message& message); // Receive a message from the enclosing game object
-			Geometry::Vector<double> get_position() const;
 
-			static Component* from_json(const nlohmann::json& j, Game_object* game_object, const Component_loader& loader);
-			virtual nlohmann::json to_json() const = 0;
+			static Component* from_json(const IO::json& j, Game_object& game_object);
+			virtual IO::json to_json() const = 0;
 
-		protected:
+		private:
 			Game_object* game_object_;
 		};
 
@@ -91,27 +93,14 @@ namespace Game
 		class Component_loader
 		{
 		public:
-			class Physics_loader
-			{
-			public:
-				explicit Physics_loader(Physics::Collision_system& collision_system);
-
-				void register_component(Collider_component& comp) const;
-			private:
-				Physics::Collision_system& collision_system_;
-
-				friend class Collider_component;
-			};
-
 			Component_loader(Graphics::Renderer& renderer, Physics::Collision_system& collision_system);
 
-			const Physics_loader& physics_loader() const;
 			void register_component(Graphics_component& comp) const;
 			void register_component(Collider_component& comp) const;
 
 		private:
 			Graphics::Renderer& renderer_;
-			Physics_loader phys_loader_;
+			Physics::Collision_system& collision_system_;
 		};
 	}
 }

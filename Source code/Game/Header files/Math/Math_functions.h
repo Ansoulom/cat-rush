@@ -46,5 +46,12 @@ namespace Game
 			assert(angle < 360);
 			return angle;
 		}
+
+
+		template<typename T>
+		T clamp_value(T value, T min, T max)
+		{
+			return value < min ? min : (value > max ? max : value);
+		}
 	}
 }

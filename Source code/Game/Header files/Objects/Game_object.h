@@ -6,6 +6,7 @@
 #include <Vector.h>
 #include <Component.h>
 #include <Communication.h>
+#include "World.h"
 
 
 namespace Game
@@ -15,31 +16,34 @@ namespace Game
 		class Game_object
 		{
 		public:
-			explicit Game_object(Geometry::Vector<double> position);
+			explicit Game_object(Geometry::Vector<double> position, World& world);
 			~Game_object();
 
 			Game_object(const Game_object& other) = delete;
 			Game_object(Game_object&& other) noexcept = delete;
-
 			Game_object& operator=(const Game_object& other) = delete;
-			Game_object& operator=(Game_object&& other) noexcept = delete;
+			Game_object& operator=(Game_object&& other) noexcept = delete; // May not have to delete them anyway
 
-			void update(Timer::Seconds time_passed);
 			Geometry::Vector<double> get_position() const;
 			void set_position(Geometry::Vector<double> position);
 			void send(const Events::Message& message);
 			void add_component(std::unique_ptr<Component>&& component);
+			World& world();
 			void add_destroy_listener(std::function<void(Game_object&)> function);
 
+			// Only call from enclosing world
 			void handle_input(Timer::Seconds time_passed, const Input::Input_handler& input);
+			void update(Timer::Seconds time_passed);
 
-			static Game_object* from_json(const nlohmann::json& json, const Component_loader& loader);
-			nlohmann::json to_json() const;
+			static Game_object* from_json(const IO::json& json, World& world);
+			IO::json to_json() const;
 
 		private:
 			Geometry::Vector<double> position_;
 			std::vector<std::unique_ptr<Component>> components_;
-			Communication::Event<Game_object&> destroyed_event_;
+			World& world_;
+
+			Communication::Event<Game_object&> destroyed_event_; // TODO: Make this more legit
 		};
 	}
 }

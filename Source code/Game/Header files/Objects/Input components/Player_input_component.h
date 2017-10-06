@@ -13,24 +13,16 @@ namespace Game
 			public Component
 		{
 		public:
-			explicit Player_input_component(Game_object* container);
-
-			//Player_input_component* clone() override
+			explicit Player_input_component(Game_object& game_object);
 
 			void handle_input(Timer::Seconds time_passed, const Input::Input_handler& input) override;
 
-			static Player_input_component* from_json(const IO::json& json, Game_object* game_object, const Component_loader& loader);
+			static Player_input_component* from_json(const IO::json& json, Game_object& game_object);
 			IO::json to_json() const override;
 
 		private:
 			void update_rotation(Geometry::Vector<double> input, Timer::Seconds time_passed, Game_object& object);
-
-			Geometry::Vector<double> smooth_input_;
-			double angle_, last_input_angle_;
-			int direction_;
-
-			const Timer::Seconds max_rotation_time_ = Timer::Seconds{0.2}; // The time it takes to rotate 180 degrees
-			const Timer::Seconds rotation_input_smoothing_time_ = Timer::Seconds{0.1}; // The time it takes for rotation input to move from 0 to 1
+			Direction direction_;
 		};
 	}
 }

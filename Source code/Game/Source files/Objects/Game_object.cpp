@@ -1,15 +1,12 @@
 #include "Game_object.h"
-#include <Animated_graphics_component.h>
-#include <Static_graphics_component.h>
-#include <Player_input_component.h>
-#include <Movement_component.h>
+#include "Component.h"
 
 
 namespace Game
 {
 	namespace Objects
 	{
-		Game_object::Game_object(Geometry::Vector<double> position) : position_{position}
+		Game_object::Game_object(Geometry::Vector<double> position, World& world) : position_{position}, world_{world}
 		{
 		}
 
@@ -19,41 +16,6 @@ namespace Game
 			destroyed_event_.notify(*this);
 		}
 
-
-		/*Game_object::Game_object(const Game_object& other) : position{other.position}, components{}
-		{
-			for(auto& component : other.components)
-			{
-				components.emplace_back(std::unique_ptr<Component>{component->clone()});
-			}
-		}
-
-
-		Game_object::Game_object(Game_object&& other) noexcept : position{other.position}, components{move(other.components)} // Make sure that other lists are not confused by new memory address
-		{
-		}
-
-
-		Game_object& Game_object::operator=(const Game_object& other)
-		{
-			position = other.position;
-			components.clear(); // Make sure to remove from other lists
-			for(auto& component : other.components)
-			{
-				components.emplace_back(std::unique_ptr<Component>{component->clone()});
-			}
-
-			return *this;
-		}
-
-
-		Game_object& Game_object::operator=(Game_object&& other) noexcept
-		{
-			position = other.position;
-			components = move(other.components); // Remove components from other lists
-
-			return *this;
-		}/**/
 
 		void Game_object::update(Timer::Seconds time_passed)
 		{
@@ -100,22 +62,28 @@ namespace Game
 		}
 
 
+		World& Game_object::world()
+		{
+			return world_;
+		}
+
+
 		void Game_object::add_destroy_listener(std::function<void(Game_object&)> function)
 		{
 			destroyed_event_.add_listener(function);
 		}
 
 
-		Game_object* Game_object::from_json(const IO::json& json, const Component_loader& loader)
+		Game_object* Game_object::from_json(const IO::json& json, World& world)
 		{
 			const auto x = json.at("x_position").get<double>();
 			const auto y = json.at("y_position").get<double>();
 
-			auto object = new Game_object{{x, y}};
+			auto object = new Game_object{{x, y}, world};
 
 			for(const auto component_json : json.at("components"))
 			{
-				object->add_component(std::unique_ptr<Component>{Component::from_json(component_json, object, loader)});
+				object->add_component(std::unique_ptr<Component>{Component::from_json(component_json, *object)});
 			}
 
 			return object;
@@ -124,7 +92,7 @@ namespace Game
 
 		IO::json Game_object::to_json() const
 		{
-			auto components_json = nlohmann::json{};
+			auto components_json = IO::json{};
 			for(auto& component : components_)
 			{
 				components_json.emplace_back(component->to_json());

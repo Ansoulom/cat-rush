@@ -7,7 +7,7 @@ namespace Game
 {
 	namespace Objects
 	{
-		Moving_physics_component::Moving_physics_component(Game_object* game_object, double speed) : Component{game_object},
+		Moving_physics_component::Moving_physics_component(Game_object& game_object, double speed) : Component{game_object},
 																									 max_speed_{speed} { }
 
 
@@ -80,8 +80,7 @@ namespace Game
 		}
 
 
-		Moving_physics_component* Moving_physics_component::from_json(const IO::json& json, Game_object* game_object,
-																	  const Component_loader& loader)
+		Moving_physics_component* Moving_physics_component::from_json(const IO::json& json, Game_object& game_object)
 		{
 			const auto max_speed = json.at("max_speed").get<double>();
 			return new Moving_physics_component{game_object, max_speed};

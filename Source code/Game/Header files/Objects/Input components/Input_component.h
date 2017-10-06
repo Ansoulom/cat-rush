@@ -24,5 +24,11 @@ namespace Game
 
 			virtual void handle_input(Timer::Seconds time_passed, const Input::Input_handler& input) = 0;
 		};
+
+
+		enum class Direction
+		{
+			left = -1, right = 1
+		};
 	}
 }
