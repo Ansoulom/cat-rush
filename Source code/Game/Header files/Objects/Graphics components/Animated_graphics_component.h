@@ -4,7 +4,7 @@
 #include "Graphics_component.h"
 #include <unordered_map>
 #include "Timer.h"
-#include <json.hpp>
+#include "json.hpp"
 
 
 namespace Game
@@ -33,6 +33,8 @@ namespace Game
 
 			std::unordered_map<std::string, Graphics::Animation> animations_;
 			std::string current_animation_;
+			
+			static const Deserializer add_to_map;
 		};
 	}
 }

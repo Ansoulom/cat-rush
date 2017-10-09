@@ -26,11 +26,12 @@ namespace Game
 				override;
 
 			static Static_graphics_component* from_json(const IO::json& json, Game_object& game_object);
-
-		private:
 			IO::json to_json() const override;
 
+		private:
 			std::string texture_name_;;
+
+			static const Deserializer add_to_map;
 		};
 	}
 }

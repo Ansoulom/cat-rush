@@ -19,7 +19,7 @@ namespace Game
 
 		IO::json Static_graphics_component::to_json() const
 		{
-			return {{"type", "static"}, {"texture", texture_name_}};
+			return {{"type", "Static_graphics_component"}, {"texture", texture_name_}};
 		}
 
 
@@ -50,7 +50,10 @@ namespace Game
 			const Camera& camera) const
 		{
 			auto texture = tm.get_texture(texture_name_);
-			return {texture.get(), camera.get_coordinates_on_screen(game_object_->get_position())};
+			return {texture.get(), camera.get_coordinates_on_screen(game_object().position())};
 		}
+
+
+		const Component::Deserializer Static_graphics_component::add_to_map{ "Static_graphics_component", from_json };
 	}
 }

@@ -29,7 +29,7 @@ namespace Game
 
 		IO::json Player_input_component::to_json() const
 		{
-			return {{"type", "player"}};
+			return {{"type", "Player_input_component"}};
 		}
 
 
@@ -72,5 +72,8 @@ namespace Game
 		{
 			return new Player_input_component{game_object};
 		}
+
+
+		const Component::Deserializer Player_input_component::add_to_map{ "Player_input_component", from_json };
 	}
 }

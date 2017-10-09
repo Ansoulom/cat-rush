@@ -1,9 +1,10 @@
 #pragma once
 
-#include <json.hpp>
-#include <Timer.h>
-#include <Vector.h>
 #include <variant>
+#include "json.hpp"
+#include "Timer.h"
+#include "Vector.h"
+
 #include "Collision_system.h"
 
 
@@ -75,6 +76,7 @@ namespace Game
 			Component& operator=(Component&&) = delete;
 
 			Game_object& game_object();
+			const Game_object& game_object() const;
 			// Receive a message from the enclosing game object
 			virtual void receive(const Events::Message& message);
 
@@ -85,8 +87,16 @@ namespace Game
 			static Component* from_json(const IO::json& j, Game_object& game_object);
 			virtual IO::json to_json() const = 0;
 
+		protected:
+			class Deserializer
+			{
+			public:
+				Deserializer(std::string class_name, std::function<Component*(const IO::json&, Game_object&)> factory);
+			};
+
 		private:
 			Game_object* game_object_;
+			static std::unordered_map<std::string, std::function<Component*(const IO::json&, Game_object&)>> deserialization_table_;
 		};
 
 

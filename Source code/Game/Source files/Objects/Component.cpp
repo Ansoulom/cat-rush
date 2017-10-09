@@ -2,11 +2,11 @@
 #include "Game_object.h"
 #include "Renderer.h"
 #include "Collision_system.h"
-#include <Static_graphics_component.h>
-#include <Animated_graphics_component.h>
-#include <Player_input_component.h>
-#include <Movement_component.h>
-#include <Collider_component.h>
+#include "Static_graphics_component.h"
+#include "Animated_graphics_component.h"
+#include "Player_input_component.h"
+#include "Movement_component.h"
+#include "Collider_component.h"
 
 
 namespace Game
@@ -25,6 +25,12 @@ namespace Game
 		}
 
 
+		const Game_object& Component::game_object() const
+		{
+			return *game_object_;
+		}
+
+
 		void Component::receive(const Events::Message&) { }
 
 
@@ -37,27 +43,15 @@ namespace Game
 		Component* Component::from_json(const IO::json& j, Game_object& game_object)
 		{
 			const auto type = j.at("type").get<std::string>();
-			if(type == "Animated_graphics_component")
-			{
-				return Animated_graphics_component::from_json(j, game_object);
-			}
-			if(type == "Static_graphics_component")
-			{
-				return Static_graphics_component::from_json(j, game_object);
-			}
-			if(type == "Player_input_component")
-			{
-				return Player_input_component::from_json(j, game_object);
-			}
-			if(type == "Movement_component")
-			{
-				return Moving_physics_component::from_json(j, game_object);
-			}
-			if(type == "Collider_component")
-			{
-				return Collider_component::from_json(j, game_object);
-			}
-			throw std::runtime_error{"Incorrect type when parsing compont from json"};
+			return deserialization_table_.at(type)(j, game_object);
+		}
+
+
+		Component::Deserializer::Deserializer(
+			std::string class_name,
+			std::function<Component*(const IO::json&, Game_object&)> factory)
+		{
+			deserialization_table_.emplace(class_name, factory);
 		}
 
 

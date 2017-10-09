@@ -19,7 +19,7 @@ namespace Game
 	{
 		if(focus)
 		{
-			position_ = focus->get_position();
+			position_ = focus->position();
 		}
 	}
 
@@ -29,12 +29,12 @@ namespace Game
 		//TODO Fixa så att focus inte kan peka mot ett dött objekt.
 		if(focus_)
 		{
-			position_ = focus_->get_position();
+			position_ = focus_->position();
 		}
 	}
 
 
-	Geometry::Vector<double> Camera::get_position() const
+	Geometry::Vector<double> Camera::position() const
 	{
 		return position_;
 	}

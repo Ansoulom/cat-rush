@@ -35,7 +35,13 @@ namespace Game
 		}
 
 
-		Geometry::Vector<double> Game_object::get_position() const
+		Geometry::Vector<double>& Game_object::position()
+		{
+			return position_;
+		}
+
+
+		Geometry::Vector<double> Game_object::position() const
 		{
 			return position_;
 		}

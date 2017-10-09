@@ -23,6 +23,8 @@ namespace Game
 		private:
 			void update_rotation(Geometry::Vector<double> input, Timer::Seconds time_passed, Game_object& object);
 			Direction direction_;
+
+			static const Deserializer add_to_map;
 		};
 	}
 }

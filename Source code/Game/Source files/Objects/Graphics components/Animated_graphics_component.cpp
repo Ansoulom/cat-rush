@@ -3,6 +3,7 @@
 #include "Game_object.h"
 #include "Camera.h"
 #include "Component.h"
+#include <typeinfo>
 
 
 namespace Game
@@ -56,7 +57,7 @@ namespace Game
 				animations_json.emplace_back(
 					IO::json{{"name", animation_pair.first}, {"animation", animation_pair.second.to_json()}});
 			}
-			return {{"type", "animated"}, {"animations", animations_json}};
+			return {{"type", "Animated_graphics_component"}, {"animations", animations_json}};
 		}
 
 
@@ -94,9 +95,15 @@ namespace Game
 			auto clip = frame.get_clip();
 			return Graphics::Render_instance{
 				&frame.get_texture(),
-				camera.get_coordinates_on_screen(game_object_->get_position()),
+				camera.get_coordinates_on_screen(game_object().position()),
 				clip
 			};
 		}
+
+
+		const Component::Deserializer Animated_graphics_component::add_to_map{
+			"Animated_graphics_component",
+			from_json
+		};
 	}
 }

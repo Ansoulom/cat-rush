@@ -64,6 +64,8 @@ namespace Game
 			std::unique_ptr<Geometry::Shape<double>> shape_;
 			std::vector<std::string> layers_, check_layers_;
 
+			static const Deserializer add_to_map;
+
 			friend bool Physics::intersects(const Collider_component& first, const Collider_component& second);
 			friend Geometry::Vector<double> Physics::intersection(
 				const Collider_component& first,

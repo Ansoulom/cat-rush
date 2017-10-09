@@ -1,13 +1,19 @@
 #include "Animation.h"
 #include "Texture.h"
-#include "Texture_manager.h"
 
 
 namespace Game
 {
 	namespace Graphics
 	{
-		Animation::Animation(std::string texture, int frames, int rows, double frame_rate) : texture_name_{texture}, frames_{frames}, rows_{rows}, current_frame_{0}, current_row_{0}, frame_rate_{frame_rate}, timer_{Timer::Seconds{1.0} / frame_rate}
+		Animation::Animation(std::string texture, int frames, int rows, double frame_rate)
+			: texture_name_{texture},
+			  frames_{frames},
+			  rows_{rows},
+			  current_frame_{0},
+			  current_row_{0},
+			  frame_rate_{frame_rate},
+			  timer_{Timer::Seconds{1.0} / frame_rate}
 		{
 			if(frames < 1)
 			{
@@ -24,9 +30,7 @@ namespace Game
 		}
 
 
-		Animation::~Animation()
-		{
-		}
+		Animation::~Animation() { }
 
 
 		Animation::Frame Animation::get_current_frame(const Texture_manager& tm) const
@@ -34,7 +38,12 @@ namespace Game
 			auto texture = tm.get_texture(texture_name_);
 			auto width = texture->get_width() / frames_;
 			auto height = texture->get_height() / rows_;
-			auto clip = Geometry::Rectangle<int>{{current_frame_ * width, current_row_ * height}, width, height, Geometry::Pivot_point::top_left};
+			auto clip = Geometry::Rectangle<int>{
+				{current_frame_ * width, current_row_ * height},
+				width,
+				height,
+				Geometry::Pivot_point::top_left
+			};
 
 			return {*texture, clip};
 		}
@@ -84,7 +93,8 @@ namespace Game
 		}
 
 
-		Animation::Frame::Frame(Texture& texture, const Geometry::Rectangle<int>& clip) : texture_{texture}, clip_{clip}
+		Animation::Frame::Frame(Texture& texture, const Geometry::Rectangle<int>& clip)
+			: texture_{texture}, clip_{clip}
 		{
 			if(clip.left() < 0 || clip.top() < 0 || clip.right() > texture.get_width() || clip.bottom() > texture.get_height())
 			{

@@ -24,8 +24,8 @@ namespace Game
 			Game_object& operator=(const Game_object& other) = delete;
 			Game_object& operator=(Game_object&& other) noexcept = delete; // May not have to delete them anyway
 
-			Geometry::Vector<double> get_position() const;
-			void set_position(Geometry::Vector<double> position);
+			Geometry::Vector<double>& position();
+			Geometry::Vector<double> position() const;
 			void send(const Events::Message& message);
 			void add_component(std::unique_ptr<Component>&& component);
 			World& world();

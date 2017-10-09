@@ -4,6 +4,7 @@
 #include "Collision_system.h"
 #include "Game_object.h"
 #include "Camera.h"
+#include <typeinfo>
 
 
 namespace Game
@@ -71,7 +72,7 @@ namespace Game
 		{
 			auto collisions = game_object().world().collision_system().get_collisions(*this);
 
-			auto old_pos = game_object().get_position();
+			auto old_pos = game_object().position();
 			auto direction = old_pos - message.start_position;
 
 			direction.set_x(abs(direction.get_x())); // TODO: FIX EXTREMELY HACKY SOLUTION
@@ -83,15 +84,15 @@ namespace Game
 				if(col_pair.second == "solid")
 				{
 					auto diff = Physics::intersection(*this, *col_pair.first, direction);
-					auto new_pos = game_object_->get_position() - diff; // Plus or minus?
+					auto new_pos = game_object().position() - diff; // Plus or minus?
 					if(abs((new_pos - message.start_position).get_magnitude()) < abs(
-						(game_object_->get_position() - message.start_position).get_magnitude()))
+						(game_object_->position() - message.start_position).get_magnitude()))
 					{
 						game_object_->set_position(new_pos);
 					}
 				}
 			}
-			if(game_object_->get_position() != old_pos)
+			if(game_object_->position() != old_pos)
 			{
 				game_object_->send(Events::Position_changed{old_pos});
 			}
@@ -100,9 +101,12 @@ namespace Game
 
 		void Collider_component::handle_event(const Events::Position_changed& message)
 		{
-			set_position(game_object_->get_position());
+			set_position(game_object_->position());
 			collision_system_.update_grid_position(*this, message.start_position);
 		}
+
+
+		const Component::Deserializer Collider_component::add_to_map{"Collider_component", from_json};
 	}
 
 

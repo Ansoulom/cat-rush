@@ -9,11 +9,11 @@ namespace Game
 {
 	namespace Objects
 	{
-		class Moving_physics_component :
+		class Movement_component :
 			public Component
 		{
 		public:
-			Moving_physics_component(Game_object& game_object, double max_speed);
+			Movement_component(Game_object& game_object, double max_speed);
 			
 			void update(Timer::Seconds time_passed) override;
 			void receive(const Events::Message& message) override;
@@ -22,7 +22,7 @@ namespace Game
 			void set_y_velocity(double velocity);
 			double get_speed() const;
 
-			static Moving_physics_component* from_json(const IO::json& json, Game_object& game_object);
+			static Movement_component* from_json(const IO::json& json, Game_object& game_object);
 			IO::json to_json() const override;
 
 		private:
@@ -32,6 +32,8 @@ namespace Game
 
 			Geometry::Vector<double> velocity_{ 0, 0 };
 			double max_speed_;
+
+			static const Deserializer add_to_map;
 		};
 	}
 }
