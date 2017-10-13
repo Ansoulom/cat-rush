@@ -9,9 +9,12 @@ namespace Game
 	{
 		namespace Paths
 		{
-			extern const std::string user_settings_file,
-									 game_constants_file;
-			extern const std::string textures_path;
+			extern const std::string resources;
+			extern const std::string textures;
+			extern const std::string preferences;
+
+			extern const std::string user_settings_file;
+			extern const std::string game_constants_file;
 		}
 	}
 }

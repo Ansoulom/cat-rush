@@ -35,15 +35,15 @@ namespace Game
 		Window_fullscreen_mode User_settings::fullscreen_mode() const
 		{
 			return fullscreen_mode_;
-		}
+		} 
 
 
 		Game_constants::Game_constants(const boost::filesystem::path& file)
 		{
 			auto ini = Io::load_ini_from_file(file);
 			name_ = ini.value<std::string>("window", "name");
-			source_width_ = ini.value<int>("graphics", "source_width");
-			source_height_ = ini.value<int>("graphics", "source_height");
+			source_width_ = ini.value<int>("graphics", "source_resolution_width");
+			source_height_ = ini.value<int>("graphics", "source_resolution_height");
 		}
 
 

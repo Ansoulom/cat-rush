@@ -65,7 +65,11 @@ namespace Game
 				throw std::runtime_error{std::string{"Could not open settings file"} + file.string()};
 			}
 			auto document = std::string{};
-			in >> document;
+			in.seekg(0, std::ios::end);
+			document.resize(in.tellg());
+			in.seekg(0, std::ios::beg);
+			in.read(&document[0], document.size());
+			in.close();
 			return Ini{document};
 		}
 	}

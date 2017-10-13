@@ -44,8 +44,8 @@
 			]
 		},
 		{
-			"x_position": 6.0,
-			"y_position": 6.0,
+			"x_position": 0.0,
+			"y_position": 0.0,
 			"components":
 			[
 				{
@@ -57,8 +57,8 @@
 					"shape":
 					{
 						"type": "Rectangle",
-						"x_position": 6.0,
-						"y_position": 6.0,
+						"x_position": 0.0,
+						"y_position": 0.0,
 						"width": 5.0,
 						"height": 5.0
 					},

@@ -28,7 +28,7 @@ namespace Game
 			  renderer_{settings_, window_},
 			  world_{}
 		{
-			resources_.textures().load_all_textures(boost::filesystem::path{Io::Paths::textures_path}, renderer_);
+			resources_.textures().load_all_textures(boost::filesystem::path{Io::Paths::textures}, renderer_);
 		}
 
 
@@ -46,7 +46,7 @@ namespace Game
 			{
 				auto time_passed = frame_timer.update();
 				auto fps = frame_timer.get_framerate();
-				window_.set_title(std::string{"Projekt Tidshax    FPS: "} + std::to_string(fps));
+				window_.set_title(settings().constants().name() +  std::string{"    FPS: "} + std::to_string(fps));
 
 				handle_events(time_passed);
 				update(time_passed);
