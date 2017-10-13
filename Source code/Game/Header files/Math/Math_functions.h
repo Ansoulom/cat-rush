@@ -51,7 +51,9 @@ namespace Game
 		template<typename T>
 		T clamp_value(T value, T min, T max)
 		{
-			return value < min ? min : (value > max ? max : value);
+			auto clamped = value < min ? min : (value > max ? max : value);
+			assert(clamped >= min && clamped <= max);
+			return clamped;
 		}
 	}
 }

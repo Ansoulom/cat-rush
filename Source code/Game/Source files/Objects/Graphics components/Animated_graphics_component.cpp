@@ -3,7 +3,7 @@
 #include "Game_object.h"
 #include "Camera.h"
 #include "Component.h"
-#include <typeinfo>
+#include "World.h"
 
 
 namespace Game
@@ -61,10 +61,9 @@ namespace Game
 		}
 
 
-		void Animated_graphics_component::handle_event(const Events::Rotation_changed& message)
+		void Animated_graphics_component::handle_event(const Events::Direction_changed& message)
 		{
-			assert(message.new_rotation >= 0.0 && message.new_rotation < 360.0);
-			set_row(static_cast<int>(round(message.new_rotation / 45.0)) % 8); // Note: May not be safe for all animations
+			flipped_ = message.direction == Direction::left;
 		}
 
 
@@ -88,7 +87,7 @@ namespace Game
 
 
 		Graphics::Render_instance Animated_graphics_component::get_render_instance(
-			const Graphics::Texture_manager& tm,
+			const Resources::Texture_manager& tm,
 			const Camera& camera) const
 		{
 			auto frame = animations_.at(current_animation_).get_current_frame(tm);
@@ -96,7 +95,7 @@ namespace Game
 			return Graphics::Render_instance{
 				&frame.get_texture(),
 				camera.get_coordinates_on_screen(game_object().position()),
-				clip
+				clip, {}, {}, flipped_
 			};
 		}
 

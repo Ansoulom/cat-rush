@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Timer.h"
 #include <Component.h>
 
 
@@ -16,19 +15,11 @@ namespace Game
 	{
 		class Game_object;
 
-
+		// TODO: Just remove this class?
 		class Input_component : public Component
 		{
 		public:
-			explicit Input_component(Game_object* container);
-
-			virtual void handle_input(Timer::Seconds time_passed, const Input::Input_handler& input) = 0;
-		};
-
-
-		enum class Direction
-		{
-			left = -1, right = 1
+			explicit Input_component(Game_object& game_object);
 		};
 	}
 }

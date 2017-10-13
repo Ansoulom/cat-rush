@@ -8,11 +8,17 @@
 
 namespace Game
 {
-	namespace Graphics
+	namespace Resources
 	{
 		class Texture_manager;
+	}
+}
 
 
+namespace Game
+{
+	namespace Graphics
+	{
 		class Animation
 		{
 		public:
@@ -30,10 +36,11 @@ namespace Game
 			};
 
 
-			Animation(std::string texture, int frames, int rows, double frame_rate); // TODO: Document and handle class invariants and consider default constructor
+			Animation(std::string texture, int frames, int rows, double frame_rate);
+			// TODO: Document and handle class invariants and consider default constructor
 			~Animation();
 
-			Frame get_current_frame(const Texture_manager& tm) const;
+			Frame get_current_frame(const Resources::Texture_manager& tm) const;
 			void update(Timer::Seconds time_passed);
 			void set_row(int row); // The row of sprites, e.g. direction or state.
 

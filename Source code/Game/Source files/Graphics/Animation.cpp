@@ -1,5 +1,6 @@
 #include "Animation.h"
 #include "Texture.h"
+#include "Resource_managers.h"
 
 
 namespace Game
@@ -33,7 +34,7 @@ namespace Game
 		Animation::~Animation() { }
 
 
-		Animation::Frame Animation::get_current_frame(const Texture_manager& tm) const
+		Animation::Frame Animation::get_current_frame(const Resources::Texture_manager& tm) const
 		{
 			auto texture = tm.get_texture(texture_name_);
 			auto width = texture->get_width() / frames_;
@@ -76,12 +77,12 @@ namespace Game
 		}
 
 
-		Animation Animation::from_json(const nlohmann::json& json)
+		Animation Animation::from_json(const IO::json& json)
 		{
-			auto texture = json.at("texture").get<std::string>();
-			auto frames = json.at("frames").get<int>();
-			auto rows = json.at("rows").get<int>();
-			auto frame_rate = json.at("frame_rate").get<double>();
+			const auto texture = json.at("texture").get<std::string>();
+			const auto frames = json.at("frames").get<int>();
+			const auto rows = json.at("rows").get<int>();
+			const auto frame_rate = json.at("frame_rate").get<double>();
 
 			return {texture, frames, rows, frame_rate};
 		}

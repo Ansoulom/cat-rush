@@ -1,10 +1,10 @@
 #include "Static_graphics_component.h"
-#include "Texture.h"
-#include "Texture_manager.h"
 #include "Renderer.h"
 #include "Camera.h"
 #include "Game_object.h"
 #include "Component.h"
+#include "Resource_managers.h"
+#include "World.h"
 
 
 namespace Game
@@ -46,7 +46,7 @@ namespace Game
 
 
 		Graphics::Render_instance Static_graphics_component::get_render_instance(
-			const Graphics::Texture_manager& tm,
+			const Resources::Texture_manager& tm,
 			const Camera& camera) const
 		{
 			auto texture = tm.get_texture(texture_name_);

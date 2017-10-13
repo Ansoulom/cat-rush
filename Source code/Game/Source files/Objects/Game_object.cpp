@@ -6,7 +6,7 @@ namespace Game
 {
 	namespace Objects
 	{
-		Game_object::Game_object(Geometry::Vector<double> position, World& world) : position_{position}, world_{world}
+		Game_object::Game_object(Geometry::Vector<double> position, Core::World& world) : position_{position}, world_{world}
 		{
 		}
 
@@ -47,12 +47,6 @@ namespace Game
 		}
 
 
-		void Game_object::set_position(Geometry::Vector<double> position)
-		{
-			this->position_ = position;
-		}
-
-
 		void Game_object::send(const Events::Message& message)
 		{
 			for(auto& component : components_)
@@ -68,7 +62,7 @@ namespace Game
 		}
 
 
-		World& Game_object::world()
+		Core::World& Game_object::world()
 		{
 			return world_;
 		}
@@ -80,7 +74,7 @@ namespace Game
 		}
 
 
-		Game_object* Game_object::from_json(const IO::json& json, World& world)
+		Game_object* Game_object::from_json(const IO::json& json, Core::World& world)
 		{
 			const auto x = json.at("x_position").get<double>();
 			const auto y = json.at("y_position").get<double>();

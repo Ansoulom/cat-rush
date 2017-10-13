@@ -1,12 +1,6 @@
 #include "Component.h"
 #include "Game_object.h"
 #include "Renderer.h"
-#include "Collision_system.h"
-#include "Static_graphics_component.h"
-#include "Animated_graphics_component.h"
-#include "Player_input_component.h"
-#include "Movement_component.h"
-#include "Collider_component.h"
 
 
 namespace Game
@@ -43,7 +37,7 @@ namespace Game
 		Component* Component::from_json(const IO::json& j, Game_object& game_object)
 		{
 			const auto type = j.at("type").get<std::string>();
-			return deserialization_table_.at(type)(j, game_object);
+			return deserialization_table().at(type)(j, game_object);
 		}
 
 
@@ -51,23 +45,25 @@ namespace Game
 			std::string class_name,
 			std::function<Component*(const IO::json&, Game_object&)> factory)
 		{
-			deserialization_table_.emplace(class_name, factory);
+			deserialization_table().emplace(class_name, factory);
 		}
 
 
-		Component_loader::Component_loader(Graphics::Renderer& renderer, Physics::Collision_system& collision_system)
-			: renderer_{renderer}, collision_system_{collision_system} { }
+		std::unordered_map<std::string, std::function<Component*(const IO::json&, Game_object&)>>& Component::
+			deserialization_table()
+		{
+			static auto table = std::unordered_map<std::string, std::function<Component*(const IO::json&, Game_object&)>>{};
+			return table;
+		}
+
+
+		Component_loader::Component_loader(Graphics::Renderer& renderer)
+			: renderer_{renderer} { }
 
 
 		void Component_loader::register_component(Graphics_component& comp) const
 		{
 			renderer_.register_component(comp);
-		}
-
-
-		void Component_loader::register_component(Collider_component& comp) const
-		{
-			collision_system_.register_component(comp);
 		}
 	}
 }

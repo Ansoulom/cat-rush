@@ -9,58 +9,74 @@
 
 namespace Game
 {
-	// TODO: Make it a singleton instead, this is just silly
-	Sdl_wrapper::Sdl_wrapper()
+	namespace Wrappers
 	{
-		if(count_++ == 0)
+		// TODO: Make it a singleton instead, this is just silly
+		Sdl_wrapper::Sdl_wrapper()
 		{
-			if(SDL_Init(SDL_INIT_EVERYTHING))
+			if(count_++ == 0)
 			{
-				throw std::runtime_error{std::string{"Could not initiate SDL: "} + SDL_GetError()};
+				if(SDL_Init(SDL_INIT_EVERYTHING))
+				{
+					throw std::runtime_error{std::string{"Could not initiate SDL: "} + SDL_GetError()};
+				}
+				if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
+				{
+					Logger::log("Warning: Linear texture filtering not enabled!");
+				}
+				if(!IMG_Init(IMG_INIT_PNG))
+				{
+					SDL_Quit();
+					throw std::runtime_error{std::string{"Could not initiate SDL_image: "} + IMG_GetError()};
+				}
+				if(TTF_Init())
+				{
+					SDL_Quit();
+					IMG_Quit();
+					throw std::runtime_error{std::string{"Could not initiate SDL_ttf: "} + TTF_GetError()};
+				}
+				auto path = std::unique_ptr<char, Sdl_deleter>{SDL_GetBasePath(), Sdl_deleter{}};
+				// Would prefer std::filesystem::current_path, but doesn't return consistent path
+				boost::filesystem::current_path(path.get());
 			}
-			if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
-			{
-				Logger::log("Warning: Linear texture filtering not enabled!");
-			}
-			if(!IMG_Init(IMG_INIT_PNG))
-			{
-				SDL_Quit();
-				throw std::runtime_error{std::string{"Could not initiate SDL_image: "} + IMG_GetError()};
-			}
-			if(TTF_Init())
+		}
+
+
+		Sdl_wrapper::~Sdl_wrapper()
+		{
+			if(--count_ == 0)
 			{
 				SDL_Quit();
 				IMG_Quit();
-				throw std::runtime_error{std::string{"Could not initiate SDL_ttf: "} + TTF_GetError()};
+				TTF_Quit();
 			}
-			auto path = std::unique_ptr<char, Sdl_deleter>{SDL_GetBasePath(), Sdl_deleter{}}; // Would prefer std::filesystem::current_path, but doesn't return consistent path
-			boost::filesystem::current_path(path.get());
 		}
-	}
 
 
-	Sdl_wrapper::~Sdl_wrapper()
-	{
-		if(--count_ == 0)
+		SDL_Rect Sdl_wrapper::get_rect(const Geometry::Rectangle<int>& rect)
 		{
-			SDL_Quit();
-			IMG_Quit();
-			TTF_Quit();
+			return {rect.left(), rect.top(), rect.width(), rect.height()};
 		}
+
+
+		SDL_Point Sdl_wrapper::get_point(const Geometry::Vector<int>& point)
+		{
+			return {point.get_x(), point.get_y()};
+		}
+
+
+		SDL_Color Sdl_wrapper::get_color(const Graphics::Color color)
+		{
+			return {color.red(), color.green(), color.blue(), color.alpha()};
+		}
+
+
+		TTF_Font& Sdl_wrapper::get_font(Text::Font& font)
+		{
+			return *font.sdl_font_;
+		}
+
+
+		int Sdl_wrapper::count_ = 0;
 	}
-
-
-	SDL_Rect Sdl_wrapper::get_rect(const Geometry::Rectangle<int>& rect)
-	{
-		return {rect.left(), rect.top(), rect.width(), rect.height()};
-	}
-
-
-	SDL_Point Sdl_wrapper::get_point(const Geometry::Vector<int>& point)
-	{
-		return {point.get_x(), point.get_y()};
-	}
-
-
-	int Sdl_wrapper::count_ = 0;
 }

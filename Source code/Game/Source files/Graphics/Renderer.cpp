@@ -3,16 +3,31 @@
 #include "Render_instance.h"
 #include "Game_core.h"
 #include "Graphics_component.h"
+#include "Window.h"
 
 
 namespace Game
 {
 	namespace Graphics
 	{
-		Renderer::Renderer(const Settings& settings) : settings_{settings} { }
+		Renderer::Renderer(const Core::Settings& settings, Core::Window& window)
+			: settings_{settings},
+			  sdl_renderer_{
+				  SDL_CreateRenderer(
+					  window.sdl_window_.get(),
+					  -1,
+					  SDL_RENDERER_ACCELERATED | (settings.user_settings().vsync() ? SDL_RENDERER_PRESENTVSYNC : 0)),
+				  Sdl_deleter{}
+			  }
+		{
+			if(!sdl_renderer_)
+			{
+				throw std::runtime_error{std::string{"Renderer could not be created! SDL Error: "} + SDL_GetError()};
+			}
+		}
 
 
-		void Renderer::render(const Texture_manager& tm, const Camera& camera, SDL_Renderer& sdl_renderer) const
+		void Renderer::render(const Resources::Texture_manager& tm, const Camera& camera) const
 		// Don't really like having SDL_Renderer as a parameter. TODO: Wrap SDL_Renderer in Renderer
 		{
 			auto render_queue = std::vector<Render_instance>{};
@@ -38,23 +53,26 @@ namespace Game
 				}
 			}
 
-			sort(render_queue.begin(), render_queue.end(), [](const Render_instance& a, const Render_instance& b)
-			 {
-				 return a.destination_.get_y() + Game_core::convert_pixels_to_meters(a.source_.height() / 2) < b.destination_.
-																												 get_y() + Game_core::convert_pixels_to_meters(a.source_.height() / 2);
-			 }); // TODO: Make this work with different layers or such, for example object on ground
+			sort(
+				render_queue.begin(),
+				render_queue.end(),
+				[this](const Render_instance& a, const Render_instance& b)
+			{
+				return a.destination_.get_y() + a.source_.height() / 2 / settings_.constants().source_height() < b.destination_.
+																												   get_y() + b.source_.height() / 2;
+			}); // TODO: Make this work with different layers or such, for example object on ground
 
 			for(const auto& instance : render_queue)
 			{
-				render(instance, sdl_renderer);
+				render(instance);
 			}
 		}
 
 
 		void Renderer::register_component(Objects::Graphics_component& gc)
 		{
-			auto cell_x = static_cast<int>(gc.get_position().get_x() / grid_cell_size_);
-			auto cell_y = static_cast<int>(gc.get_position().get_y() / grid_cell_size_);
+			auto cell_x = static_cast<int>(gc.game_object().position().get_x() / grid_cell_size_);
+			auto cell_y = static_cast<int>(gc.game_object().position().get_y() / grid_cell_size_);
 			auto cell_pos = Geometry::Vector<int>{cell_x, cell_y};
 
 			grid_[cell_pos].push_back(&gc);
@@ -65,8 +83,8 @@ namespace Game
 
 		void Renderer::remove_component(Objects::Graphics_component& gc)
 		{
-			auto cell_x = static_cast<int>(gc.get_position().get_x() / grid_cell_size_);
-			auto cell_y = static_cast<int>(gc.get_position().get_y() / grid_cell_size_);
+			auto cell_x = static_cast<int>(gc.game_object().position().get_x() / grid_cell_size_);
+			auto cell_y = static_cast<int>(gc.game_object().position().get_y() / grid_cell_size_);
 			auto cell_pos = Geometry::Vector<int>{cell_x, cell_y};
 			auto iter = grid_.find(cell_pos);
 			if(iter != grid_.end())
@@ -103,12 +121,12 @@ namespace Game
 		}
 
 
-		void Renderer::render(const Render_instance& instance, SDL_Renderer& sdl_renderer) const
+		void Renderer::render(const Render_instance& instance) const
 		{
 			const auto screen_dest = Geometry::Rectangle<int>{
 				{
-					static_cast<int>(round(instance.destination_.get_x() * settings_.source_height)),
-					static_cast<int>(round(instance.destination_.get_y() * settings_.source_height))
+					static_cast<int>(round(instance.destination_.get_x() * settings_.constants().source_height())),
+					static_cast<int>(round(instance.destination_.get_y() * settings_.constants().source_height()))
 				},
 				static_cast<int>(round(instance.scaling_.get_x() * instance.source_.width())),
 				static_cast<int>(round(instance.scaling_.get_y() * instance.source_.height()))
@@ -118,17 +136,47 @@ namespace Game
 				static_cast<int>(round(instance.pivot_.get_y() * screen_dest.height()))
 			};
 
-			auto dst = Sdl_wrapper::get_rect(screen_dest);
-			auto src = Sdl_wrapper::get_rect(instance.source_);
-			auto center = Sdl_wrapper::get_point(screen_pivot);
+			auto dst = Wrappers::Sdl_wrapper::get_rect(screen_dest);
+			auto src = Wrappers::Sdl_wrapper::get_rect(instance.source_);
+			auto center = Wrappers::Sdl_wrapper::get_point(screen_pivot);
 			const auto flip_x = instance.flipped_x_ ? SDL_FLIP_HORIZONTAL : 0;
 			const auto flip_y = instance.flipped_y_ ? SDL_FLIP_VERTICAL : 0;
 
-			if(SDL_RenderCopyEx(&sdl_renderer, instance.texture_->texture_.get(), &src, &dst, instance.angle_, &center,
-								static_cast<SDL_RendererFlip>(flip_x | flip_y)))
+			if(SDL_RenderCopyEx(
+				sdl_renderer_.get(),
+				instance.texture_->texture_.get(),
+				&src,
+				&dst,
+				instance.angle_,
+				&center,
+				static_cast<SDL_RendererFlip>(flip_x | flip_y)))
 			{
 				throw std::runtime_error{std::string{"Could not render texture: "} + SDL_GetError()};
 			}
+		}
+
+
+		void Renderer::clear(Color clear_color)
+		{
+			SDL_SetRenderDrawColor(
+				sdl_renderer_.get(),
+				clear_color.red(),
+				clear_color.green(),
+				clear_color.blue(),
+				clear_color.alpha());
+			SDL_RenderClear(sdl_renderer_.get());
+		}
+
+
+		void Renderer::show()
+		{
+			SDL_RenderPresent(sdl_renderer_.get());
+		}
+
+
+		void Renderer::set_render_scale(double x, double y)
+		{
+			SDL_RenderSetScale(sdl_renderer_.get(), static_cast<float>(x), static_cast<float>(y));
 		}
 	}
 }

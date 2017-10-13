@@ -6,7 +6,7 @@
 
 namespace Game
 {
-	namespace Graphics
+	namespace Resources
 	{
 		class Texture_manager;
 	}
@@ -22,7 +22,7 @@ namespace Game
 
 			void update(Timer::Seconds time_passed) override;
 			void receive(const Events::Message& message) override;
-			Graphics::Render_instance get_render_instance(const Graphics::Texture_manager& tm, const Camera& camera) const
+			Graphics::Render_instance get_render_instance(const Resources::Texture_manager& tm, const Camera& camera) const
 				override;
 
 			static Static_graphics_component* from_json(const IO::json& json, Game_object& game_object);

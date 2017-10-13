@@ -21,7 +21,7 @@ namespace Game
 			IO::json to_json() const override;
 
 		private:
-			void update_rotation(Geometry::Vector<double> input, Timer::Seconds time_passed, Game_object& object);
+			void update_rotation(Direction direction);
 			Direction direction_;
 
 			static const Deserializer add_to_map;

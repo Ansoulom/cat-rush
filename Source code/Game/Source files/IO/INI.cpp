@@ -55,5 +55,18 @@ namespace Game
 		{
 			return content_.at(section).at(key);
 		}
+
+
+		Ini load_ini_from_file(const boost::filesystem::path& file)
+		{
+			std::ifstream in{file.string()};
+			if(!in.is_open())
+			{
+				throw std::runtime_error{std::string{"Could not open settings file"} + file.string()};
+			}
+			auto document = std::string{};
+			in >> document;
+			return Ini{document};
+		}
 	}
 }

@@ -14,24 +14,30 @@ namespace Game
 
 	namespace Graphics
 	{
-		class Texture_manager;
 		class Render_instance;
+		class Texture;
 
 
 		class Renderer
 		{
 		public:
-			explicit Renderer(const Settings& settings);
+			explicit Renderer(const Core::Settings& settings, Core::Window& window);
 
-			void render(const Texture_manager& tm, const Camera& camera, SDL_Renderer& sdl_renderer) const;
-			void render(const Render_instance& instance, SDL_Renderer& sdl_renderer) const;
+			void clear(Color clear_color);
+			void show();
+			void set_render_scale(double x, double y);
+			void render(const Resources::Texture_manager& tm, const Camera& camera) const;
+			void render(const Render_instance& instance) const;
 			void register_component(Objects::Graphics_component& gc);
 			void remove_component(Objects::Graphics_component& gc);
 
 		private:
 			std::unordered_map<Geometry::Vector<int>, std::list<Objects::Graphics_component*>> grid_;
 			const double grid_cell_size_ = 10.0; // Very temporary and random number for now
-			const Settings& settings_;
+			const Core::Settings& settings_;
+			std::unique_ptr<SDL_Renderer, Sdl_deleter> sdl_renderer_;
+
+			friend class Texture;
 		};
 
 

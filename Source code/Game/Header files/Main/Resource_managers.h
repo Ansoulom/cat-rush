@@ -1,15 +1,7 @@
 #pragma once
+
 #include "Texture.h"
 #include <unordered_map>
-
-
-namespace Game
-{
-	namespace Graphics
-	{
-		class Renderer;
-	}
-}
 
 
 namespace boost
@@ -23,6 +15,12 @@ namespace boost
 
 namespace Game
 {
+	namespace Graphics
+	{
+		class Renderer;
+	}
+
+
 	namespace Resources
 	{
 		class Texture_manager

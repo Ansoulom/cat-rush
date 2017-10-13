@@ -1,4 +1,5 @@
 #include "Resource_managers.h"
+#include <boost/filesystem/operations.hpp>
 
 
 namespace Game

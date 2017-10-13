@@ -20,7 +20,7 @@ int main(int argc, char* args[])
 		throw;
 	}/**/
 
-	Game::Game_core game{"Chronos?"};
+	Game::Core::Game_core game{};
 	game.run();
 
 	return 0;

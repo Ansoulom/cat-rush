@@ -4,7 +4,7 @@
 #include "Collision_system.h"
 #include "Game_object.h"
 #include "Camera.h"
-#include <typeinfo>
+#include "World.h"
 
 
 namespace Game
@@ -51,13 +51,13 @@ namespace Game
 
 		Collider_component* Collider_component::from_json(const IO::json& j, Game_object& game_object)
 		{
-			auto component = new Collider_component{
+			const auto component = new Collider_component{
 				game_object,
 				std::unique_ptr<Geometry::Shape<double>>{Geometry::Shape<double>::from_json(j.at("shape"))},
 				j.at("layers").get<std::vector<std::string>>(),
 				j.at("check_layers").get<std::vector<std::string>>()
 			};
-			game_object.world().component_loader().register_component(*component);
+			game_object.world().collision_system().register_component(*component);
 			return component;
 		}
 
@@ -86,23 +86,23 @@ namespace Game
 					auto diff = Physics::intersection(*this, *col_pair.first, direction);
 					auto new_pos = game_object().position() - diff; // Plus or minus?
 					if(abs((new_pos - message.start_position).get_magnitude()) < abs(
-						(game_object_->position() - message.start_position).get_magnitude()))
+						(game_object().position() - message.start_position).get_magnitude()))
 					{
-						game_object_->set_position(new_pos);
+						game_object().position() = new_pos;
 					}
 				}
 			}
-			if(game_object_->position() != old_pos)
+			if(game_object().position() != old_pos)
 			{
-				game_object_->send(Events::Position_changed{old_pos});
+				game_object().send(Events::Position_changed{old_pos});
 			}
 		}
 
 
 		void Collider_component::handle_event(const Events::Position_changed& message)
 		{
-			set_position(game_object_->position());
-			collision_system_.update_grid_position(*this, message.start_position);
+			set_position(game_object().position());
+			game_object().world().collision_system().update_grid_position(*this, message.start_position);
 		}
 
 

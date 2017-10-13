@@ -1,5 +1,6 @@
 #include "Collision_system.h"
 #include "Collider_component.h"
+#include "Game_object.h"
 
 
 namespace Game
@@ -11,8 +12,8 @@ namespace Game
 		{
 			auto colliders = std::vector<std::pair<Objects::Collider_component*, std::string_view>>{};
 
-			auto start = get_grid_cell_position(collider.get_position()) - Geometry::Vector<int>{1, 1};
-			auto end = get_grid_cell_position(collider.get_position()) + Geometry::Vector<int>{1, 1};
+			auto start = get_grid_cell_position(collider.game_object().position()) - Geometry::Vector<int>{1, 1};
+			auto end = get_grid_cell_position(collider.game_object().position()) + Geometry::Vector<int>{1, 1};
 			for(auto x = start.get_x(); x <= end.get_x(); ++x)
 			{
 				for(auto y = start.get_y(); y <= end.get_y(); ++y)
@@ -47,20 +48,20 @@ namespace Game
 
 		void Collision_system::register_component(Objects::Collider_component& comp)
 		{
-			register_component(comp, get_grid_cell_position(comp.get_position()));
+			register_component(comp, get_grid_cell_position(comp.game_object().position()));
 		}
 
 
 		void Collision_system::remove_component(Objects::Collider_component& comp)
 		{
-			remove_component(comp, get_grid_cell_position(comp.get_position()));
+			remove_component(comp, get_grid_cell_position(comp.game_object().position()));
 		}
 
 
 		void Collision_system::update_grid_position(Objects::Collider_component& comp, Geometry::Vector<double> old_position)
 		{
 			auto old_cell_pos = get_grid_cell_position(old_position);
-			auto cell_pos = get_grid_cell_position(comp.get_position());
+			auto cell_pos = get_grid_cell_position(comp.game_object().position());
 
 			if(old_cell_pos != cell_pos)
 			{

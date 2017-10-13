@@ -4,13 +4,14 @@
 #include "json.hpp"
 #include "Timer.h"
 #include "Vector.h"
-
+#include <functional>
 #include "Collision_system.h"
 
 
 namespace Game
 {
-	namespace Input {
+	namespace Input
+	{
 		class Input_handler;
 	}
 
@@ -19,6 +20,7 @@ namespace Game
 	{
 		class Renderer;
 	}
+
 
 	namespace Physics
 	{
@@ -32,6 +34,14 @@ namespace Game
 		class Game_object;
 		class Graphics_component;
 		class Collider_component;
+
+
+		enum class Direction
+		{
+			left = -1,
+			right = 1
+		};
+
 
 		// Internal events only
 		namespace Events
@@ -54,13 +64,13 @@ namespace Game
 			};
 
 
-			struct Rotation_changed
+			struct Direction_changed
 			{
-				double new_rotation;
+				Direction direction;
 			};
 
 
-			using Message = std::variant<Object_moved, Change_velocity_normalized, Rotation_changed, Position_changed>;
+			using Message = std::variant<Object_moved, Change_velocity_normalized, Direction_changed, Position_changed>;
 		}
 
 
@@ -94,23 +104,25 @@ namespace Game
 				Deserializer(std::string class_name, std::function<Component*(const IO::json&, Game_object&)> factory);
 			};
 
+
 		private:
 			Game_object* game_object_;
-			static std::unordered_map<std::string, std::function<Component*(const IO::json&, Game_object&)>> deserialization_table_;
+
+			// Do not use this during static deinitialization!
+			static std::unordered_map<std::string, std::function<Component*(const IO::json&, Game_object&)>>&
+			deserialization_table();
 		};
 
 
 		class Component_loader
 		{
 		public:
-			Component_loader(Graphics::Renderer& renderer, Physics::Collision_system& collision_system);
+			explicit Component_loader(Graphics::Renderer& renderer);
 
 			void register_component(Graphics_component& comp) const;
-			void register_component(Collider_component& comp) const;
 
 		private:
 			Graphics::Renderer& renderer_;
-			Physics::Collision_system& collision_system_;
 		};
 	}
 }

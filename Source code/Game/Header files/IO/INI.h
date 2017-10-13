@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <boost/filesystem.hpp>
 
 
 namespace Game
@@ -28,5 +29,18 @@ namespace Game
 			stream >> parsed_value;
 			return parsed_value;
 		}
+
+
+		template<>
+		inline bool Ini::value<bool>(const std::string& section, const std::string& key) const
+		{
+			auto stream = std::istringstream{std::string{value(section, key)}};
+			auto parsed_value = bool{};
+			stream >> std::boolalpha >> parsed_value;
+			return parsed_value;
+		}
+
+
+		Ini load_ini_from_file(const boost::filesystem::path& file);
 	}
 }
