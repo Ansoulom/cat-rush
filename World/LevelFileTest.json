@@ -36,7 +36,7 @@
 						"type": "Circle",
 						"x_position": 0.0,
 						"y_position": 0.0,
-						"radius": 1.28
+						"radius": 0.099
 					},
 					"layers": ["solid", "player"],
 					"check_layers": ["solid", "triggers"]
@@ -59,8 +59,8 @@
 						"type": "Rectangle",
 						"x_position": 0.0,
 						"y_position": 0.0,
-						"width": 5.0,
-						"height": 5.0
+						"width": 0.432,
+						"height": 0.432
 					},
 					"layers": ["solid"],
 					"check_layers": ["solid"]

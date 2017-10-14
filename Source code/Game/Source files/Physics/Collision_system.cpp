@@ -18,8 +18,8 @@ namespace Game
 			{
 				for(auto y = start.get_y(); y <= end.get_y(); ++y)
 				{
-					auto cell_pos = Geometry::Vector<int>{x, y};
-					auto iter = grid_.find(cell_pos);
+					const auto cell_pos = Geometry::Vector<int>{x, y};
+					const auto iter = grid_.find(cell_pos);
 					if(iter != grid_.end())
 					{
 						auto& layers = collider.get_check_layers();
@@ -33,7 +33,7 @@ namespace Game
 									if(&collider == component) continue;
 									if(intersects(collider, *component))
 									{
-										colliders.emplace_back(component, layer);
+										colliders.emplace_back(component, layer); 
 									}
 								}
 							}
