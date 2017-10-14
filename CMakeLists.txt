@@ -30,6 +30,7 @@ set(GAME_SOURCE_DIR "${PROJ_PATH}/Source code/Game/Source files")
 
 set(PROJ_INCLUDE_DIRS
 "${GAME_HEADER_DIR}"
+"${GAME_HEADER_DIR}/Audio"
 "${GAME_HEADER_DIR}/Debug"
 "${GAME_HEADER_DIR}/Geometry"
 "${GAME_HEADER_DIR}/Graphics"
@@ -50,6 +51,7 @@ set(PROJ_INCLUDE_DIRS
 )
 
 set(PROJ_HEADERS 
+"${GAME_HEADER_DIR}/Audio/Audio_player.h"
 "${GAME_HEADER_DIR}/Debug/Logger.h"
 "${GAME_HEADER_DIR}/Geometry/Shapes.h"
 "${GAME_HEADER_DIR}/Geometry/Vector.h"
@@ -93,6 +95,7 @@ set(PROJ_HEADERS
 )
 
 set(PROJ_SOURCES 
+"${GAME_SOURCE_DIR}/Audio/Audio_player.cpp"
 "${GAME_SOURCE_DIR}/Debug/Logger.cpp"
 "${GAME_SOURCE_DIR}/Graphics/Animation.cpp"
 "${GAME_SOURCE_DIR}/Graphics/Colors.cpp"
