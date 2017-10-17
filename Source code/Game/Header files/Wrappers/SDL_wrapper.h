@@ -4,6 +4,7 @@
 #include <Shapes.h>
 #include "Colors.h"
 #include "Fonts.h"
+#include "Sound.h"
 
 
 namespace Game
@@ -20,6 +21,8 @@ namespace Game
 			static SDL_Point get_point(const Geometry::Vector<int>& point);
 			static SDL_Color get_color(const Graphics::Color color);
 			static TTF_Font& get_font(Text::Font& font);
+			static Mix_Chunk& get_sound_chunk(Audio::Sound_effect& sound);
+			static Mix_Music& get_music(Audio::Music_track& music);
 
 		private:
 			static int count_;

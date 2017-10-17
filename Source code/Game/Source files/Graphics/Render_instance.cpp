@@ -8,6 +8,7 @@ namespace Game
 		Render_instance::Render_instance(
 			Texture* texture,
 			Geometry::Vector<double> destination,
+			int layer,
 			const std::optional<Geometry::Rectangle<int>> source,
 			double angle,
 			const std::optional<Geometry::Vector<double>> pivot_point,
@@ -25,7 +26,8 @@ namespace Game
 			  angle_{angle},
 			  pivot_{pivot_point ? *pivot_point : Geometry::Vector<double>{}},
 			  flipped_x_{flipped_x},
-			  flipped_y_{flipped_y} { }
+			  flipped_y_{flipped_y},
+			  layer_{layer} { }
 
 
 		Render_instance::Render_instance(const Render_instance& other)

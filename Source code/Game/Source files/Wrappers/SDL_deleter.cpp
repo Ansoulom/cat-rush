@@ -36,4 +36,16 @@ namespace Game
 	{
 		SDL_GameControllerClose(controller);
 	}
+
+
+	void Sdl_deleter::operator()(Mix_Music* music) const
+	{
+		Mix_FreeMusic(music);
+	}
+
+
+	void Sdl_deleter::operator()(Mix_Chunk* chunk) const
+	{
+		Mix_FreeChunk(chunk);
+	}
 }

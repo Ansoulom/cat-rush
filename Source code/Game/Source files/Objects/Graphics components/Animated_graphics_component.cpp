@@ -12,13 +12,13 @@ namespace Game
 	{
 		Animated_graphics_component::Animated_graphics_component(
 			Game_object& game_object,
+			int layer,
 			std::unordered_map<std::string, Graphics::Animation> animations)
 			: Graphics_component{game_object},
 			  animations_{animations},
-			  current_animation_{animations.size() > 0 ? animations.begin()->first : ""} { }
-
-
-		Animated_graphics_component::~Animated_graphics_component() { }
+			  current_animation_{animations.size() > 0 ? animations.begin()->first : ""},
+			  flipped_{false},
+			  layer_{layer} { }
 
 
 		void Animated_graphics_component::update(Timer::Seconds time_passed)
@@ -57,7 +57,7 @@ namespace Game
 				animations_json.emplace_back(
 					IO::json{{"name", animation_pair.first}, {"animation", animation_pair.second.to_json()}});
 			}
-			return {{"type", "Animated_graphics_component"}, {"animations", animations_json}};
+			return {{"type", "Animated_graphics_component"}, {"animations", animations_json}, {"layer", layer_}};
 		}
 
 
@@ -78,8 +78,9 @@ namespace Game
 					animation.at("name").get<std::string>(),
 					Graphics::Animation::from_json(animation.at("animation")));
 			}
+			const auto layer = json.at("layer").get<int>();
 
-			const auto component = new Animated_graphics_component{game_object, animations};
+			const auto component = new Animated_graphics_component{game_object, layer, animations};
 			game_object.world().component_loader().register_component(*component);
 
 			return component;
@@ -95,7 +96,11 @@ namespace Game
 			return Graphics::Render_instance{
 				&frame.get_texture(),
 				camera.get_coordinates_on_screen(game_object().position()),
-				clip, {}, {}, flipped_
+				layer_,
+				clip,
+				{},
+				{},
+				flipped_
 			};
 		}
 

@@ -58,8 +58,10 @@ namespace Game
 				render_queue.end(),
 				[this](const Render_instance& a, const Render_instance& b)
 			{
-				return a.destination_.get_y() + a.source_.height() / 2 / settings_.constants().source_height() < b.destination_.
-																												   get_y() + b.source_.height() / 2 / settings_.constants().source_height();
+				return a.layer_ != b.layer_ ?
+						   a.layer_ < b.layer_ :
+						   a.destination_.get_y() + a.source_.height() / 2 / settings_.constants().source_height() < b.destination_.
+																													   get_y() + b.source_.height() / 2 / settings_.constants().source_height();
 			}); // TODO: Make this work with different layers or such, for example object on ground
 
 			for(const auto& instance : render_queue)

@@ -12,7 +12,16 @@ namespace Game
 		class Render_instance
 		{
 		public:
-			Render_instance(Texture* texture, Geometry::Vector<double> destination, const std::optional<Geometry::Rectangle<int>> source = {}, double angle = {}, const std::optional<Geometry::Vector<double>> pivot_point = {}, bool flipped_x = false, bool flipped_y = false, Geometry::Vector<double> scaling = {1.0, 1.0});
+			Render_instance(
+				Texture* texture,
+				Geometry::Vector<double> destination,
+				int layer,
+				const std::optional<Geometry::Rectangle<int>> source = {},
+				double angle = {},
+				const std::optional<Geometry::Vector<double>> pivot_point = {},
+				bool flipped_x = false,
+				bool flipped_y = false,
+				Geometry::Vector<double> scaling = {1.0, 1.0});
 
 			Render_instance(const Render_instance& other);
 			Render_instance(Render_instance&& other) noexcept;
@@ -28,6 +37,7 @@ namespace Game
 			double angle_;
 			Geometry::Vector<double> pivot_;
 			bool flipped_x_, flipped_y_;
+			int layer_;
 
 			friend class Renderer;
 		};

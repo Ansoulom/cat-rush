@@ -6,19 +6,17 @@ namespace Game
 {
 	namespace Resources
 	{
-		Texture_manager::Texture_manager() : textures_{}
-		{
-		}
+		Texture_manager::Texture_manager() : textures_{} { }
 
 
 		void Texture_manager::load_all_textures(const boost::filesystem::path& texture_path, Graphics::Renderer& renderer)
 		{
 			// TODO: Be careful about error handling
-			if (exists(texture_path) && is_directory(texture_path))
+			if(exists(texture_path) && is_directory(texture_path))
 			{
-				for (auto&& x : boost::filesystem::recursive_directory_iterator{ texture_path })
+				for(auto&& x : boost::filesystem::recursive_directory_iterator{texture_path})
 				{
-					if (x.path().extension().string() == ".png")
+					if(x.path().extension().string() == ".png")
 					{
 						auto texture = std::make_shared<Graphics::Texture>(renderer, x.path().string());
 						auto filename = x.path().stem().string();

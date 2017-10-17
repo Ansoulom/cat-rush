@@ -12,22 +12,24 @@ namespace Game
 	namespace Objects
 	{
 		Static_graphics_component::
-			Static_graphics_component(Game_object& game_object, std::string texture)
+			Static_graphics_component(Game_object& game_object, std::string texture, int layer)
 			: Graphics_component{game_object},
-			  texture_name_{texture} { }
+			  texture_name_{texture},
+			  layer_{layer} { }
 
 
 		IO::json Static_graphics_component::to_json() const
 		{
-			return {{"type", "Static_graphics_component"}, {"texture", texture_name_}};
+			return {{"type", "Static_graphics_component"}, {"texture", texture_name_}, {"layer", layer_}};
 		}
 
 
 		Static_graphics_component* Static_graphics_component::from_json(const IO::json& json, Game_object& game_object)
 		{
-			auto texture = json.at("texture").get<std::string>();
+			const auto texture = json.at("texture").get<std::string>();
+			const auto layer = json.at("layer").get<int>();
 
-			auto component = new Static_graphics_component{game_object, texture};
+			const auto component = new Static_graphics_component{game_object, texture, layer};
 			game_object.world().component_loader().register_component(*component);
 
 			return component;
@@ -50,10 +52,10 @@ namespace Game
 			const Camera& camera) const
 		{
 			auto texture = tm.get_texture(texture_name_);
-			return {texture.get(), camera.get_coordinates_on_screen(game_object().position())};
+			return {texture.get(), camera.get_coordinates_on_screen(game_object().position()), layer_};
 		}
 
 
-		const Component::Deserializer Static_graphics_component::add_to_map{ "Static_graphics_component", from_json };
+		const Component::Deserializer Static_graphics_component::add_to_map{"Static_graphics_component", from_json};
 	}
 }

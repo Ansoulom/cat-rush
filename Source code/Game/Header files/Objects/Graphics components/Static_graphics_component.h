@@ -17,7 +17,7 @@ namespace Game
 		class Static_graphics_component : public Graphics_component
 		{
 		public:
-			explicit Static_graphics_component(Game_object& game_object, std::string texture);
+			explicit Static_graphics_component(Game_object& game_object, std::string texture, int layer);
 			virtual ~Static_graphics_component();
 
 			void update(Timer::Seconds time_passed) override;
@@ -29,7 +29,8 @@ namespace Game
 			IO::json to_json() const override;
 
 		private:
-			std::string texture_name_;;
+			std::string texture_name_;
+			int layer_;
 
 			static const Deserializer add_to_map;
 		};

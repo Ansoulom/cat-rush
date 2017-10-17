@@ -14,13 +14,54 @@
 							"name": "Idle",
 							"animation":
 							{
-								"texture": "Player",
+								"texture": "Meowington_idle",
+								"frames": 1,
+								"rows": 1,
+								"frame_rate": 1
+							}
+						},
+						{
+							"name": "Walking",
+							"animation":
+							{
+								"texture": "Meowington_walk",
 								"frames": 4,
-								"rows": 8,
+								"rows": 1,
 								"frame_rate": 4
 							}
+						},
+						{
+							"name": "Jumping",
+							"animation":
+							{
+								"texture": "Meowington_jump",
+								"frames": 1,
+								"rows": 1,
+								"frame_rate": 1
+							}
+						},
+						{
+							"name": "Attacking",
+							"animation":
+							{
+								"texture": "Meowington_attack",
+								"frames": 2,
+								"rows": 1,
+								"frame_rate": 4
+							}
+						},
+						{
+							"name": "Crouching",
+							"animation":
+							{
+								"texture": "Meowington_crouch",
+								"frames": 1,
+								"rows": 1,
+								"frame_rate": 1
+							}
 						}
-					]
+					],
+					"draw_layer": 1
 				},
 				{
 					"type": "Movement_component",
@@ -33,10 +74,11 @@
 					"type": "Collider_component",
 					"shape":
 					{
-						"type": "Circle",
+						"type": "Rectangle",
 						"x_position": 0.0,
 						"y_position": 0.0,
-						"radius": 0.099
+						"width": 0.3,
+						"height": 0.3
 					},
 					"layers": ["solid", "player"],
 					"check_layers": ["solid", "triggers"]
@@ -50,7 +92,8 @@
 			[
 				{
 					"type": "Static_graphics_component",
-					"texture": "Grej"
+					"texture": "Grej",
+					"layer": 1
 				},
 				{
 					"type": "Collider_component",
@@ -64,6 +107,18 @@
 					},
 					"layers": ["solid"],
 					"check_layers": ["solid"]
+				}
+			]
+		},
+		{
+			"x_position": 0.0,
+			"y_position": 0.0,
+			"components":
+			[
+				{
+					"type": "Static_graphics_component",
+					"texture": "Noodles_stage",
+					"layer": 0
 				}
 			]
 		}

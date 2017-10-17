@@ -1,6 +1,7 @@
 #include "SDL_wrapper.h"
 #include <SDL_ttf.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 #include "Logger.h"
 #include <memory>
 #include "SDL_deleter.h"
@@ -20,7 +21,7 @@ namespace Game
 				{
 					throw std::runtime_error{std::string{"Could not initiate SDL: "} + SDL_GetError()};
 				}
-				if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
+				if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0"))
 				{
 					Logger::log("Warning: Linear texture filtering not enabled!");
 				}
@@ -34,6 +35,13 @@ namespace Game
 					SDL_Quit();
 					IMG_Quit();
 					throw std::runtime_error{std::string{"Could not initiate SDL_ttf: "} + TTF_GetError()};
+				}
+				if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+				{
+					SDL_Quit();
+					IMG_Quit();
+					TTF_Quit();
+					throw std::runtime_error{std::string{"Could not initiate SDL_ttf: "} + Mix_GetError()};
 				}
 				auto path = std::unique_ptr<char, Sdl_deleter>{SDL_GetBasePath(), Sdl_deleter{}};
 				// Would prefer std::filesystem::current_path, but doesn't return consistent path
@@ -49,6 +57,7 @@ namespace Game
 				SDL_Quit();
 				IMG_Quit();
 				TTF_Quit();
+				Mix_Quit();
 			}
 		}
 
@@ -74,6 +83,18 @@ namespace Game
 		TTF_Font& Sdl_wrapper::get_font(Text::Font& font)
 		{
 			return *font.sdl_font_;
+		}
+
+
+		Mix_Chunk& Sdl_wrapper::get_sound_chunk(Audio::Sound_effect& sound)
+		{
+			return *sound.sdl_sound_;
+		}
+
+
+		Mix_Music& Sdl_wrapper::get_music(Audio::Music_track& music)
+		{
+			return *music.sdl_music_;
 		}
 
 

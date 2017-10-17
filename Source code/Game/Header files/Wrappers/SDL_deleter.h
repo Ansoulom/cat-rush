@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include <SDL_mixer.h>
 
 
 namespace Game
@@ -16,5 +17,7 @@ namespace Game
 		void operator()(char* text) const;
 		void operator()(SDL_Surface* surface) const;
 		void operator()(SDL_GameController* controller) const;
+		void operator()(Mix_Music* music) const;
+		void operator()(Mix_Chunk* chunk) const;
 	};
 }
