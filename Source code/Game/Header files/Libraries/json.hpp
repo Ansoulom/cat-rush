@@ -13003,7 +13003,7 @@ inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std
 // CODE ADDED BY ANTON SÖDERGREN
 namespace Game
 {
-	namespace IO
+	namespace Io
 	{
 		using json = nlohmann::json;
 	}

@@ -9,29 +9,23 @@ namespace Game
 {
 	namespace Objects
 	{
-		class Movement_component :
-			public Component
+		class Movement_component : public Component
 		{
 		public:
-			Movement_component(Game_object& game_object, double max_speed);
-			
+			explicit Movement_component(Game_object& game_object);
+
 			void update(Timer::Seconds time_passed) override;
-			void receive(const Events::Message& message) override;
 
-			void set_x_velocity(double velocity);
-			void set_y_velocity(double velocity);
-			double get_speed() const;
+			Geometry::Vector<double>& velocity();
+			Geometry::Vector<double> velocity() const;
 
-			static Movement_component* from_json(const IO::json& json, Game_object& game_object);
-			IO::json to_json() const override;
+			static Movement_component* from_json(const Io::json& json, Game_object& game_object, const Component_type_map& component_map);
+			Io::json to_json() const override;
+			std::string component_type() const override;
+			static std::string type();
 
 		private:
-			template<typename T>
-			void handle_event(const T& message){}
-			void handle_event(const Events::Change_velocity_normalized& message);
-
-			Geometry::Vector<double> velocity_{ 0, 0 };
-			double max_speed_;
+			Geometry::Vector<double> velocity_{0, 0};
 
 			static const Deserializer add_to_map;
 		};

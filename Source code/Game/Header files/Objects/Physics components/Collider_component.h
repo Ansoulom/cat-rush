@@ -3,6 +3,7 @@
 #include <json.hpp>
 #include "Component.h"
 #include "Component.h"
+#include "Component.h"
 
 
 namespace Game
@@ -50,8 +51,13 @@ namespace Game
 			const std::vector<std::string>& get_layers() const;
 			const std::vector<std::string>& get_check_layers() const;
 
-			static Collider_component* from_json(const IO::json& j, Game_object& game_object);
-			IO::json to_json() const override;
+			static Collider_component* from_json(
+				const Io::json& j,
+				Game_object& game_object,
+				const Component_type_map& component_map);
+			Io::json to_json() const override;
+			std::string component_type() const override;
+			static std::string type();
 
 		private:
 			template<typename T>

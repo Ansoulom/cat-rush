@@ -44,7 +44,7 @@ namespace Game
 
 
 		World* World::from_json(
-			const IO::json& json,
+			const Io::json& json,
 			Game_core& game_context,
 			const Objects::Component_loader& component_loader)
 		{
@@ -59,9 +59,9 @@ namespace Game
 		}
 
 
-		IO::json World::to_json() const
+		Io::json World::to_json() const
 		{
-			auto objects_json = IO::json{};
+			auto objects_json = Io::json{};
 			for(auto& object : objects_)
 			{
 				objects_json.push_back(object->to_json());
@@ -104,7 +104,7 @@ namespace Game
 				throw std::runtime_error{std::string{"Could not open level file"} + file.string()};
 			}
 
-			auto world_json = IO::json{};
+			auto world_json = Io::json{};
 			in >> world_json;
 
 			return World::from_json(world_json, game_context, component_loader);

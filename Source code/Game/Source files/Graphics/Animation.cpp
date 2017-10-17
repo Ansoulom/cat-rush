@@ -77,7 +77,7 @@ namespace Game
 		}
 
 
-		Animation Animation::from_json(const IO::json& json)
+		Animation Animation::from_json(const Io::json& json)
 		{
 			const auto texture = json.at("texture").get<std::string>();
 			const auto frames = json.at("frames").get<int>();

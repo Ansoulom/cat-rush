@@ -49,7 +49,10 @@ namespace Game
 		}
 
 
-		Collider_component* Collider_component::from_json(const IO::json& j, Game_object& game_object)
+		Collider_component* Collider_component::from_json(
+			const Io::json& j,
+			Game_object& game_object,
+			const Component_type_map& component_map)
 		{
 			const auto component = new Collider_component{
 				game_object,
@@ -62,9 +65,21 @@ namespace Game
 		}
 
 
-		IO::json Collider_component::to_json() const
+		Io::json Collider_component::to_json() const
 		{
-			return {{"type", "Collider_component"}, {"shape", shape_->to_json()}};
+			return {{"type", type()}, {"shape", shape_->to_json()}};
+		}
+
+
+		std::string Collider_component::component_type() const
+		{
+			return type();
+		}
+
+
+		std::string Collider_component::type()
+		{
+			return "Collider_component";
 		}
 
 
@@ -106,7 +121,7 @@ namespace Game
 		}
 
 
-		const Component::Deserializer Collider_component::add_to_map{"Collider_component", from_json};
+		const Component::Deserializer Collider_component::add_to_map{type(), from_json};
 	}
 
 

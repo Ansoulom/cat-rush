@@ -34,25 +34,32 @@ namespace Game
 		void Component::update(Timer::Seconds) { }
 
 
-		Component* Component::from_json(const IO::json& j, Game_object& game_object)
+		Component* Component::from_json(
+			const Io::json& j,
+			Game_object& game_object,
+			const Component_type_map& component_map)
 		{
 			const auto type = j.at("type").get<std::string>();
-			return deserialization_table().at(type)(j, game_object);
+			return deserialization_table().at(type)(j, game_object, component_map);
 		}
 
 
 		Component::Deserializer::Deserializer(
 			std::string class_name,
-			std::function<Component*(const IO::json&, Game_object&)> factory)
+			std::function<Component*(const Io::json&, Game_object&, const Component_type_map&)> factory)
 		{
 			deserialization_table().emplace(class_name, factory);
 		}
 
 
-		std::unordered_map<std::string, std::function<Component*(const IO::json&, Game_object&)>>& Component::
+		std::unordered_map<std::string, std::function<Component*(const Io::json&, Game_object&, const Component_type_map&)>>&
+			Component::
 			deserialization_table()
 		{
-			static auto table = std::unordered_map<std::string, std::function<Component*(const IO::json&, Game_object&)>>{};
+			static auto table = std::unordered_map<std::string, std::function<Component*(
+													   const Io::json&,
+													   Game_object&,
+													   const Component_type_map&)>>{};
 			return table;
 		}
 
@@ -64,6 +71,24 @@ namespace Game
 		void Component_loader::register_component(Graphics_component& comp) const
 		{
 			renderer_.register_component(comp);
+		}
+
+
+		Component& Component_type_map::get_component(const std::string& type) const
+		{
+			return *map_.at(type);
+		}
+
+
+		bool Component_type_map::contains(const std::string& type) const
+		{
+			return map_.find(type) != map_.end();
+		}
+
+
+		void Component_type_map::add_component(Component& component)
+		{
+			map_.insert_or_assign(component.component_type(), &component);
 		}
 	}
 }

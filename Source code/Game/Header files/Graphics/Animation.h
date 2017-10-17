@@ -45,7 +45,7 @@ namespace Game
 			void set_row(int row); // The row of sprites, e.g. direction or state.
 
 			static Animation from_json(const nlohmann::json& json);
-			IO::json to_json() const;
+			Io::json to_json() const;
 
 		private:
 			std::string texture_name_;

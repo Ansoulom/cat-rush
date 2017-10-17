@@ -61,14 +61,18 @@
 							}
 						}
 					],
-					"draw_layer": 1
+					"layer": 1
 				},
 				{
-					"type": "Movement_component",
+					"type": "Movement_component"
+				},
+				{
+					"type": "Player_input_component",
+					"requires":
+					[
+						"Movement_component"
+					],
 					"max_speed": 3.0
-				},
-				{
-					"type": "Player_input_component"
 				},
 				{
 					"type": "Collider_component",

@@ -1,14 +1,14 @@
 #include "Movement_component.h"
 #include "Game_object.h"
 #include "World.h"
+#include "Component.h"
 
 
 namespace Game
 {
 	namespace Objects
 	{
-		Movement_component::Movement_component(Game_object& game_object, double speed) : Component{game_object},
-																									 max_speed_{speed} { }
+		Movement_component::Movement_component(Game_object& game_object) : Component{game_object} { }
 
 
 		void Movement_component::update(Timer::Seconds time_passed)
@@ -43,50 +43,45 @@ namespace Game
 		}
 
 
-		void Movement_component::receive(const Events::Message& message)
+		Geometry::Vector<double>& Movement_component::velocity()
 		{
-			visit([this](const auto& msg) { handle_event(msg); }, message);
+			return velocity_;
 		}
 
 
-		void Movement_component::set_x_velocity(double velocity)
+		Geometry::Vector<double> Movement_component::velocity() const
 		{
-			this->velocity_.set_x(velocity);
+			return velocity_;
 		}
 
 
-		void Movement_component::set_y_velocity(double velocity)
+		Io::json Movement_component::to_json() const
 		{
-			this->velocity_.set_y(velocity);
+			return {{"type", type()}};
 		}
 
 
-		double Movement_component::get_speed() const
+		std::string Movement_component::component_type() const
 		{
-			return max_speed_;
+			return type();
 		}
 
 
-		IO::json Movement_component::to_json() const
+		std::string Movement_component::type()
 		{
-			return {{"type", "Movement_component"}, {"max_speed", max_speed_}}; 
+			return "Movement_component";
 		}
 
 
-		void Movement_component::handle_event(const Events::Change_velocity_normalized& message)
+		Movement_component* Movement_component::from_json(
+			const Io::json& json,
+			Game_object& game_object,
+			const Component_type_map& component_map)
 		{
-			assert(message.normalized_velocity.get_magnitude() <= 1.0);
-			velocity_ = message.normalized_velocity * max_speed_;
+			return new Movement_component{game_object};
 		}
 
 
-		Movement_component* Movement_component::from_json(const IO::json& json, Game_object& game_object)
-		{
-			const auto max_speed = json.at("max_speed").get<double>();
-			return new Movement_component{game_object, max_speed};
-		}
-
-
-		const Component::Deserializer Movement_component::add_to_map{ "Movement_component", from_json };
+		const Component::Deserializer Movement_component::add_to_map{type(), from_json};
 	}
 }

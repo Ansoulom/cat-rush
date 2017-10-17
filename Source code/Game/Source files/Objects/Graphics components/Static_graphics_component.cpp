@@ -5,6 +5,7 @@
 #include "Component.h"
 #include "Resource_managers.h"
 #include "World.h"
+#include "Component.h"
 
 
 namespace Game
@@ -18,13 +19,28 @@ namespace Game
 			  layer_{layer} { }
 
 
-		IO::json Static_graphics_component::to_json() const
+		Io::json Static_graphics_component::to_json() const
 		{
-			return {{"type", "Static_graphics_component"}, {"texture", texture_name_}, {"layer", layer_}};
+			return {{"type", type()}, {"texture", texture_name_}, {"layer", layer_}};
 		}
 
 
-		Static_graphics_component* Static_graphics_component::from_json(const IO::json& json, Game_object& game_object)
+		std::string Static_graphics_component::component_type() const
+		{
+			return type();
+		}
+
+
+		std::string Static_graphics_component::type()
+		{
+			return "Static_graphics_component";
+		}
+
+
+		Static_graphics_component* Static_graphics_component::from_json(
+			const Io::json& json,
+			Game_object& game_object,
+			const Component_type_map& component_map)
 		{
 			const auto texture = json.at("texture").get<std::string>();
 			const auto layer = json.at("layer").get<int>();
@@ -56,6 +72,6 @@ namespace Game
 		}
 
 
-		const Component::Deserializer Static_graphics_component::add_to_map{"Static_graphics_component", from_json};
+		const Component::Deserializer Static_graphics_component::add_to_map{type(), from_json};
 	}
 }

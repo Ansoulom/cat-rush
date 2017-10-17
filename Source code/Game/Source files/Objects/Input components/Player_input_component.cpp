@@ -10,8 +10,14 @@ namespace Game
 {
 	namespace Objects
 	{
-		Player_input_component::Player_input_component(Game_object& container)
-			: Component{container}, direction_{Direction::right} { }
+		Player_input_component::Player_input_component(
+			Game_object& container,
+			Movement_component& movement_component,
+			double max_speed)
+			: Component{container},
+			  direction_{Direction::right},
+			  max_speed_{max_speed},
+			  movement_component_{&movement_component} { }
 
 
 		void Player_input_component::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
@@ -22,7 +28,7 @@ namespace Game
 			auto range_input = input.get_processed_vector(Input::Range::movement_x, Input::Range::movement_y, "game");
 			const auto x_input = Math::clamp_value(x_state_input + range_input.get_x(), -1.0, 1.0);
 
-			game_object().send(Events::Change_velocity_normalized{{x_input, 0.0}});
+			movement_component_->velocity().set_x(x_input * max_speed_);
 			// TODO: Make this work with vertical movement
 
 			if(std::abs(x_input) > 0.0)
@@ -30,9 +36,24 @@ namespace Game
 		}
 
 
-		IO::json Player_input_component::to_json() const
+		Io::json Player_input_component::to_json() const
 		{
-			return {{"type", "Player_input_component"}};
+			return {
+				{"type", type()},
+				{"dependencies", std::vector<std::string>{Movement_component::type()}, {"max_speed", max_speed_}}
+			};
+		}
+
+
+		std::string Player_input_component::component_type() const
+		{
+			return type();
+		}
+
+
+		std::string Player_input_component::type()
+		{
+			return "Player_input_component";
 		}
 
 
@@ -44,12 +65,19 @@ namespace Game
 		}
 
 
-		Player_input_component* Player_input_component::from_json(const IO::json& json, Game_object& game_object)
+		Player_input_component* Player_input_component::from_json(
+			const Io::json& json,
+			Game_object& game_object,
+			const Component_type_map& component_map)
 		{
-			return new Player_input_component{game_object};
+			return new Player_input_component{
+				game_object,
+				component_map.get_component<Movement_component>(),
+				json.at("max_speed").get<double>()
+			};
 		}
 
 
-		const Component::Deserializer Player_input_component::add_to_map{"Player_input_component", from_json};
+		const Component::Deserializer Player_input_component::add_to_map{type(), from_json};
 	}
 }

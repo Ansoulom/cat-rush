@@ -42,10 +42,10 @@ namespace Game
 			void update(Timer::Seconds time_passed);
 
 			static World* from_json(
-				const IO::json& json,
+				const Io::json& json,
 				Game_core& game_context,
 				const Objects::Component_loader& component_loader);
-			IO::json to_json() const;
+			Io::json to_json() const;
 
 		private:
 			std::vector<std::unique_ptr<Objects::Game_object>> objects_;

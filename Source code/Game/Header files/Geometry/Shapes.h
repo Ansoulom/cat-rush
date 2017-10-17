@@ -48,8 +48,8 @@ namespace Game
 			virtual T y_intersection(const Circle<T>& other) const = 0;
 			virtual T y_intersection(const Rectangle<T>& other) const = 0;
 
-			static Shape* from_json(const IO::json& j);
-			virtual IO::json to_json() const = 0;
+			static Shape* from_json(const Io::json& j);
+			virtual Io::json to_json() const = 0;
 		};
 
 
@@ -83,8 +83,8 @@ namespace Game
 			T y_intersection(const Rectangle& other) const override;
 			T y_intersection(const Circle<T>& other) const override;
 
-			static Rectangle* from_json(const IO::json& j);
-			IO::json to_json() const override;
+			static Rectangle* from_json(const Io::json& j);
+			Io::json to_json() const override;
 
 		private:
 			void correct_center(Pivot_point pivot);
@@ -117,8 +117,8 @@ namespace Game
 			T y_intersection(const Rectangle<T>& other) const override;
 			T y_intersection(const Circle& other) const override;
 
-			static Circle* from_json(const IO::json& j);
-			IO::json to_json() const override;
+			static Circle* from_json(const Io::json& j);
+			Io::json to_json() const override;
 
 		private:
 			Vector<T> pos_;
@@ -322,7 +322,7 @@ namespace Game
 
 
 		template<typename T>
-		Shape<T>* Shape<T>::from_json(const IO::json& j)
+		Shape<T>* Shape<T>::from_json(const Io::json& j)
 		{
 			auto type = j.at("type").get<std::string>();
 			if(type == "Rectangle")
@@ -486,16 +486,16 @@ namespace Game
 
 
 		template<typename T>
-		Rectangle<T>* Rectangle<T>::from_json(const IO::json& j)
+		Rectangle<T>* Rectangle<T>::from_json(const Io::json& j)
 		{
 			return new Rectangle{{j.at("x_position").get<T>(), j.at("y_position").get<T>()}, j.at("width").get<T>(), j.at("height").get<T>()};
 		}
 
 
 		template<typename T>
-		IO::json Rectangle<T>::to_json() const
+		Io::json Rectangle<T>::to_json() const
 		{
-			return IO::json{{"type", "rectangle"}, {"x_position", pos_.get_x()}, {"y_position", pos_.get_y()}, {"width", w_}, {"height", h_}};
+			return Io::json{{"type", "rectangle"}, {"x_position", pos_.get_x()}, {"y_position", pos_.get_y()}, {"width", w_}, {"height", h_}};
 		}
 
 
@@ -632,16 +632,16 @@ namespace Game
 
 
 		template<typename T>
-		Circle<T>* Circle<T>::from_json(const IO::json& j)
+		Circle<T>* Circle<T>::from_json(const Io::json& j)
 		{
 			return new Circle{{j.at("x_position").get<T>(), j.at("y_position").get<T>()}, j.at("radius").get<T>()};
 		}
 
 
 		template<typename T>
-		IO::json Circle<T>::to_json() const
+		Io::json Circle<T>::to_json() const
 		{
-			return IO::json{{"type", "circle"},{"x_position", pos_.get_x()},{"y_position", pos_.get_y()},{"radius", r_}};
+			return Io::json{{"type", "circle"},{"x_position", pos_.get_x()},{"y_position", pos_.get_y()},{"radius", r_}};
 		}
 	}
 }

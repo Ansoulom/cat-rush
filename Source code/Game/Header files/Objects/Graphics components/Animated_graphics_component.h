@@ -20,7 +20,6 @@ namespace Game
 				std::unordered_map<std::string, Graphics::Animation> animations = {}
 			);
 			// TODO: Make it possible to change active animation and make sure to avoid problems with empty map arguments
-			virtual ~Animated_graphics_component();
 
 			void update(Timer::Seconds time_passed) override; // The object passed is the owner of the component.
 			void receive(const Events::Message& message) override;
@@ -29,8 +28,10 @@ namespace Game
 				const Camera& camera) const override;
 			void set_row(int row); // The row of sprites, e.g. direction or state. Must be valid for the current animation.
 
-			static Animated_graphics_component* from_json(const IO::json& json, Game_object& game_object);
-			IO::json to_json() const override;
+			static Animated_graphics_component* from_json(const Io::json& json, Game_object& game_object, const Component_type_map& component_map);
+			Io::json to_json() const override;
+			std::string component_type() const override;
+			static std::string type();
 
 		private:
 			template<typename T>

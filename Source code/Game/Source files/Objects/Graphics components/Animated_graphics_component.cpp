@@ -49,15 +49,27 @@ namespace Game
 		}
 
 
-		IO::json Animated_graphics_component::to_json() const
+		Io::json Animated_graphics_component::to_json() const
 		{
-			auto animations_json = IO::json{};
+			auto animations_json = Io::json{};
 			for(const auto& animation_pair : animations_)
 			{
 				animations_json.emplace_back(
-					IO::json{{"name", animation_pair.first}, {"animation", animation_pair.second.to_json()}});
+					Io::json{{"name", animation_pair.first}, {"animation", animation_pair.second.to_json()}});
 			}
-			return {{"type", "Animated_graphics_component"}, {"animations", animations_json}, {"layer", layer_}};
+			return {{"type", type()}, {"animations", animations_json}, {"layer", layer_}};
+		}
+
+
+		std::string Animated_graphics_component::component_type() const
+		{
+			return type();
+		}
+
+
+		std::string Animated_graphics_component::type()
+		{
+			return "Animated_graphics_component";
 		}
 
 
@@ -68,8 +80,9 @@ namespace Game
 
 
 		Animated_graphics_component* Animated_graphics_component::from_json(
-			const IO::json& json,
-			Game_object& game_object)
+			const Io::json& json,
+			Game_object& game_object,
+			const Component_type_map& component_map)
 		{
 			auto animations = std::unordered_map<std::string, Graphics::Animation>{};
 			for(auto animation : json.at("animations"))
@@ -106,7 +119,7 @@ namespace Game
 
 
 		const Component::Deserializer Animated_graphics_component::add_to_map{
-			"Animated_graphics_component",
+			type(),
 			from_json
 		};
 	}

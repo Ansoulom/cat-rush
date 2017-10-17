@@ -6,6 +6,7 @@
 #include "Vector.h"
 #include <functional>
 #include "Collision_system.h"
+#include <typeinfo>
 
 
 namespace Game
@@ -33,7 +34,7 @@ namespace Game
 		class Component_loader;
 		class Game_object;
 		class Graphics_component;
-		class Collider_component;
+		class Component_type_map;
 
 
 		enum class Direction
@@ -58,19 +59,13 @@ namespace Game
 			};
 
 
-			struct Change_velocity_normalized
-			{
-				Geometry::Vector<double> normalized_velocity;
-			};
-
-
 			struct Direction_changed
 			{
 				Direction direction;
 			};
 
 
-			using Message = std::variant<Object_moved, Change_velocity_normalized, Direction_changed, Position_changed>;
+			using Message = std::variant<Object_moved, Direction_changed, Position_changed>;
 		}
 
 
@@ -94,14 +89,20 @@ namespace Game
 			virtual void handle_input(Timer::Seconds time_passed, const Input::Input_handler& input);
 			virtual void update(Timer::Seconds time_passed);
 
-			static Component* from_json(const IO::json& j, Game_object& game_object);
-			virtual IO::json to_json() const = 0;
+			static Component* from_json(
+				const Io::json& j,
+				Game_object& game_object,
+				const Component_type_map& component_map);
+			virtual Io::json to_json() const = 0;
+			virtual std::string component_type() const = 0;
 
 		protected:
 			class Deserializer
 			{
 			public:
-				Deserializer(std::string class_name, std::function<Component*(const IO::json&, Game_object&)> factory);
+				Deserializer(
+					std::string class_name,
+					std::function<Component*(const Io::json&, Game_object&, const Component_type_map&)> factory);
 			};
 
 
@@ -109,8 +110,11 @@ namespace Game
 			Game_object* game_object_;
 
 			// Do not use this during static deinitialization!
-			static std::unordered_map<std::string, std::function<Component*(const IO::json&, Game_object&)>>&
-			deserialization_table();
+			static std::unordered_map<std::string, std::function<Component*(
+										  const Io::json&,
+										  Game_object&,
+										  const Component_type_map&)>>&
+				deserialization_table();
 		};
 
 
@@ -124,5 +128,26 @@ namespace Game
 		private:
 			Graphics::Renderer& renderer_;
 		};
+
+
+		class Component_type_map
+		{
+		public:
+			template<typename T>
+			T& get_component() const;
+			Component& get_component(const std::string& type) const;
+			bool contains(const std::string& type) const;
+			void add_component(Component& component);
+			 
+		private:
+			std::unordered_map<std::string, Component*> map_;
+		};
+
+
+		template<typename T>
+		T& Component_type_map::get_component() const
+		{
+			return *dynamic_cast<T*>(map_.at(T::type()));
+		}
 	}
 }
