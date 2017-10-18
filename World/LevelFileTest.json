@@ -79,10 +79,10 @@
 					"shape":
 					{
 						"type": "Rectangle",
-						"x_position": 0.0,
-						"y_position": 0.0,
-						"width": 0.3,
-						"height": 0.3
+						"x_position": -0.012,
+						"y_position": -0.006,
+						"width": 0.074,
+						"height": 0.259
 					},
 					"layers": ["solid", "player"],
 					"check_layers": ["solid", "triggers"]

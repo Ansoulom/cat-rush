@@ -30,7 +30,7 @@ namespace Game
 				game_object().position() += movement;
 				game_object().send(Events::Position_changed{old_pos});
 				game_object().send(Events::Object_moved{old_pos});
-			}
+			} 
 
 			/*if(velocity.get_magnitude() > 0.0)
 			{

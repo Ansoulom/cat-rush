@@ -48,7 +48,7 @@ namespace Game
 		{
 			return {
 				{"type", type()},
-				{"dependencies", std::vector<std::string>{Movement_component::type()}},
+				{"requires", std::vector<std::string>{Movement_component::type()}},
 				{"x_acceleration", acceleration_.get_x()},
 				{"y_acceleration", acceleration_.get_y()}
 			};

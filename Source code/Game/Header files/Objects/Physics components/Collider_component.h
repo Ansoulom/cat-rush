@@ -47,7 +47,6 @@ namespace Game
 			void update(Timer::Seconds time_passed) override;
 			void receive(const Events::Message& message) override;
 
-			void set_position(Geometry::Vector<double> position);
 			const std::vector<std::string>& get_layers() const;
 			const std::vector<std::string>& get_check_layers() const;
 

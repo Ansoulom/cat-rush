@@ -40,7 +40,7 @@ namespace Game
 		{
 			return {
 				{"type", type()},
-				{"dependencies", std::vector<std::string>{Movement_component::type()}, {"max_speed", max_speed_}}
+				{"requires", std::vector<std::string>{Movement_component::type()}, {"max_speed", max_speed_}}
 			};
 		}
 

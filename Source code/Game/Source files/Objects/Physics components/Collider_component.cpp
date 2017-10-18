@@ -31,12 +31,6 @@ namespace Game
 		}
 
 
-		void Collider_component::set_position(Geometry::Vector<double> position)
-		{
-			shape_->set_position(position);
-		}
-
-
 		const std::vector<std::string>& Collider_component::get_layers() const
 		{
 			return layers_;
@@ -99,7 +93,7 @@ namespace Game
 				if(col_pair.second == "solid")
 				{
 					auto diff = Physics::intersection(*this, *col_pair.first, direction);
-					auto new_pos = game_object().position() - diff; // Plus or minus?
+					auto new_pos = game_object().position() - diff;
 					if(abs((new_pos - message.start_position).get_magnitude()) < abs(
 						(game_object().position() - message.start_position).get_magnitude()))
 					{
@@ -116,7 +110,6 @@ namespace Game
 
 		void Collider_component::handle_event(const Events::Position_changed& message)
 		{
-			set_position(game_object().position());
 			game_object().world().collision_system().update_grid_position(*this, message.start_position);
 		}
 
@@ -129,7 +122,11 @@ namespace Game
 	{
 		bool intersects(const Objects::Collider_component& first, const Objects::Collider_component& second)
 		{
-			return intersects(*first.shape_, *second.shape_);
+			auto first_shape = std::unique_ptr<Geometry::Shape<double>>{ first.shape_->clone() };
+			first_shape->position() += first.game_object().position();
+			auto second_shape = std::unique_ptr<Geometry::Shape<double>>{ second.shape_->clone() };
+			second_shape->position() += second.game_object().position();
+			return intersects(*first_shape, *second_shape);
 		}
 
 
@@ -139,7 +136,11 @@ namespace Game
 			Geometry::Vector<double> direction)
 		{
 			//assert(direction.get_magnitude() == 1.0); // Floating point comparison
-			return intersection(*first.shape_, *second.shape_, direction);
+			auto first_shape = std::unique_ptr<Geometry::Shape<double>>{ first.shape_->clone() };
+			first_shape->position() += first.game_object().position();
+			auto second_shape = std::unique_ptr<Geometry::Shape<double>>{ second.shape_->clone() };
+			second_shape->position() += second.game_object().position();
+			return intersection(*first_shape, *second_shape, direction);
 		}
 	}
 }

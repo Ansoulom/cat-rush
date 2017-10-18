@@ -34,7 +34,10 @@ namespace Game
 		public:
 			virtual ~Shape();
 
-			virtual void set_position(Vector<T> position) = 0;
+			virtual Vector<T>& position() = 0;
+			virtual Vector<T> position() const = 0;
+
+			virtual Shape* clone() const = 0;
 
 			virtual bool intersects(const Shape& other) const = 0;
 			virtual bool intersects(const Circle<T>& other) const = 0;
@@ -66,7 +69,12 @@ namespace Game
 			T left() const;
 			T top() const;
 			T bottom() const;
-			void set_position(Vector<T> position) override;
+
+			Vector<T>& position() override;
+			Vector<T> position() const override;
+
+			Rectangle* clone() const override;
+
 			void set_position(Vector<T> position, Pivot_point pivot);
 			void set_width(T width);
 			void set_height(T height);
@@ -102,7 +110,10 @@ namespace Game
 
 			Vector<T> center() const;
 			T radius() const;
-			void set_position(Vector<T> position) override;
+
+			Vector<T>& position() override;
+			Vector<T> position() const override;
+			Circle* clone() const override;
 			void set_radius(T radius);
 
 			bool intersects(const Shape<T>& other) const override;
@@ -159,10 +170,15 @@ namespace Game
 		template<typename T>
 		bool intersects(const Rectangle<T>& first, const Circle<T>& second)
 		{
-			auto closest_x = second.center().get_x() < first.left() ? first.left() : (second.center().get_x() > first.right() ? first.right() : second.center().get_x());
-			auto closest_y = second.center().get_y() < first.top() ? first.top() : (second.center().get_y() > first.bottom() ? first.bottom() : second.center().get_y());
+			auto closest_x = second.center().get_x() < first.left() ?
+								 first.left() :
+								 (second.center().get_x() > first.right() ? first.right() : second.center().get_x());
+			auto closest_y = second.center().get_y() < first.top() ?
+								 first.top() :
+								 (second.center().get_y() > first.bottom() ? first.bottom() : second.center().get_y());
 
-			auto distance_squared = pow(closest_x - second.center().get_x(), 2.0) + pow(closest_y - second.center().get_y(), 2.0);
+			auto distance_squared = pow(closest_x - second.center().get_x(), 2.0) +
+				pow(closest_y - second.center().get_y(), 2.0);
 			auto total_radius_squared = pow(second.radius(), 2.0);
 
 			return distance_squared < total_radius_squared;
@@ -172,7 +188,9 @@ namespace Game
 		template<typename T>
 		bool intersects(const Circle<T>& first, const Circle<T>& second)
 		{
-			auto distance_squared = pow(second.center().get_x() - first.center().get_x(), 2.0) + pow(second.center().get_y() - first.center().get_y(), 2.0);
+			auto distance_squared = pow(second.center().get_x() - first.center().get_x(), 2.0) + pow(
+				second.center().get_y() - first.center().get_y(),
+				2.0);
 			auto total_radius_squared = pow(first.radius() + second.radius(), 2.0);
 
 			return distance_squared < total_radius_squared;
@@ -190,7 +208,8 @@ namespace Game
 		Vector<T> intersection(const Shape<T>& first, const Shape<T>& second, Vector<double> direction)
 		{
 			//assert(direction.get_magnitude() == T{ 1 }); // Floating point comparison
-			return { x_intersection(first, second) * direction.get_x(), y_intersection(first, second) * direction.get_y()}; // TODO: Implement non-lazy and optimized solution
+			return {x_intersection(first, second) * direction.get_x(), y_intersection(first, second) * direction.get_y()};
+			// TODO: Implement non-lazy and optimized solution
 		}
 
 
@@ -214,15 +233,24 @@ namespace Game
 		template<typename T>
 		T x_intersection(const Rectangle<T>& first, const Circle<T>& second)
 		{
-			auto closest_x = second.center().get_x() < first.left() ? first.left() : (second.center().get_x() > first.right() ? first.right() : second.center().get_x());
-			auto closest_y = second.center().get_y() < first.top() ? first.top() : (second.center().get_y() > first.bottom() ? first.bottom() : second.center().get_y());
+			auto closest_x = second.center().get_x() < first.left() ?
+								 first.left() :
+								 (second.center().get_x() > first.right() ? first.right() : second.center().get_x());
+			auto closest_y = second.center().get_y() < first.top() ?
+								 first.top() :
+								 (second.center().get_y() > first.bottom() ? first.bottom() : second.center().get_y());
 
-			auto distance_squared = pow(closest_x - second.center().get_x(), 2.0) + pow(closest_y - second.center().get_y(), 2.0);
+			auto distance_squared = pow(closest_x - second.center().get_x(), 2.0) +
+				pow(closest_y - second.center().get_y(), 2.0);
 			auto total_radius_squared = pow(second.radius(), 2.0);
 
 			if(distance_squared < total_radius_squared)
 			{
-				return static_cast<T>(second.center().get_x() > closest_x ? -(second.center().get_x() - closest_x - sqrt(total_radius_squared - pow(closest_y - second.center().get_y(), 2.0))) : -(second.center().get_x() - closest_x + sqrt(total_radius_squared - pow(closest_y - second.center().get_y(), 2.0))));
+				return static_cast<T>(second.center().get_x() > closest_x ?
+										  -(second.center().get_x() - closest_x - sqrt(
+											  total_radius_squared - pow(closest_y - second.center().get_y(), 2.0))) :
+										  -(second.center().get_x() - closest_x + sqrt(
+											  total_radius_squared - pow(closest_y - second.center().get_y(), 2.0))));
 			}
 
 			return T{};
@@ -232,12 +260,18 @@ namespace Game
 		template<typename T>
 		T x_intersection(const Circle<T>& first, const Circle<T>& second)
 		{
-			auto distance_squared = pow(second.center().get_x() - first.center().get_x(), 2.0) + pow(second.center().get_y() - first.center().get_y(), 2.0);
+			auto distance_squared = pow(second.center().get_x() - first.center().get_x(), 2.0) + pow(
+				second.center().get_y() - first.center().get_y(),
+				2.0);
 			auto total_radius_squared = pow(first.radius() + second.radius(), 2.0);
 
 			if(distance_squared < total_radius_squared)
 			{
-				return static_cast<T>(first.center().get_x() > second.center().get_x() ? first.center().get_x() - second.center().get_x() - sqrt(total_radius_squared - pow(second.center().get_y() - first.center().get_y(), 2.0)) : first.center().get_x() - second.center().get_x() + sqrt(total_radius_squared - pow(second.center().get_y() - first.center().get_y(), 2.0)));
+				return static_cast<T>(first.center().get_x() > second.center().get_x() ?
+										  first.center().get_x() - second.center().get_x() - sqrt(
+											  total_radius_squared - pow(second.center().get_y() - first.center().get_y(), 2.0)) :
+										  first.center().get_x() - second.center().get_x() + sqrt(
+											  total_radius_squared - pow(second.center().get_y() - first.center().get_y(), 2.0)));
 			}
 
 			return T{};
@@ -271,15 +305,24 @@ namespace Game
 		template<typename T>
 		T y_intersection(const Rectangle<T>& first, const Circle<T>& second)
 		{
-			auto closest_x = second.center().get_x() < first.left() ? first.left() : (second.center().get_x() > first.right() ? first.right() : second.center().get_x());
-			auto closest_y = second.center().get_y() < first.top() ? first.top() : (second.center().get_y() > first.bottom() ? first.bottom() : second.center().get_y());
+			auto closest_x = second.center().get_x() < first.left() ?
+								 first.left() :
+								 (second.center().get_x() > first.right() ? first.right() : second.center().get_x());
+			auto closest_y = second.center().get_y() < first.top() ?
+								 first.top() :
+								 (second.center().get_y() > first.bottom() ? first.bottom() : second.center().get_y());
 
-			auto distance_squared = pow(closest_x - second.center().get_x(), 2.0) + pow(closest_y - second.center().get_y(), 2.0);
+			auto distance_squared = pow(closest_x - second.center().get_x(), 2.0) +
+				pow(closest_y - second.center().get_y(), 2.0);
 			auto total_radius_squared = pow(second.radius(), 2.0);
 
 			if(distance_squared < total_radius_squared)
 			{
-				return static_cast<T>(second.center().get_y() > closest_y ? -(second.center().get_y() - closest_y - sqrt(total_radius_squared - pow(closest_x - second.center().get_x(), 2.0))) : -(second.center().get_y() - closest_y + sqrt(total_radius_squared - pow(closest_x - second.center().get_x(), 2.0))));
+				return static_cast<T>(second.center().get_y() > closest_y ?
+										  -(second.center().get_y() - closest_y - sqrt(
+											  total_radius_squared - pow(closest_x - second.center().get_x(), 2.0))) :
+										  -(second.center().get_y() - closest_y + sqrt(
+											  total_radius_squared - pow(closest_x - second.center().get_x(), 2.0))));
 			}
 
 			return T{};
@@ -289,12 +332,18 @@ namespace Game
 		template<typename T>
 		T y_intersection(const Circle<T>& first, const Circle<T>& second)
 		{
-			auto distance_squared = pow(second.center().get_x() - first.center().get_x(), 2.0) + pow(second.center().get_y() - first.center().get_y(), 2.0);
+			auto distance_squared = pow(second.center().get_x() - first.center().get_x(), 2.0) + pow(
+				second.center().get_y() - first.center().get_y(),
+				2.0);
 			auto total_radius_squared = pow(first.radius() + second.radius(), 2.0);
 
 			if(distance_squared < total_radius_squared)
 			{
-				return static_cast<T>(first.center().get_y() > second.center().get_y() ? first.center().get_y() - second.center().get_y() - sqrt(total_radius_squared - pow(second.center().get_x() - first.center().get_x(), 2.0)) : first.center().get_y() - second.center().get_y() + sqrt(total_radius_squared - pow(second.center().get_x() - first.center().get_x(), 2.0)));
+				return static_cast<T>(first.center().get_y() > second.center().get_y() ?
+										  first.center().get_y() - second.center().get_y() - sqrt(
+											  total_radius_squared - pow(second.center().get_x() - first.center().get_x(), 2.0)) :
+										  first.center().get_y() - second.center().get_y() + sqrt(
+											  total_radius_squared - pow(second.center().get_x() - first.center().get_x(), 2.0)));
 			}
 
 			return T{};
@@ -311,14 +360,13 @@ namespace Game
 		template<typename T>
 		bool intersects(const Rectangle<T>& rect, const Vector<T>& point)
 		{
-			return point.get_x() > rect.left() && point.get_x() < rect.right() && point.get_y() > rect.top && point.get_y() < rect.bottom();
+			return point.get_x() > rect.left() && point.get_x() < rect.right() && point.get_y() > rect.top && point.get_y() <
+				rect.bottom();
 		}
 
 
 		template<typename T>
-		Shape<T>::~Shape()
-		{
-		}
+		Shape<T>::~Shape() { }
 
 
 		template<typename T>
@@ -338,7 +386,8 @@ namespace Game
 
 
 		template<typename T>
-		Rectangle<T>::Rectangle(Vector<T> center_position, T width, T height, Pivot_point pivot) : pos_{center_position}, w_{width}, h_{height}
+		Rectangle<T>::Rectangle(Vector<T> center_position, T width, T height, Pivot_point pivot)
+			: pos_{center_position}, w_{width}, h_{height}
 		{
 			correct_center(pivot);
 		}
@@ -394,9 +443,23 @@ namespace Game
 
 
 		template<typename T>
-		void Rectangle<T>::set_position(Vector<T> position)
+		Vector<T>& Rectangle<T>::position()
 		{
-			pos_ = position;
+			return pos_;
+		}
+
+
+		template<typename T>
+		Vector<T> Rectangle<T>::position() const
+		{
+			return pos_;
+		}
+
+
+		template<typename T>
+		Rectangle<T>* Rectangle<T>::clone() const
+		{
+			return new Rectangle{*this};
 		}
 
 
@@ -488,14 +551,24 @@ namespace Game
 		template<typename T>
 		Rectangle<T>* Rectangle<T>::from_json(const Io::json& j)
 		{
-			return new Rectangle{{j.at("x_position").get<T>(), j.at("y_position").get<T>()}, j.at("width").get<T>(), j.at("height").get<T>()};
+			return new Rectangle{
+				{j.at("x_position").get<T>(), j.at("y_position").get<T>()},
+				j.at("width").get<T>(),
+				j.at("height").get<T>()
+			};
 		}
 
 
 		template<typename T>
 		Io::json Rectangle<T>::to_json() const
 		{
-			return Io::json{{"type", "rectangle"}, {"x_position", pos_.get_x()}, {"y_position", pos_.get_y()}, {"width", w_}, {"height", h_}};
+			return Io::json{
+				{"type", "rectangle"},
+				{"x_position", pos_.get_x()},
+				{"y_position", pos_.get_y()},
+				{"width", w_},
+				{"height", h_}
+			};
 		}
 
 
@@ -535,9 +608,7 @@ namespace Game
 
 
 		template<typename T>
-		Circle<T>::Circle(Vector<T> position, T radius) : pos_{position}, r_{radius}
-		{
-		}
+		Circle<T>::Circle(Vector<T> position, T radius) : pos_{position}, r_{radius} { }
 
 
 		template<typename T>
@@ -555,9 +626,23 @@ namespace Game
 
 
 		template<typename T>
-		void Circle<T>::set_position(Vector<T> position)
+		Vector<T>& Circle<T>::position()
 		{
-			pos_ = position;
+			return pos_;
+		}
+
+
+		template<typename T>
+		Vector<T> Circle<T>::position() const
+		{
+			return pos_;
+		}
+
+
+		template<typename T>
+		Circle<T>* Circle<T>::clone() const
+		{
+			return new Circle{*this};
 		}
 
 
