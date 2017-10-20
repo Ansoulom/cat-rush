@@ -37,7 +37,7 @@ namespace Game
 			template<typename T>
 			void handle_event(const T& message) {}
 
-
+			void handle_event(const Events::State_changed& message);
 			void handle_event(const Events::Direction_changed& message);
 
 			std::unordered_map<std::string, Graphics::Animation> animations_;

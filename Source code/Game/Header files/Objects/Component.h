@@ -36,6 +36,13 @@ namespace Game
 		class Component_type_map;
 
 
+		enum class Direction
+		{
+			positive = 1,
+			negative = -1
+		};
+
+
 		enum class Direction_x
 		{
 			left = -1,
@@ -49,9 +56,11 @@ namespace Game
 			down = 1
 		};
 
+
 		enum class Axis
 		{
-			x, y, both
+			x,
+			y
 		};
 
 
@@ -79,16 +88,23 @@ namespace Game
 
 			struct Collided
 			{
-				Collided(Axis axis, Collider_component& moving, Collider_component& collided_with, std::string layer);
+				Collided(Axis axis, Direction movement_direction, Collider_component& moving, Collider_component& collided_with, std::string layer);
 
 				Axis axis;
+				Direction movement_direction;
 				Collider_component& moving;
 				Collider_component& collided_with;
 				std::string layer;
 			};
 
 
-			using Message = std::variant<Object_moved, Direction_changed, Position_changed, Collided>;
+			struct State_changed
+			{
+				std::string state;
+			};
+
+
+			using Message = std::variant<Object_moved, Direction_changed, Position_changed, Collided, State_changed>;
 		}
 
 
@@ -161,7 +177,7 @@ namespace Game
 			Component& get_component(const std::string& type) const;
 			bool contains(const std::string& type) const;
 			void add_component(Component& component);
-			 
+
 		private:
 			std::unordered_map<std::string, Component*> map_;
 		};

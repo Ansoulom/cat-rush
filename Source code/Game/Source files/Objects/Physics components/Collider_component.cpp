@@ -82,6 +82,10 @@ namespace Game
 			auto collisions = game_object().world().collision_system().get_collisions(*this);
 
 			const auto old_pos = game_object().position();
+			const auto direction = static_cast<Direction>(Math::sign(
+				message.axis == Axis::x ?
+					old_pos.get_x() - message.start_position.get_x() :
+					old_pos.get_y() - message.start_position.get_y()));
 
 			for(auto& col_pair : collisions)
 			{
@@ -103,18 +107,9 @@ namespace Game
 								*col_pair.first);
 							break;
 						}
-						case Axis::both:
-						{
-							handle_x_collision(
-								message.start_position.get_x(),
-								*col_pair.first);
-							handle_y_collision(
-								message.start_position.get_y(),
-								*col_pair.first);
-						}
 					}
 				}
-				game_object().send(Events::Collided{message.axis, *this, *col_pair.first, std::string{col_pair.second}});
+				game_object().send(Events::Collided{message.axis, direction, *this, *col_pair.first, std::string{col_pair.second}});
 			}
 
 
@@ -131,9 +126,7 @@ namespace Game
 		}
 
 
-		void Collider_component::handle_event(const Events::Direction_changed& message)
-		{
-		}
+		void Collider_component::handle_event(const Events::Direction_changed& message) { }
 
 
 		void Collider_component::handle_x_collision(double start_x, Collider_component& other)

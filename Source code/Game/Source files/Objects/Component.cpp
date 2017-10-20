@@ -9,8 +9,8 @@ namespace Game
 	{
 		namespace Events
 		{
-			Collided::Collided(Axis axis, Collider_component& moving, Collider_component& collided_with, std::string layer)
-				: axis{axis}, moving{moving}, collided_with{collided_with}, layer{layer} {}
+			Collided::Collided(Axis axis, Direction movement_direction, Collider_component& moving, Collider_component& collided_with, std::string layer)
+				: axis{axis}, movement_direction{movement_direction}, moving{moving}, collided_with{collided_with}, layer{layer} {}
 		}
 
 

@@ -73,6 +73,16 @@ namespace Game
 		}
 
 
+		void Animated_graphics_component::handle_event(const Events::State_changed& message)
+		{
+			const auto iter = animations_.find(message.state);
+			if(iter != animations_.end())
+			{
+				current_animation_ = message.state;
+			}
+		}
+
+
 		void Animated_graphics_component::handle_event(const Events::Direction_changed& message)
 		{
 			flipped_ = message.direction == Direction_x::left;

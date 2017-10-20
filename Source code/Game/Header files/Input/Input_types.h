@@ -32,6 +32,8 @@ namespace Game
 
 		enum class Action
 		{
+			jump,
+			attack
 		};
 
 
@@ -113,12 +115,12 @@ namespace std
 
 	inline size_t hash<Game::Input::Button>::operator()(const Game::Input::Button& button) const
 	{
-		auto type_hash = hash<Game::Input::Button::Type>()(button.type_);
-		auto keyboard_button_hash = hash<SDL_Keycode>()(button.keyboard_button_);
-		auto mouse_button_hash = hash<Uint8>()(button.mouse_button_);
-		auto gamepad_button_hash = hash<SDL_GameControllerButton>()(button.gamepad_button_);
+		const auto type_hash = hash<Game::Input::Button::Type>()(button.type_);
+		const auto keyboard_button_hash = hash<SDL_Keycode>()(button.keyboard_button_);
+		const auto mouse_button_hash = hash<Uint8>()(button.mouse_button_);
+		const auto gamepad_button_hash = hash<SDL_GameControllerButton>()(button.gamepad_button_);
 
-		return ((((type_hash ^ (keyboard_button_hash << 1)) >> 1) ^ (mouse_button_hash << 1)) >> 1) ^ (gamepad_button_hash << 1);
+		return ((type_hash ^ keyboard_button_hash << 1) >> 1 ^ mouse_button_hash << 1) >> 1 ^ gamepad_button_hash << 1;
 	}
 
 
