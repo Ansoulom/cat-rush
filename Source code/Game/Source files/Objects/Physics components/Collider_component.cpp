@@ -81,26 +81,43 @@ namespace Game
 		{
 			auto collisions = game_object().world().collision_system().get_collisions(*this);
 
-			auto old_pos = game_object().position();
-			auto direction = old_pos - message.start_position;
+			const auto old_pos = game_object().position();
 
-			direction.set_x(abs(direction.get_x())); // TODO: FIX EXTREMELY HACKY SOLUTION
-			direction.set_y(abs(direction.get_y()));
-
-			direction.set_magnitude(1.0);
 			for(auto& col_pair : collisions)
 			{
 				if(col_pair.second == "solid")
 				{
-					auto diff = Physics::intersection(*this, *col_pair.first, direction);
-					auto new_pos = game_object().position() - diff;
-					if(abs((new_pos - message.start_position).get_magnitude()) < abs(
-						(game_object().position() - message.start_position).get_magnitude()))
+					switch(message.axis)
 					{
-						game_object().position() = new_pos;
+						case Axis::x:
+						{
+							handle_x_collision(
+								message.start_position.get_x(),
+								*col_pair.first);
+							break;
+						}
+						case Axis::y:
+						{
+							handle_y_collision(
+								message.start_position.get_y(),
+								*col_pair.first);
+							break;
+						}
+						case Axis::both:
+						{
+							handle_x_collision(
+								message.start_position.get_x(),
+								*col_pair.first);
+							handle_y_collision(
+								message.start_position.get_y(),
+								*col_pair.first);
+						}
 					}
 				}
+				game_object().send(Events::Collided{message.axis, *this, *col_pair.first, std::string{col_pair.second}});
 			}
+
+
 			if(game_object().position() != old_pos)
 			{
 				game_object().send(Events::Position_changed{old_pos});
@@ -114,18 +131,53 @@ namespace Game
 		}
 
 
+		void Collider_component::handle_event(const Events::Direction_changed& message)
+		{
+		}
+
+
+		void Collider_component::handle_x_collision(double start_x, Collider_component& other)
+		{
+			const auto diff = Physics::x_intersection(*this, other);
+			const auto new_x = game_object().position().get_x() - diff;
+			if(abs(new_x - start_x) < abs(
+				game_object().position().get_x() - start_x))
+			{
+				game_object().position().set_x(new_x);
+			}
+		}
+
+
+		void Collider_component::handle_y_collision(double start_y, Collider_component& other)
+		{
+			const auto diff = Physics::y_intersection(*this, other);
+			const auto new_y = game_object().position().get_y() - diff;
+			if(abs(new_y - start_y) < abs(
+				game_object().position().get_y() - start_y))
+			{
+				game_object().position().set_y(new_y);
+			}
+		}
+
+
 		const Component::Deserializer Collider_component::add_to_map{type(), from_json};
 	}
 
 
 	namespace Physics
 	{
+		std::unique_ptr<Geometry::Shape<double>> shape_from_collider(const Objects::Collider_component& collider)
+		{
+			auto shape = std::unique_ptr<Geometry::Shape<double>>{collider.shape_->clone()};
+			shape->position() += collider.game_object().position();
+			return move(shape);
+		}
+
+
 		bool intersects(const Objects::Collider_component& first, const Objects::Collider_component& second)
 		{
-			auto first_shape = std::unique_ptr<Geometry::Shape<double>>{ first.shape_->clone() };
-			first_shape->position() += first.game_object().position();
-			auto second_shape = std::unique_ptr<Geometry::Shape<double>>{ second.shape_->clone() };
-			second_shape->position() += second.game_object().position();
+			const auto first_shape = shape_from_collider(first);
+			const auto second_shape = shape_from_collider(second);
 			return intersects(*first_shape, *second_shape);
 		}
 
@@ -135,12 +187,29 @@ namespace Game
 			const Objects::Collider_component& second,
 			Geometry::Vector<double> direction)
 		{
-			//assert(direction.get_magnitude() == 1.0); // Floating point comparison
-			auto first_shape = std::unique_ptr<Geometry::Shape<double>>{ first.shape_->clone() };
-			first_shape->position() += first.game_object().position();
-			auto second_shape = std::unique_ptr<Geometry::Shape<double>>{ second.shape_->clone() };
-			second_shape->position() += second.game_object().position();
+			const auto first_shape = shape_from_collider(first);
+			const auto second_shape = shape_from_collider(second);
 			return intersection(*first_shape, *second_shape, direction);
+		}
+
+
+		double x_intersection(
+			const Objects::Collider_component& first,
+			const Objects::Collider_component& second)
+		{
+			const auto first_shape = shape_from_collider(first);
+			const auto second_shape = shape_from_collider(second);
+			return x_intersection(*first_shape, *second_shape);
+		}
+
+
+		double y_intersection(
+			const Objects::Collider_component& first,
+			const Objects::Collider_component& second)
+		{
+			const auto first_shape = shape_from_collider(first);
+			const auto second_shape = shape_from_collider(second);
+			return y_intersection(*first_shape, *second_shape);
 		}
 	}
 }

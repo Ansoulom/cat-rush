@@ -17,29 +17,26 @@ namespace Game
 			// TODO: Maybe merge x and y for efficiency and unified behaviour, requires new collision formulas though
 			if(velocity_.get_x() != 0.0)
 			{
-				const auto movement = Geometry::Vector<double>{velocity_.get_x() * time_passed.count(), 0.0};
+				const auto movement = velocity_.get_x() * time_passed.count();
 				const auto old_pos = game_object().position();
-				game_object().position() += movement;
+				game_object().position().x() += movement;
 				game_object().send(Events::Position_changed{old_pos});
-				game_object().send(Events::Object_moved{old_pos});
+				game_object().send(Events::Object_moved{Axis::x, old_pos});
 			}
 			if(velocity_.get_y() != 0.0)
 			{
-				const auto movement = Geometry::Vector<double>{0.0, velocity_.get_y() * time_passed.count()};
+				const auto movement = velocity_.get_y() * time_passed.count();
 				const auto old_pos = game_object().position();
-				game_object().position() += movement;
+				game_object().position().y() += movement;
 				game_object().send(Events::Position_changed{old_pos});
-				game_object().send(Events::Object_moved{old_pos});
-			} 
+				game_object().send(Events::Object_moved{Axis::y, old_pos});
+			}
+		}
 
-			/*if(velocity.get_magnitude() > 0.0)
-			{
-				const auto movement = velocity * time_passed.count();
-				const auto old_pos = game_object->get_position();
-				game_object->set_position(game_object->get_position() + movement);
-				game_object->send(Events::Position_changed{ old_pos });
-				game_object->send(Events::Object_moved{ old_pos });
-			}*/
+
+		void Movement_component::receive(const Events::Message& message)
+		{
+			visit([this](const auto& msg) { handle_event(msg); }, message);
 		}
 
 
@@ -70,6 +67,24 @@ namespace Game
 		std::string Movement_component::type()
 		{
 			return "Movement_component";
+		}
+
+
+		void Movement_component::handle_event(const Events::Collided& message)
+		{
+			if(message.layer != "solid") return; 
+			switch(message.axis)
+			{
+				case Axis::x:
+					velocity_.set_x(0.0);
+					break;
+				case Axis::y:
+					velocity_.set_y(0.0);
+					break;
+				case Axis::both:
+					velocity_ = {};
+					break;
+			}
 		}
 
 

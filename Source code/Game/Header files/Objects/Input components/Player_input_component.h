@@ -13,7 +13,7 @@ namespace Game
 			public Component
 		{
 		public:
-			explicit Player_input_component(Game_object& game_object, Movement_component& movement_component, double max_speed);
+			Player_input_component(Game_object& game_object, Movement_component& movement_component, double max_speed);
 
 			void handle_input(Timer::Seconds time_passed, const Input::Input_handler& input) override;
 
@@ -23,8 +23,8 @@ namespace Game
 			static std::string type();
 
 		private:
-			void update_rotation(Direction direction);
-			Direction direction_;
+			void update_rotation(Direction_x direction);
+			Direction_x direction_;
 			double max_speed_;
 
 			Movement_component* movement_component_;

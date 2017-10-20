@@ -6,7 +6,6 @@
 #include "Vector.h"
 #include <functional>
 #include "Collision_system.h"
-#include <typeinfo>
 
 
 namespace Game
@@ -37,10 +36,22 @@ namespace Game
 		class Component_type_map;
 
 
-		enum class Direction
+		enum class Direction_x
 		{
 			left = -1,
 			right = 1
+		};
+
+
+		enum class Direction_y
+		{
+			up = -1,
+			down = 1
+		};
+
+		enum class Axis
+		{
+			x, y, both
 		};
 
 
@@ -55,17 +66,29 @@ namespace Game
 
 			struct Object_moved
 			{
+				Axis axis;
 				Geometry::Vector<double> start_position;
 			};
 
 
 			struct Direction_changed
 			{
-				Direction direction;
+				Direction_x direction;
 			};
 
 
-			using Message = std::variant<Object_moved, Direction_changed, Position_changed>;
+			struct Collided
+			{
+				Collided(Axis axis, Collider_component& moving, Collider_component& collided_with, std::string layer);
+
+				Axis axis;
+				Collider_component& moving;
+				Collider_component& collided_with;
+				std::string layer;
+			};
+
+
+			using Message = std::variant<Object_moved, Direction_changed, Position_changed, Collided>;
 		}
 
 

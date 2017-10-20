@@ -23,6 +23,8 @@ namespace Game
 
 			T get_magnitude() const; // Returns the length.
 			T get_angle() const; // Returns the angle in degrees, from the positive x axis towards the positive y axis.
+			T& x();
+			T& y();
 			T get_x() const;
 			T get_y() const;
 			void set_x(T x);
@@ -90,6 +92,20 @@ namespace Game
 		T Vector<T>::get_angle() const
 		{
 			return Math::rad_to_deg(atan2(y_, x_));
+		}
+
+
+		template<typename T>
+		T& Vector<T>::x()
+		{
+			return x_;
+		}
+
+
+		template<typename T>
+		T& Vector<T>::y()
+		{
+			return y_;
 		}
 
 

@@ -15,6 +15,7 @@ namespace Game
 			explicit Movement_component(Game_object& game_object);
 
 			void update(Timer::Seconds time_passed) override;
+			void receive(const Events::Message& message) override;
 
 			Geometry::Vector<double>& velocity();
 			Geometry::Vector<double> velocity() const;
@@ -25,6 +26,12 @@ namespace Game
 			static std::string type();
 
 		private:
+			template<typename T>
+			void handle_event(const T& message) {}
+
+
+			void handle_event(const Events::Collided& message);
+
 			Geometry::Vector<double> velocity_{0, 0};
 
 			static const Deserializer add_to_map;

@@ -15,7 +15,7 @@ namespace Game
 
 		void Acceleration_component::update(Timer::Seconds time_passed)
 		{
-			movement_component_->velocity() += acceleration_;
+			movement_component_->velocity() += acceleration_ * time_passed.count();
 		}
 
 
@@ -35,7 +35,7 @@ namespace Game
 			const Io::json& json,
 			Game_object& game_object,
 			const Component_type_map& component_map)
-		{
+		{ 
 			return new Acceleration_component{
 				game_object,
 				{json.at("x_acceleration").get<double>(), json.at("y_acceleration").get<double>()},

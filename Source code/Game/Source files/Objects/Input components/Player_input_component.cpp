@@ -15,7 +15,7 @@ namespace Game
 			Movement_component& movement_component,
 			double max_speed)
 			: Component{container},
-			  direction_{Direction::right},
+			  direction_{Direction_x::right},
 			  max_speed_{max_speed},
 			  movement_component_{&movement_component} { }
 
@@ -32,7 +32,7 @@ namespace Game
 			// TODO: Make this work with vertical movement
 
 			if(std::abs(x_input) > 0.0)
-				update_rotation(static_cast<Direction>(Math::sign(x_input)));
+				update_rotation(static_cast<Direction_x>(Math::sign(x_input)));
 		}
 
 
@@ -57,7 +57,7 @@ namespace Game
 		}
 
 
-		void Player_input_component::update_rotation(Direction direction)
+		void Player_input_component::update_rotation(Direction_x direction)
 		{
 			direction_ = direction;
 

@@ -12,7 +12,7 @@ namespace Game
 		{
 		public:
 			explicit Ini(const std::string& document);
-			std::string_view value(const std::string& section, const std::string& key) const;
+			const std::string& value(const std::string& section, const std::string& key) const;
 			template<typename Type>
 			Type value(const std::string& section, const std::string& key) const;
 
@@ -28,6 +28,13 @@ namespace Game
 			auto parsed_value = Type{};
 			stream >> parsed_value;
 			return parsed_value;
+		}
+
+
+		template<>
+		inline std::string Ini::value<std::string>(const std::string& section, const std::string& key) const
+		{
+			return value(section, key);
 		}
 
 

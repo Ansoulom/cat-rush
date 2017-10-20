@@ -225,8 +225,9 @@ namespace Game
 		{
 			if(!intersects(first, second)) return T{};
 
-			if(first.left() < second.left()) return first.right() - second.left();
-			return first.left() - second.right();
+			return first.center().get_x() < second.center().get_x() ?
+					   first.right() - second.left() :
+					   first.left() - second.right();
 		}
 
 
@@ -297,8 +298,7 @@ namespace Game
 		{
 			if(!intersects(first, second)) return T{};
 
-			if(first.top() < second.top()) return first.bottom() - second.top();
-			return first.top() - second.bottom();
+			return first.center().get_y() < second.center().get_y() ? first.bottom() - second.top() : first.top() - second.bottom();
 		}
 
 

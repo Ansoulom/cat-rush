@@ -7,6 +7,13 @@ namespace Game
 {
 	namespace Objects
 	{
+		namespace Events
+		{
+			Collided::Collided(Axis axis, Collider_component& moving, Collider_component& collided_with, std::string layer)
+				: axis{axis}, moving{moving}, collided_with{collided_with}, layer{layer} {}
+		}
+
+
 		Component::Component(Game_object& game_object) : game_object_{&game_object} { }
 
 

@@ -1,57 +1,44 @@
 #include <regex>
 #include <sstream>
-#include <cctype>
 #include "IO/INI.h"
+#include "Text_functions.h"
 
 
 namespace Game
 {
-	namespace Text
-	{
-		void trim(std::string& text)
-		{
-			text.erase(remove_if(text.begin(), text.end(), [](unsigned char c) { return std::isspace(c); }), text.end());
-		}
-	}
-
-
 	namespace Io
 	{
 		Ini::Ini(const std::string& document)
 		{
 			// regular expressions to process ini files
-			const auto section_test = std::regex{"\\[(.*?)\\]"};
-			const auto value_test = std::regex{"(\\w+)=([^\\+]+(?!\\+{3}))"};
+			const auto section_test = std::regex{ R"(\[(.*?)\])" };
+			const auto value_test = std::regex{ R"((\w+)=(.+))" };
 
 			auto stream = std::istringstream{document};
 			std::string line, current;
 			while(getline(stream, line))
 			{
-				Text::trim(line);
+				Text::trim(line, '\0');
+				if(line.empty() || line[0] == ';') continue;
 
-				if(line.length() > 0)
+				std::smatch match;
+				if(regex_search(line, match, section_test))
 				{
-					if(line[0] == ';') continue;
-
-					std::smatch match;
-					if(regex_search(line, match, section_test))
-					{
-						current = match[1];
-					}
-					else if(regex_search(line, match, value_test))
-					{
-						content_[current][match[1]] = match[2];
-					}
-					else
-					{
-						throw std::runtime_error{std::string{"Incorrect line in INI file: "} + line};
-					}
+					current = match[1];
+				}
+				else if(regex_search(line, match, value_test))
+				{
+					content_[current][match[1]] = match[2];
+				}
+				else
+				{
+					throw std::runtime_error{std::string{"Incorrect line in INI file: "} + line};
 				}
 			}
 		}
 
 
-		std::string_view Ini::value(const std::string& section, const std::string& key) const
+		const std::string& Ini::value(const std::string& section, const std::string& key) const
 		{
 			return content_.at(section).at(key);
 		}

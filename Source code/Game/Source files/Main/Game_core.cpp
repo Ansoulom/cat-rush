@@ -4,6 +4,7 @@
 #include "Frame_timer.h"
 #include "Component.h"
 #include "File_paths.h"
+#include "Logger.h"
 
 
 namespace Game
@@ -36,7 +37,7 @@ namespace Game
 		{
 			window_.set_visible(true);
 
-			auto loader = Objects::Component_loader{renderer_};
+			const auto loader = Objects::Component_loader{renderer_};
 			world_ = std::unique_ptr<World>{load_world("LevelFileTest", *this, loader)};
 
 			running_ = true;
@@ -44,9 +45,10 @@ namespace Game
 			auto frame_timer = Frame_timer{};
 			while(running_)
 			{
-				auto time_passed = frame_timer.update();
-				auto fps = frame_timer.get_framerate();
-				window_.set_title(settings().constants().name() +  std::string{"    FPS: "} + std::to_string(fps));
+				const auto time_passed = frame_timer.update(); 
+				const auto fps = frame_timer.get_framerate();
+				const auto title = settings().constants().name() + std::string{"    FPS: "} + std::to_string(fps);
+				window_.set_title(title);
 
 				handle_events(time_passed);
 				update(time_passed);
