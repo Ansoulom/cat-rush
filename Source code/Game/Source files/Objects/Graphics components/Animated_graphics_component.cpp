@@ -26,7 +26,10 @@ namespace Game
 			auto iter = animations_.find(current_animation_);
 			if(iter != animations_.end())
 			{
-				iter->second.update(time_passed);
+				if(iter->second.update(time_passed))
+				{
+					game_object().send(Events::Animation_finished{ current_animation_ });
+				}
 			}
 			// TODO: Decide if it should be okay for current_animation to be invalid or if exception should be thrown
 		}
@@ -75,12 +78,11 @@ namespace Game
 
 		void Animated_graphics_component::handle_event(const Events::State_changed& message)
 		{
-			if (message.state == current_animation_) return;
-
 			const auto iter = animations_.find(message.state);
 			if(iter != animations_.end())
 			{
 				current_animation_ = message.state;
+				iter->second.reset();
 			}
 		}
 

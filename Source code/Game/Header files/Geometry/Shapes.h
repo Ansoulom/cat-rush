@@ -563,7 +563,7 @@ namespace Game
 		Io::json Rectangle<T>::to_json() const
 		{
 			return Io::json{
-				{"type", "rectangle"},
+				{"type", "Rectangle"},
 				{"x_position", pos_.get_x()},
 				{"y_position", pos_.get_y()},
 				{"width", w_},
@@ -726,7 +726,7 @@ namespace Game
 		template<typename T>
 		Io::json Circle<T>::to_json() const
 		{
-			return Io::json{{"type", "circle"},{"x_position", pos_.get_x()},{"y_position", pos_.get_y()},{"radius", r_}};
+			return Io::json{{"type", "Circle"},{"x_position", pos_.get_x()},{"y_position", pos_.get_y()},{"radius", r_}};
 		}
 	}
 }

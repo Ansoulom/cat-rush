@@ -19,23 +19,35 @@ namespace Game
 			Game_object& container,
 			Movement_component& movement_component,
 			double max_speed,
-			Collider_component& collider_component)
+			Collider_component& collider_component,
+			Geometry::Rectangle<double> stand_hitbox,
+			Geometry::Rectangle<double> crouch_hitbox)
 			: Component{container},
 			  direction_{Direction_x::right},
 			  max_speed_{max_speed},
 			  state_{std::make_unique<Idle_state>(*this)},
 			  old_state_{state_->state()},
 			  movement_component_{&movement_component},
-			  collider_component_{&collider_component}
+			  collider_component_{&collider_component},
+			  stand_hitbox_{stand_hitbox},
+			  crouch_hitbox_{crouch_hitbox}
 		{
 			state_->enter();
+		}
+
+
+		void Player_input_component::attack()
+		{
+			attacking_ = true;
+			old_state_ = "Attacking";
+			game_object().send(Events::State_changed{old_state_});
 		}
 
 
 		void Player_input_component::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
 		{
 			while(state_->handle_input(time_passed, input));
-			if(state_->state() != old_state_)
+			if(!attacking_ && state_->state() != old_state_)
 			{
 				old_state_ = state_->state();
 				game_object().send(Events::State_changed{old_state_});
@@ -65,7 +77,12 @@ namespace Game
 		{
 			return {
 				{"type", type()},
-				{"requires", std::vector<std::string>{Movement_component::type()},{"max_speed", max_speed_}}
+				{
+					"requires",
+					std::vector<std::string>{Movement_component::type()},
+					{"max_speed", max_speed_},
+					{"stand_hitbox", stand_hitbox_.to_json()}
+				}
 			};
 		}
 
@@ -85,6 +102,7 @@ namespace Game
 		void Player_input_component::receive(const Events::Message& message)
 		{
 			state_->receive(message);
+			visit([this](const auto& msg) { handle_event(msg); }, message);
 		}
 
 
@@ -92,6 +110,12 @@ namespace Game
 		{
 			movement_component_->velocity().set_y(-3.0); // TODO: Get rid of magic number
 			switch_state(std::make_unique<Air_state>(*this));
+		}
+
+
+		void Player_input_component::handle_event(const Events::Animation_finished& message)
+		{
+			if(message.animation == "Attacking") attacking_ = false;
 		}
 
 
@@ -108,11 +132,20 @@ namespace Game
 			Game_object& game_object,
 			const Component_type_map& component_map)
 		{
+			const auto stand = std::unique_ptr<Geometry::Rectangle<double>>{
+				Geometry::Rectangle<double>::from_json(json.at("stand_hitbox"))
+			};
+			const auto crouch = std::unique_ptr<Geometry::Rectangle<double>>{
+				Geometry::Rectangle<double>::from_json(json.at("crouch_hitbox"))
+			};
+
 			return new Player_input_component{
 				game_object,
 				component_map.get_component<Movement_component>(),
 				json.at("max_speed").get<double>(),
-				component_map.get_component<Collider_component>()
+				component_map.get_component<Collider_component>(),
+				Geometry::Rectangle<double>{*stand},
+				Geometry::Rectangle<double>{*crouch}
 			};
 		}
 
@@ -158,7 +191,10 @@ namespace Game
 		{
 			const auto x_input = get_x_input(input);
 			player_->movement_component_->velocity().set_x(x_input * player_->max_speed_);
-
+			if(!player_->attacking_ && input.get_action(Input::Action::attack, "game"))
+			{
+				player_->attack();
+			}
 			return false;
 		}
 
@@ -210,8 +246,13 @@ namespace Game
 
 		bool Player_input_component::Walk_state::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
 		{
+			if(!player_->attacking_ && input.get_action(Input::Action::attack, "game"))
+			{
+				player_->attack();
+			}
+
 			// Crouch check
-			if(input.get_state(Input::State::movement_down, "game") || input.get_processed_vector(
+			if(!player_->attacking_ && input.get_state(Input::State::movement_down, "game") || input.get_processed_vector(
 				Input::Range::movement_x,
 				Input::Range::movement_y,
 				"game").get_y() > 0.5)
@@ -258,8 +299,13 @@ namespace Game
 
 		bool Player_input_component::Idle_state::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
 		{
+			if(!player_->attacking_ && input.get_action(Input::Action::attack, "game"))
+			{
+				player_->attack();
+			}
+
 			// Crouch check
-			if(input.get_state(Input::State::movement_down, "game") || input.get_processed_vector(
+			if(!player_->attacking_ && input.get_state(Input::State::movement_down, "game") || input.get_processed_vector(
 				Input::Range::movement_x,
 				Input::Range::movement_y,
 				"game").get_y() > 0.5)
@@ -288,10 +334,14 @@ namespace Game
 		void Player_input_component::Crouch_state::enter()
 		{
 			player_->movement_component_->velocity().set_x(0.0);
+			player_->collider_component_->set_shape(player_->crouch_hitbox_);
 		}
 
 
-		void Player_input_component::Crouch_state::exit() {}
+		void Player_input_component::Crouch_state::exit()
+		{
+			player_->collider_component_->set_shape(player_->stand_hitbox_);
+		}
 
 
 		std::string Player_input_component::Crouch_state::state() const

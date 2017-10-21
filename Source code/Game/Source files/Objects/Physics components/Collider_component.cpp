@@ -43,6 +43,12 @@ namespace Game
 		}
 
 
+		void Collider_component::set_shape(const Geometry::Shape<double>& shape)
+		{
+			shape_ = std::unique_ptr<Geometry::Shape<double>>{shape.clone()};
+		}
+
+		 
 		Collider_component* Collider_component::from_json(
 			const Io::json& j,
 			Game_object& game_object,

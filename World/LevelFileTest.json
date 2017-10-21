@@ -17,7 +17,8 @@
 								"texture": "Meowington_idle",
 								"frames": 1,
 								"rows": 1,
-								"frame_rate": 1
+								"frame_rate": 1,
+								"looping": true
 							}
 						},
 						{
@@ -27,7 +28,8 @@
 								"texture": "Meowington_walk",
 								"frames": 4,
 								"rows": 1,
-								"frame_rate": 4
+								"frame_rate": 4,
+								"looping": true
 							}
 						},
 						{
@@ -37,7 +39,8 @@
 								"texture": "Meowington_jump",
 								"frames": 1,
 								"rows": 1,
-								"frame_rate": 1
+								"frame_rate": 1,
+								"looping": false
 							}
 						},
 						{
@@ -47,7 +50,8 @@
 								"texture": "Meowington_attack",
 								"frames": 2,
 								"rows": 1,
-								"frame_rate": 4
+								"frame_rate": 4,
+								"looping": false
 							}
 						},
 						{
@@ -57,7 +61,8 @@
 								"texture": "Meowington_crouch",
 								"frames": 1,
 								"rows": 1,
-								"frame_rate": 1
+								"frame_rate": 1,
+								"looping": true
 							}
 						}
 					],
@@ -73,7 +78,21 @@
 						"Movement_component",
 						"Collider_component"
 					],
-					"max_speed": 1.0
+					"max_speed": 1.0,
+					"stand_hitbox":
+					{
+						"x_position": 0.0,
+						"y_position": 0.0,
+						"width": 0.074,
+						"height": 0.235
+					},
+					"crouch_hitbox":
+					{
+						"x_position": 0.0,
+						"y_position": 0.031,
+						"width": 0.074,
+						"height": 0.173
+					}
 				},
 				{
 					"type": "Collider_component",
@@ -81,9 +100,9 @@
 					{
 						"type": "Rectangle",
 						"x_position": 0.0,
-						"y_position": -0.006,
+						"y_position": 0.0,
 						"width": 0.074,
-						"height": 0.259
+						"height": 0.235
 					},
 					"layers": ["solid", "player"],
 					"check_layers": ["solid", "triggers"]

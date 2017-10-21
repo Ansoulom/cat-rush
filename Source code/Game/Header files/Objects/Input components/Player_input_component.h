@@ -3,6 +3,7 @@
 #include <json.hpp>
 #include "Component.h"
 #include <chrono>
+#include "Shapes.h"
 
 
 namespace Game
@@ -17,7 +18,13 @@ namespace Game
 		{
 			class Player_state;
 		public:
-			Player_input_component(Game_object& game_object, Movement_component& movement_component, double max_speed, Collider_component& collider_component);
+			Player_input_component(
+				Game_object& game_object,
+				Movement_component& movement_component,
+				double max_speed,
+				Collider_component& collider_component,
+				Geometry::Rectangle<double> stand_hitbox,
+				Geometry::Rectangle<double> crouch_hitbox);
 
 			static Player_input_component* from_json(
 				const Io::json& json,
@@ -31,11 +38,19 @@ namespace Game
 			void handle_input(Timer::Seconds time_passed, const Input::Input_handler& input) override;
 
 			void jump();
+			void attack();
 			void switch_state(std::unique_ptr<Player_state>&& state);
 			static double get_x_input(const Input::Input_handler& input);
 
 		private:
 			static const Deserializer add_to_map;
+
+
+			template<typename T>
+			void handle_event(const T& message) {}
+
+
+			void handle_event(const Events::Animation_finished& message);
 
 			void update_rotation(Direction_x direction);
 
@@ -43,8 +58,10 @@ namespace Game
 			double max_speed_;
 			std::unique_ptr<Player_state> state_;
 			std::string old_state_;
+			bool attacking_{};
 			Movement_component* movement_component_;
 			Collider_component* collider_component_;
+			Geometry::Rectangle<double> stand_hitbox_, crouch_hitbox_;
 
 
 			// Internal states

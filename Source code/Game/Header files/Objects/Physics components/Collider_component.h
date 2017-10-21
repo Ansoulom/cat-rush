@@ -52,6 +52,7 @@ namespace Game
 
 			const std::vector<std::string>& get_layers() const;
 			const std::vector<std::string>& get_check_layers() const;
+			void set_shape(const Geometry::Shape<double>& shape);
 
 			static Collider_component* from_json(
 				const Io::json& j,

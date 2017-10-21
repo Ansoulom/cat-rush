@@ -36,15 +36,19 @@ namespace Game
 			};
 
 
-			Animation(std::string texture, int frames, int rows, double frame_rate);
+			Animation(std::string texture, int frames, int rows, double frame_rate, bool looping);
 			// TODO: Document and handle class invariants and consider default constructor
 			~Animation();
 
 			Frame get_current_frame(const Resources::Texture_manager& tm) const;
-			void update(Timer::Seconds time_passed);
-			void set_row(int row); // The row of sprites, e.g. direction or state.
 
-			static Animation from_json(const nlohmann::json& json);
+			// Returns true if animation just finished, false otherwise.
+			bool update(Timer::Seconds time_passed);
+			// The row of sprites, e.g. direction or state.
+			void set_row(int row);
+			void reset();
+
+			static Animation from_json(const Io::json& json);
 			Io::json to_json() const;
 
 		private:
@@ -55,6 +59,8 @@ namespace Game
 			int current_row_;
 			double frame_rate_;
 			Timer timer_;
+			bool looping_;
+			bool finished_{};
 		};
 	}
 }

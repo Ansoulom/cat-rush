@@ -38,6 +38,10 @@
 			<key type="key">Space</key>
 			<value type="action">jump</value>
 		</mapping>
+		<mapping>
+			<key type="key">Z</key>
+			<value type="action">attack</value>
+		</mapping>
 		
 		<!-- Game controller mappings -->
 		<mapping>

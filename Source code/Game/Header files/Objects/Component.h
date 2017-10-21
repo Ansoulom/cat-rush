@@ -88,7 +88,12 @@ namespace Game
 
 			struct Collided
 			{
-				Collided(Axis axis, Direction movement_direction, Collider_component& moving, Collider_component& collided_with, std::string layer);
+				Collided(
+					Axis axis,
+					Direction movement_direction,
+					Collider_component& moving,
+					Collider_component& collided_with,
+					std::string layer);
 
 				Axis axis;
 				Direction movement_direction;
@@ -104,7 +109,14 @@ namespace Game
 			};
 
 
-			using Message = std::variant<Object_moved, Direction_changed, Position_changed, Collided, State_changed>;
+			struct Animation_finished
+			{
+				std::string animation;
+			};
+
+
+			using Message = std::variant<Object_moved, Direction_changed, Position_changed, Collided, State_changed,
+										 Animation_finished>;
 		}
 
 
