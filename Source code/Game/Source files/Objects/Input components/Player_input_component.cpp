@@ -4,155 +4,46 @@
 #include "Math_functions.h"
 #include "Game_object.h"
 #include <valarray>
+#include <chrono>
+#include "Movement_component.h"
+#include "Collider_component.h"
 
 
 namespace Game
 {
 	namespace Objects
 	{
-		Player::Player_state::Player_state(Player_input_component& player) : player_{&player} { }
-
-
-		Player::Player_state::~Player_state() {}
-
-
-		Player::Air_state::Air_state(Player_input_component& player) : Player_state{player} { }
-
-
-		void Player::Air_state::receive(const Events::Message& message)
-		{
-			visit([this](const auto& msg) { handle_event(msg); }, message);
-		}
-
-
-		std::string Player::Air_state::state() const
-		{
-			return "Jumping";
-		}
-
-
-		void Player::Player_state::receive(const Events::Message& message) { }
-
-
-		void Player::Air_state::enter() {}
-
-
-		void Player::Air_state::exit() {}
-
-
-		void Player::Air_state::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input) {}
-
-
-		void Player::Air_state::handle_event(const Events::Collided& message)
-		{
-			if(message.axis == Axis::y && message.movement_direction == Direction::positive)
-			{
-				player_->switch_state(std::make_unique<Idle_state>(*player_));
-			}
-		}
-
-
-		Player::Grounded_state::Grounded_state(Player_input_component& player) : Player_state{player} {}
-
-
-		void Player::Grounded_state::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
-		{
-			if(input.get_action(Input::Action::jump, "game"))
-			{
-				player_->jump();
-			}
-			else if(input.get_state(Input::State::movement_down, "game") || input.get_processed_vector(Input::Range::movement_x, Input::Range::movement_y, "game").get_y() > 0.5)
-			{
-				player_->switch_state(std::make_unique<Crouch_state>(*player_));
-			}
-		}
-
-
-		Player::Run_state::Run_state(Player_input_component& player) : Grounded_state{player} {}
-
-
-		std::string Player::Run_state::state() const
-		{
-			return "Walking";
-		}
-
-
-		void Player::Run_state::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
-		{
-			const auto x_input = Player_input_component::get_x_input(input);
-			if (abs(x_input) == 0.0)
-			{
-				player_->switch_state(std::make_unique<Idle_state>(*player_));
-			}
-			else
-			{
-				movement_component_->velocity().set_x(x_input * max_speed_);
-
-				if (std::abs(x_input) > 0.0)
-					update_rotation(static_cast<Direction_x>(Math::sign(x_input)));
-			}
-		}
-
-
-		Player::Idle_state::Idle_state(Player_input_component& player) : Grounded_state{player} {}
-
-
-		std::string Player::Idle_state::state() const
-		{
-			return "Idle";
-		}
-
-
-		void Player::Idle_state::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
-		{
-			const auto x_input = Player_input_component::get_x_input(input);
-			if(abs(x_input) > 0.0)
-			{
-				player_->switch_state(std::make_unique<Run_state>(*player_));
-			}
-		}
-
-
-		Player::Crouch_state::Crouch_state(Player_input_component& player) : Grounded_state{player} {}
-
-
-		std::string Player::Crouch_state::state() const
-		{
-			return "Crouching";
-		}
-
-
-		void Player::Crouch_state::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
-		{
-			if (!input.get_state(Input::State::movement_down, "game") && input.get_processed_vector(Input::Range::movement_x, Input::Range::movement_y, "game").get_y() <= 0.5)
-			{
-				player_->switch_state(std::make_unique<Idle_state>(*player_));
-			}
-		}
-
+		// Player_input_component
 
 		Player_input_component::Player_input_component(
 			Game_object& container,
 			Movement_component& movement_component,
-			double max_speed)
+			double max_speed,
+			Collider_component& collider_component)
 			: Component{container},
 			  direction_{Direction_x::right},
 			  max_speed_{max_speed},
-			  movement_component_{&movement_component} { }
+			  state_{std::make_unique<Idle_state>(*this)},
+			  old_state_{state_->state()},
+			  movement_component_{&movement_component},
+			  collider_component_{&collider_component}
+		{
+			state_->enter();
+		}
 
 
 		void Player_input_component::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
 		{
-			const auto x_input = get_x_input(input);
-
-			movement_component_->velocity().set_x(x_input * max_speed_);
-
-			if(std::abs(x_input) > 0.0)
-				update_rotation(static_cast<Direction_x>(Math::sign(x_input)));
+			while(state_->handle_input(time_passed, input));
+			if(state_->state() != old_state_)
+			{
+				old_state_ = state_->state();
+				game_object().send(Events::State_changed{old_state_});
+			}
 		}
 
 
-		void Player_input_component::switch_state(std::unique_ptr<Player::Player_state>&& state)
+		void Player_input_component::switch_state(std::unique_ptr<Player_state>&& state)
 		{
 			state_->exit();
 			state_ = move(state);
@@ -174,7 +65,7 @@ namespace Game
 		{
 			return {
 				{"type", type()},
-				{"requires", std::vector<std::string>{Movement_component::type()}, {"max_speed", max_speed_}}
+				{"requires", std::vector<std::string>{Movement_component::type()},{"max_speed", max_speed_}}
 			};
 		}
 
@@ -191,10 +82,16 @@ namespace Game
 		}
 
 
+		void Player_input_component::receive(const Events::Message& message)
+		{
+			state_->receive(message);
+		}
+
+
 		void Player_input_component::jump()
 		{
-			movement_component_->velocity().set_y(-20); // TODO: Get rid of magic number
-			switch_state(std::make_unique<Player::Air_state>());
+			movement_component_->velocity().set_y(-3.0); // TODO: Get rid of magic number
+			switch_state(std::make_unique<Air_state>(*this));
 		}
 
 
@@ -214,11 +111,208 @@ namespace Game
 			return new Player_input_component{
 				game_object,
 				component_map.get_component<Movement_component>(),
-				json.at("max_speed").get<double>()
+				json.at("max_speed").get<double>(),
+				component_map.get_component<Collider_component>()
 			};
 		}
 
 
 		const Component::Deserializer Player_input_component::add_to_map{type(), from_json};
+
+
+		// Player_state
+
+		Player_input_component::Player_state::Player_state(Player_input_component& player) : player_{&player} { }
+
+
+		Player_input_component::Player_state::~Player_state() {}
+
+
+		void Player_input_component::Player_state::receive(const Events::Message& message) { }
+
+
+		// Air_state
+
+		Player_input_component::Air_state::Air_state(Player_input_component& player) : Player_state{player} { }
+
+
+		void Player_input_component::Air_state::receive(const Events::Message& message)
+		{
+			visit([this](const auto& msg) { handle_event(msg); }, message);
+		}
+
+
+		std::string Player_input_component::Air_state::state() const
+		{
+			return "Jumping";
+		}
+
+
+		void Player_input_component::Air_state::enter() {}
+
+
+		void Player_input_component::Air_state::exit() {}
+
+
+		bool Player_input_component::Air_state::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
+		{
+			const auto x_input = get_x_input(input);
+			player_->movement_component_->velocity().set_x(x_input * player_->max_speed_);
+
+			return false;
+		}
+
+
+		void Player_input_component::Air_state::handle_event(const Events::Collided& message)
+		{
+			if(message.axis == Axis::y && message.movement_direction == Direction::positive)
+			{
+				player_->switch_state(std::make_unique<Idle_state>(*player_));
+			}
+		}
+
+
+		// Ground_state
+
+		Player_input_component::Ground_state::Ground_state(Player_input_component& player) : Player_state{player} {}
+
+
+		bool Player_input_component::Ground_state::handle_input(
+			Timer::Seconds time_passed,
+			const Input::Input_handler& input)
+		{
+			if(input.get_action(Input::Action::jump, "game"))
+			{
+				player_->jump();
+				return true;
+			}
+
+			return false;
+		}
+
+
+		// Walk_state
+
+		Player_input_component::Walk_state::Walk_state(Player_input_component& player) : Ground_state{player} {}
+
+
+		void Player_input_component::Walk_state::enter() {}
+
+
+		void Player_input_component::Walk_state::exit() {}
+
+
+		std::string Player_input_component::Walk_state::state() const
+		{
+			return "Walking";
+		}
+
+
+		bool Player_input_component::Walk_state::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
+		{
+			// Crouch check
+			if(input.get_state(Input::State::movement_down, "game") || input.get_processed_vector(
+				Input::Range::movement_x,
+				Input::Range::movement_y,
+				"game").get_y() > 0.5)
+			{
+				player_->switch_state(std::make_unique<Crouch_state>(*player_));
+				return true;
+			}
+
+			const auto x_input = get_x_input(input);
+			player_->movement_component_->velocity().set_x(x_input * player_->max_speed_);
+
+			// Idle check
+			if(abs(x_input) == 0.0)
+			{
+				player_->switch_state(std::make_unique<Idle_state>(*player_));
+				return true;
+			}
+
+			player_->update_rotation(static_cast<Direction_x>(Math::sign(x_input)));
+
+			return Ground_state::handle_input(time_passed, input);
+		}
+
+
+		// Idle_state
+
+		Player_input_component::Idle_state::Idle_state(Player_input_component& player) : Ground_state{player} {}
+
+
+		void Player_input_component::Idle_state::enter()
+		{
+			player_->movement_component_->velocity().set_x(0.0);
+		}
+
+
+		void Player_input_component::Idle_state::exit() {}
+
+
+		std::string Player_input_component::Idle_state::state() const
+		{
+			return "Idle";
+		}
+
+
+		bool Player_input_component::Idle_state::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
+		{
+			// Crouch check
+			if(input.get_state(Input::State::movement_down, "game") || input.get_processed_vector(
+				Input::Range::movement_x,
+				Input::Range::movement_y,
+				"game").get_y() > 0.5)
+			{
+				player_->switch_state(std::make_unique<Crouch_state>(*player_));
+				return true;
+			}
+
+			// Walking check
+			const auto x_input = get_x_input(input);
+			if(abs(x_input) > 0.0)
+			{
+				player_->switch_state(std::make_unique<Walk_state>(*player_));
+				return true;
+			}
+
+			return Ground_state::handle_input(time_passed, input);
+		}
+
+
+		// Crouch_state
+
+		Player_input_component::Crouch_state::Crouch_state(Player_input_component& player) : Ground_state{player} {}
+
+
+		void Player_input_component::Crouch_state::enter()
+		{
+			player_->movement_component_->velocity().set_x(0.0);
+		}
+
+
+		void Player_input_component::Crouch_state::exit() {}
+
+
+		std::string Player_input_component::Crouch_state::state() const
+		{
+			return "Crouching";
+		}
+
+
+		bool Player_input_component::Crouch_state::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
+		{
+			// Stopped crouching check
+			if(!input.get_state(Input::State::movement_down, "game") && input.get_processed_vector(
+				Input::Range::movement_x,
+				Input::Range::movement_y,
+				"game").get_y() <= 0.5)
+			{
+				player_->switch_state(std::make_unique<Idle_state>(*player_));
+				return true;
+			}
+
+			return Ground_state::handle_input(time_passed, input);
+		}
 	}
 }

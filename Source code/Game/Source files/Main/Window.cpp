@@ -46,5 +46,33 @@ namespace Game
 			if(visible) SDL_ShowWindow(sdl_window_.get());
 			else SDL_HideWindow(sdl_window_.get());
 		}
+
+
+		void Window::set_position(Geometry::Vector<int> position)
+		{
+			SDL_SetWindowPosition(sdl_window_.get(), position.get_x(), position.get_y());
+		}
+
+
+		Geometry::Vector<int> Window::get_position() const
+		{
+			auto pos = Geometry::Vector<int>{};
+			SDL_GetWindowPosition(sdl_window_.get(), &pos.x(), &pos.y());
+			return pos;
+		}
+
+
+		void Window::set_size(Geometry::Vector<int> size)
+		{
+			SDL_SetWindowSize(sdl_window_.get(), size.get_x(), size.get_y());
+		}
+
+
+		Geometry::Vector<int> Window::get_size() const
+		{
+			auto size = Geometry::Vector<int>{};
+			SDL_GetWindowSize(sdl_window_.get(), &size.x(), &size.y());
+			return size;
+		}
 	}
 }

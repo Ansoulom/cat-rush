@@ -75,6 +75,8 @@ namespace Game
 
 		void Animated_graphics_component::handle_event(const Events::State_changed& message)
 		{
+			if (message.state == current_animation_) return;
+
 			const auto iter = animations_.find(message.state);
 			if(iter != animations_.end())
 			{

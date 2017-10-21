@@ -34,6 +34,10 @@
 			<key type="key">Right</key>
 			<value type="state">movement_right</value>
 		</mapping>
+		<mapping>
+			<key type="key">Space</key>
+			<value type="action">jump</value>
+		</mapping>
 		
 		<!-- Game controller mappings -->
 		<mapping>

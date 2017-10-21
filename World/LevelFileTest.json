@@ -70,7 +70,8 @@
 					"type": "Player_input_component",
 					"requires":
 					[
-						"Movement_component"
+						"Movement_component",
+						"Collider_component"
 					],
 					"max_speed": 1.0
 				},

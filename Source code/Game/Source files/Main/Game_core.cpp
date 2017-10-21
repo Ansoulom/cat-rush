@@ -19,8 +19,8 @@ namespace Game
 			  resources_{},
 			  window_{
 				  settings_.constants().name(),
-				  1920 / 2 /* TODO: Read screen size instead */,
-				  1080 / 2,
+				  0,
+				  0,
 				  settings_.user_settings().resolution_width(),
 				  settings_.user_settings().resolution_height(),
 				  settings_.user_settings().fullscreen_mode(),
@@ -29,6 +29,10 @@ namespace Game
 			  renderer_{settings_, window_},
 			  world_{}
 		{
+			SDL_DisplayMode dm;
+			if(SDL_GetCurrentDisplayMode(0, &dm) != 0)
+				throw std::runtime_error{std::string{"Could not retrieve display mode: "} + SDL_GetError()};
+			window_.set_position({dm.w / 2 - window_.get_size().get_x() / 2, dm.h / 2 - window_.get_size().get_y() / 2});
 			resources_.textures().load_all_textures(boost::filesystem::path{Io::Paths::textures}, renderer_);
 		}
 
@@ -45,7 +49,7 @@ namespace Game
 			auto frame_timer = Frame_timer{};
 			while(running_)
 			{
-				const auto time_passed = frame_timer.update(); 
+				const auto time_passed = frame_timer.update();
 				const auto fps = frame_timer.get_framerate();
 				const auto title = settings().constants().name() + std::string{"    FPS: "} + std::to_string(fps);
 				window_.set_title(title);

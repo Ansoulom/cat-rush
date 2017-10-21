@@ -81,9 +81,6 @@ namespace Game
 				case Axis::y:
 					velocity_.set_y(0.0);
 					break;
-				case Axis::both:
-					velocity_ = {};
-					break;
 			}
 		}
 
