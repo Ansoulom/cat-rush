@@ -2,7 +2,7 @@
 	"objects":
 	[
 		{
-			"x_position": 0.0,
+			"x_position": -0.5,
 			"y_position": 0.0,
 			"components":
 			[
@@ -125,7 +125,43 @@
 			[
 				{
 					"type": "Static_graphics_component",
-					"texture": "Dango_stage",
+					"texture": "Noodles",
+					"layer": 1
+				},
+				{
+					"type": "Acceleration_component",
+					"x_acceleration": 0.0,
+					"y_acceleration": 9.82,
+					"requires":
+					[
+						"Movement_component"
+					]
+				},
+				{
+					"type": "Collider_component",
+					"shape":
+					{
+						"type": "Circle",
+						"x_position": 0.022,
+						"y_position": -0.012,
+						"radius": 0.204
+					},
+					"layers": ["solid", "Enemy"],
+					"check_layers": ["solid", "triggers", "player"]
+				},
+				{
+					"type": "Movement_component"
+				}
+			]
+		},
+		{
+			"x_position": 0.0,
+			"y_position": 0.0,
+			"components":
+			[
+				{
+					"type": "Static_graphics_component",
+					"texture": "Noodles_stage",
 					"layer": 0
 				}
 			]
@@ -204,6 +240,26 @@
 						"y_position": 0.0,
 						"width": 0.1,
 						"height": 1.0
+					},
+					"layers": ["solid"],
+					"check_layers": []
+				}
+			]
+		},
+		{
+			"x_position": 0.864,
+			"y_position": 0.253,
+			"components":
+			[
+				{
+					"type": "Collider_component",
+					"shape":
+					{
+						"type": "Rectangle",
+						"x_position": 0.0,
+						"y_position": 0.0,
+						"width": 0.148,
+						"height": 0.42
 					},
 					"layers": ["solid"],
 					"check_layers": []
