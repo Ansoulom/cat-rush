@@ -8,6 +8,7 @@
 #include "Window.h"
 #include "Settings.h"
 #include "Resource_managers.h"
+#include "HUD.h"
 
 
 namespace Game
@@ -36,6 +37,7 @@ namespace Game
 			Window window_;
 			Graphics::Renderer renderer_;
 			std::unique_ptr<World> world_;
+			Gui::Hud hud_;
 		};
 	}
 }

@@ -44,5 +44,23 @@ namespace Game
 
 			return {bg_instance, bar_instance};
 		}
+
+
+		Hud::Hud(Graphics::Aspect_ratio aspect_ratio)
+			: aspect_ratio_{aspect_ratio},
+			  player_bar_{{{0.5, 0.2}, 0.4, 0.05, Geometry::Pivot_point::center_right}, false},
+			  boss_bar_{{{0.8, 0.2}, 0.4, 0.05, Geometry::Pivot_point::center_left}, true} { }
+
+
+		std::vector<Graphics::Render_instance> Hud::get_render_instances(
+			const Resources::Texture_manager& tm,
+			const Graphics::Render_settings& render_settings)
+		{
+			auto instances = player_bar_.get_render_instances(tm, render_settings);
+			auto boss_bar_instances = boss_bar_.get_render_instances(tm, render_settings);
+			instances.insert(instances.end(), boss_bar_instances.begin(), boss_bar_instances.end());
+
+			return instances;
+		}
 	}
 }

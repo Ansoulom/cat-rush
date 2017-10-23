@@ -27,7 +27,8 @@ namespace Game
 				  false
 			  },
 			  renderer_{settings_, window_},
-			  world_{}
+			  world_{},
+			  hud_{{settings_.constants().source_width(), settings_.constants().source_height()}}
 		{
 			SDL_DisplayMode dm;
 			if(SDL_GetCurrentDisplayMode(0, &dm) != 0)
@@ -103,6 +104,10 @@ namespace Game
 				settings_.user_settings().resolution_height() / static_cast<double>(settings_.constants().source_height()));
 
 			renderer_.render(resources_.textures(), world_->camera());
+			for(auto& instance : hud_.get_render_instances(resources_.textures(), renderer_.render_settings()))
+			{
+				renderer_.render(instance);
+			}
 
 			renderer_.set_render_scale(1.0, 1.0);
 
