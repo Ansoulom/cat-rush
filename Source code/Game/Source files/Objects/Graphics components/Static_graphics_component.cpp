@@ -5,7 +5,6 @@
 #include "Component.h"
 #include "Resource_managers.h"
 #include "World.h"
-#include "Component.h"
 
 
 namespace Game
@@ -65,10 +64,19 @@ namespace Game
 
 		Graphics::Render_instance Static_graphics_component::get_render_instance(
 			const Resources::Texture_manager& tm,
-			const Camera& camera) const
+			const Camera& camera,
+			const Graphics::Render_settings& render_settings) const
 		{
-			const auto texture = tm.get_texture(texture_name_);
-			return {*texture, camera.get_coordinates_on_screen(game_object().position()), layer_};
+			const auto& texture = tm.get_texture(texture_name_);
+			return {
+				texture,
+				{
+					render_settings.normalized_to_pixels(camera.get_normalized_coordinates_on_screen(game_object().position())),
+					texture.width(),
+					texture.height()
+				},
+				layer_
+			};
 		}
 
 

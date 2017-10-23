@@ -23,7 +23,7 @@ namespace Game
 
 		void update(Timer::Seconds time_passed);
 		Geometry::Vector<double> position() const;
-		Geometry::Vector<double> get_coordinates_on_screen(Geometry::Vector<double> position_in_world) const;
+		Geometry::Vector<double> get_normalized_coordinates_on_screen(Geometry::Vector<double> position_in_world) const;
 		Geometry::Rectangle<double> bounding_box() const;
 		void set_aspect_ratio(Graphics::Aspect_ratio aspect_ratio);
 

@@ -18,19 +18,17 @@ namespace Game
 				{
 					if(x.path().extension().string() == ".png")
 					{
-						auto texture = std::make_shared<Graphics::Texture>(renderer, x.path().string());
-						auto filename = x.path().stem().string();
-						textures_.emplace(filename, texture);
+						textures_.emplace(x.path().stem().string(), Graphics::Texture{renderer, x.path().string()});
 					}
 				}
 			}
-		} 
+		}
 
 
-		std::shared_ptr<Graphics::Texture> Texture_manager::get_texture(std::string texture_name) const
+		const Graphics::Texture& Texture_manager::get_texture(std::string texture_name) const
 		{
 			return textures_.at(texture_name); // TODO: Decide what to do if texture does not exist
-		} 
+		}
 
 
 		Texture_manager& Resource_manager::textures()

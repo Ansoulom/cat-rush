@@ -25,7 +25,8 @@ namespace Game
 			void receive(const Events::Message& message) override;
 			Graphics::Render_instance get_render_instance(
 				const Resources::Texture_manager& tm,
-				const Camera& camera) const override;
+				const Camera& camera,
+				const Graphics::Render_settings& render_settings) const override;
 			void set_row(int row); // The row of sprites, e.g. direction or state. Must be valid for the current animation.
 
 			static Animated_graphics_component* from_json(const Io::json& json, Game_object& game_object, const Component_type_map& component_map);

@@ -10,6 +10,21 @@ namespace Game
 {
 	namespace Graphics
 	{
+		Geometry::Vector<int> Render_settings::normalized_to_pixels(Geometry::Vector<double> normalized) const
+		{
+			return {
+				normalized_to_pixels(normalized.get_x()),
+				normalized_to_pixels(normalized.get_y())
+			};
+		}
+
+
+		int Render_settings::normalized_to_pixels(double normalized) const
+		{
+			return static_cast<int>(round(normalized * render_size.get_y()));
+		}
+
+
 		Renderer::Renderer(const Core::Settings& settings, Core::Window& window)
 			: settings_{settings},
 			  sdl_renderer_{
@@ -47,7 +62,7 @@ namespace Game
 					{
 						for(auto component : iter->second)
 						{
-							render_queue.push_back(component->get_render_instance(tm, camera));
+							render_queue.push_back(component->get_render_instance(tm, camera, render_settings()));
 						}
 					}
 				}
@@ -60,9 +75,8 @@ namespace Game
 			{
 				return a.layer_ != b.layer_ ?
 						   a.layer_ < b.layer_ :
-						   a.destination_.get_y() + a.source_.height() / 2 / settings_.constants().source_height() < b.destination_.
-																													   get_y() + b.source_.height() / 2 / settings_.constants().source_height();
-			}); // TODO: Make this work with different layers or such, for example object on ground
+						   a.destination_.bottom() < b.destination_.bottom();
+			});
 
 			for(const auto& instance : render_queue)
 			{
@@ -96,6 +110,12 @@ namespace Game
 		}
 
 
+		Render_settings Renderer::render_settings() const
+		{
+			return {{settings_.constants().source_width(), settings_.constants().source_height()}};
+		}
+
+
 		Aspect_ratio::Aspect_ratio(int x, int y) : x_{x}, y_{y} { }
 
 
@@ -125,18 +145,8 @@ namespace Game
 
 		void Renderer::render(const Render_instance& instance) const
 		{
-			const auto screen_dest = Geometry::Rectangle<int>{
-				{
-					static_cast<int>(round(instance.destination_.get_x() * settings_.constants().source_height())),
-					static_cast<int>(round(instance.destination_.get_y() * settings_.constants().source_height()))
-				},
-				static_cast<int>(round(instance.scaling_.get_x() * instance.source_.width())),
-				static_cast<int>(round(instance.scaling_.get_y() * instance.source_.height()))
-			};
-			const auto screen_pivot = Geometry::Vector<int>{
-				static_cast<int>(round(instance.pivot_.get_x() * screen_dest.width())),
-				static_cast<int>(round(instance.pivot_.get_y() * screen_dest.height()))
-			};
+			const auto screen_dest = instance.destination_;
+			const auto screen_pivot = instance.pivot_;
 
 			auto dst = Wrappers::Sdl_wrapper::get_rect(screen_dest);
 			auto src = Wrappers::Sdl_wrapper::get_rect(instance.source_);

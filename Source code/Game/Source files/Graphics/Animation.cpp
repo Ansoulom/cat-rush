@@ -18,43 +18,31 @@ namespace Game
 			  timer_{Timer::Seconds{1.0} / frame_rate},
 			  looping_{looping}
 		{
-			if(frames < 1)
-			{
-				throw std::out_of_range{"Must have at least one frame."};
-			}
-			if(rows < 1)
-			{
-				throw std::out_of_range{"Must have at least one row."};
-			}
-			if(frame_rate < std::numeric_limits<double>::epsilon()) // Is this the correct usage of epsilon?
-			{
-				throw std::out_of_range{"Frame rate must be larger than zero."};
-			}
+			assert(frames >= 1);
+			assert(rows >= 1);
+			assert(frame_rate > 0);
 		}
 
 
-		Animation::~Animation() { }
-
-
-		Animation::Frame Animation::get_current_frame(const Resources::Texture_manager& tm) const
+		Animation::Frame Animation::current_frame(const Resources::Texture_manager& tm) const
 		{
-			auto texture = tm.get_texture(texture_name_);
-			auto width = texture->get_width() / frames_;
-			auto height = texture->get_height() / rows_;
-			auto clip = Geometry::Rectangle<int>{
+			const auto& texture = tm.get_texture(texture_name_);
+			const auto width = texture.width() / frames_;
+			const auto height = texture.height() / rows_;
+			const auto clip = Geometry::Rectangle<int>{
 				{current_frame_ * width, current_row_ * height},
 				width,
 				height,
 				Geometry::Pivot_point::top_left
 			};
 
-			return {*texture, clip};
+			return {texture, clip};
 		}
 
 
 		bool Animation::update(Timer::Seconds time_passed)
 		{
-			if (finished_) return false;
+			if(finished_) return false;
 
 			if(timer_.update(time_passed))
 			{
@@ -103,27 +91,33 @@ namespace Game
 
 		Io::json Animation::to_json() const
 		{
-			return {{"texture", texture_name_},{"frames", frames_},{"rows", rows_},{"frame_rate", frame_rate_}, {"looping", looping_}};
+			return {
+				{"texture", texture_name_},
+				{"frames", frames_},
+				{"rows", rows_},
+				{"frame_rate", frame_rate_},
+				{"looping", looping_}
+			};
 		}
 
 
-		Animation::Frame::Frame(Texture& texture, const Geometry::Rectangle<int>& clip)
-			: texture_{texture}, clip_{clip}
+		Animation::Frame::Frame(const Texture& texture, const Geometry::Rectangle<int>& clip)
+			: texture_{&texture}, clip_{clip}
 		{
-			if(clip.left() < 0 || clip.top() < 0 || clip.right() > texture.get_width() || clip.bottom() > texture.get_height())
+			if(clip.left() < 0 || clip.top() < 0 || clip.right() > texture.width() || clip.bottom() > texture.height())
 			{
 				throw std::runtime_error{"Clip can not be bigger than or outside of texture."};
 			}
 		}
 
 
-		Texture& Animation::Frame::get_texture() const
+		const Texture& Animation::Frame::texture() const
 		{
-			return texture_;
+			return *texture_;
 		}
 
 
-		Geometry::Rectangle<int> Animation::Frame::get_clip() const
+		Geometry::Rectangle<int> Animation::Frame::clip() const
 		{
 			return clip_;
 		}

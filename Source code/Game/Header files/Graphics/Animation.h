@@ -25,22 +25,21 @@ namespace Game
 			class Frame
 			{
 			public:
-				Frame(Texture& texture, const Geometry::Rectangle<int>& clip);
+				Frame(const Texture& texture, const Geometry::Rectangle<int>& clip);
 
-				Texture& get_texture() const;
-				Geometry::Rectangle<int> get_clip() const;
+				const Texture& texture() const;
+				Geometry::Rectangle<int> clip() const;
 
 			private:
-				Texture& texture_;
+				const Texture* texture_;
 				Geometry::Rectangle<int> clip_;
 			};
 
-
-			Animation(std::string texture, int frames, int rows, double frame_rate, bool looping);
 			// TODO: Document and handle class invariants and consider default constructor
-			~Animation();
+			Animation(std::string texture, int frames, int rows, double frame_rate, bool looping);
+			
 
-			Frame get_current_frame(const Resources::Texture_manager& tm) const;
+			Frame current_frame(const Resources::Texture_manager& tm) const;
 
 			// Returns true if animation just finished, false otherwise.
 			bool update(Timer::Seconds time_passed);

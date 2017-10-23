@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "Communication.h"
 #include "Render_instance.h"
+#include "Renderer.h"
 
 
 namespace Game
@@ -19,6 +20,7 @@ namespace Game
 	namespace Graphics
 	{
 		class Renderer;
+		struct Render_settings;
 	}
 
 
@@ -37,7 +39,8 @@ namespace Game
 
 			virtual Graphics::Render_instance get_render_instance(
 				const Resources::Texture_manager& tm,
-				const Camera& camera) const = 0;
+				const Camera& camera,
+				const Graphics::Render_settings& render_settings) const = 0;
 			void add_destroy_listener(std::function<void(Graphics_component&)> function);
 
 		private:

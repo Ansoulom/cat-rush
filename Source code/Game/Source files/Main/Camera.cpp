@@ -40,7 +40,7 @@ namespace Game
 	}
 
 
-	Geometry::Vector<double> Camera::get_coordinates_on_screen(Geometry::Vector<double> position_in_world) const
+	Geometry::Vector<double> Camera::get_normalized_coordinates_on_screen(Geometry::Vector<double> position_in_world) const
 	{
 		const auto x_render = (position_in_world.get_x() - position_.get_x() + aspect_ratio_.x_multiplier() / 2) * zoom_;
 		const auto y_render = (position_in_world.get_y() - position_.get_y() + aspect_ratio_.y_multiplier() / 2) * zoom_;

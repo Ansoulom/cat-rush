@@ -29,8 +29,8 @@ namespace Game
 			Texture(Renderer& renderer, const boost::filesystem::path& file_path);
 			Texture(Renderer& renderer, const std::string& text, Color text_color, Text::Font& font);
 
-			int get_width() const;
-			int get_height() const;
+			int width() const;
+			int height() const;
 
 		private:
 			Texture(std::unique_ptr<SDL_Surface, Sdl_deleter> surface, Renderer& renderer);

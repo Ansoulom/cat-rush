@@ -5,9 +5,7 @@ namespace Game
 {
 	namespace Objects
 	{
-		Graphics_component::Graphics_component(Game_object& game_object) : Component{game_object}
-		{
-		}
+		Graphics_component::Graphics_component(Game_object& game_object) : Component{game_object} { }
 
 
 		Graphics_component::~Graphics_component()

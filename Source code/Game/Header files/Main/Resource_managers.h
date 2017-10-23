@@ -29,10 +29,10 @@ namespace Game
 			Texture_manager();
 
 			void load_all_textures(const boost::filesystem::path& texture_path, Graphics::Renderer& renderer);
-			std::shared_ptr<Graphics::Texture> get_texture(std::string texture_name) const;
+			const Graphics::Texture& get_texture(std::string texture_name) const;
 
 		private:
-			std::unordered_map<std::string, std::shared_ptr<Graphics::Texture>> textures_;
+			std::unordered_map<std::string, Graphics::Texture> textures_;
 		};
 
 

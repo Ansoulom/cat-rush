@@ -28,7 +28,7 @@ namespace Game
 			{
 				if(iter->second.update(time_passed))
 				{
-					game_object().send(Events::Animation_finished{ current_animation_ });
+					game_object().send(Events::Animation_finished{current_animation_});
 				}
 			}
 			// TODO: Decide if it should be okay for current_animation to be invalid or if exception should be thrown
@@ -116,18 +116,23 @@ namespace Game
 
 		Graphics::Render_instance Animated_graphics_component::get_render_instance(
 			const Resources::Texture_manager& tm,
-			const Camera& camera) const
+			const Camera& camera,
+			const Graphics::Render_settings& render_settings) const
 		{
-			auto frame = animations_.at(current_animation_).get_current_frame(tm);
-			auto clip = frame.get_clip();
-			return Graphics::Render_instance{
-				frame.get_texture(),
-				camera.get_coordinates_on_screen(game_object().position()),
+			auto frame = animations_.at(current_animation_).current_frame(tm);
+			auto clip = frame.clip();
+
+			return {
+				frame.texture(),
+				{
+					render_settings.normalized_to_pixels(camera.get_normalized_coordinates_on_screen(game_object().position())),
+					clip.width(),
+					clip.height()
+				},
 				layer_,
 				clip,
-				{},
-				{},
-				flipped_
+				flipped_,
+				false
 			};
 		}
 

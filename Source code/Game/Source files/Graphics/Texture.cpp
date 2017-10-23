@@ -50,13 +50,13 @@ namespace Game
 		}
 
 
-		int Texture::get_width() const
+		int Texture::width() const
 		{
 			return width_;
 		}
 
 
-		int Texture::get_height() const
+		int Texture::height() const
 		{
 			return height_;
 		}

@@ -6,65 +6,60 @@ namespace Game
 	namespace Graphics
 	{
 		Render_instance::Render_instance(
-			Texture& texture,
-			Geometry::Vector<double> destination,
+			const Texture& texture,
+			Geometry::Rectangle<int> destination,
 			int layer,
-			const std::optional<Geometry::Rectangle<int>> source,
-			double angle,
-			const std::optional<Geometry::Vector<double>> pivot_point,
+			std::optional<Geometry::Rectangle<int>> source,
 			bool flipped_x,
 			bool flipped_y,
-			Geometry::Vector<double> scaling)
+			double angle,
+			std::optional<Geometry::Vector<int>> pivot_point)
 			: texture_{&texture},
+			  destination_{destination},
+			  layer_{layer},
 			  source_{
 				  source ?
 					  *source :
-					  Geometry::Rectangle<int>{{0, 0}, texture.get_width(), texture.get_height(), Geometry::Pivot_point::top_left}
+					  Geometry::Rectangle<int>{{0, 0}, texture.width(), texture.height(), Geometry::Pivot_point::top_left}
 			  },
-			  destination_{destination},
-			  scaling_{scaling},
-			  angle_{angle},
-			  pivot_{pivot_point ? *pivot_point : Geometry::Vector<double>{}},
 			  flipped_x_{flipped_x},
 			  flipped_y_{flipped_y},
-			  layer_{layer} { }
+			  angle_{angle},
+			  pivot_{pivot_point ? *pivot_point : Geometry::Vector<int>{}} { }
 
 
 		Render_instance::Render_instance(const Render_instance& other)
 			: texture_{other.texture_},
-			  source_{other.source_},
 			  destination_{other.destination_},
-			  scaling_{other.scaling_},
-			  angle_{other.angle_},
-			  pivot_{other.pivot_},
+			  layer_{other.layer_},
+			  source_{other.source_},
 			  flipped_x_{other.flipped_x_},
 			  flipped_y_{other.flipped_y_},
-			  layer_{other.layer_} { }
+			  angle_{other.angle_},
+			  pivot_{other.pivot_} { }
 
 
 		Render_instance::Render_instance(Render_instance&& other) noexcept
 			: texture_{other.texture_},
-			  source_{other.source_},
 			  destination_{other.destination_},
-			  scaling_{other.scaling_},
-			  angle_{other.angle_},
-			  pivot_{other.pivot_},
+			  layer_{other.layer_},
+			  source_{other.source_},
 			  flipped_x_{other.flipped_x_},
 			  flipped_y_{other.flipped_y_},
-			  layer_{other.layer_} { }
+			  angle_{other.angle_},
+			  pivot_{other.pivot_} { }
 
 
 		Render_instance& Render_instance::operator=(const Render_instance& other)
 		{
 			texture_ = other.texture_;
 			destination_ = other.destination_;
+			layer_ = other.layer_;
 			source_ = other.source_;
-			angle_ = other.angle_;
-			pivot_ = other.pivot_;
 			flipped_x_ = other.flipped_x_;
 			flipped_y_ = other.flipped_y_;
-			scaling_ = other.scaling_;
-			layer_ = other.layer_;
+			angle_ = other.angle_;
+			pivot_ = other.pivot_;
 
 			return *this;
 		}
@@ -74,13 +69,12 @@ namespace Game
 		{
 			texture_ = other.texture_;
 			destination_ = other.destination_;
+			layer_ = other.layer_;
 			source_ = other.source_;
-			angle_ = other.angle_;
-			pivot_ = other.pivot_;
 			flipped_x_ = other.flipped_x_;
 			flipped_y_ = other.flipped_y_;
-			scaling_ = other.scaling_;
-			layer_ = other.layer_;
+			angle_ = other.angle_;
+			pivot_ = other.pivot_;
 
 			return *this;
 		}

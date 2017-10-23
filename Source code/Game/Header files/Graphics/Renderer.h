@@ -3,19 +3,40 @@
 #include <list>
 #include <unordered_map>
 #include "SDL.h"
-#include <Graphics_component.h>
 #include "Settings.h"
 
 
 namespace Game
 {
+	namespace Objects
+	{
+		class Graphics_component;
+	}
+
+
+	namespace Resources
+	{
+		class Texture_manager;
+	}
+
+
 	class Camera;
 
 
 	namespace Graphics
 	{
+		class Color;
 		class Render_instance;
 		class Texture;
+
+
+		struct Render_settings
+		{
+			Geometry::Vector<int> normalized_to_pixels(Geometry::Vector<double> normalized) const;
+			int normalized_to_pixels(double normalized) const;
+
+			Geometry::Vector<int> render_size;
+		};
 
 
 		class Renderer
@@ -30,6 +51,7 @@ namespace Game
 			void render(const Render_instance& instance) const;
 			void register_component(Objects::Graphics_component& gc);
 			void remove_component(Objects::Graphics_component& gc);
+			Render_settings render_settings() const;
 
 		private:
 			std::unordered_map<Geometry::Vector<int>, std::list<Objects::Graphics_component*>> grid_;

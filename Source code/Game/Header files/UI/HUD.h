@@ -7,6 +7,15 @@
 
 namespace Game
 {
+	namespace Graphics
+	{
+		struct Render_settings;
+	}
+}
+
+
+namespace Game
+{
 	namespace Gui
 	{
 		class Health_bar
@@ -14,7 +23,9 @@ namespace Game
 		public:
 			Health_bar(Geometry::Rectangle<double> bounds, bool flipped);
 
-			std::vector<Graphics::Render_instance> get_render_instances(const Resources::Texture_manager& tm) const;
+			std::vector<Graphics::Render_instance> get_render_instances(
+				const Resources::Texture_manager& tm,
+				const Graphics::Render_settings& render_settings) const;
 
 		private:
 			int max_health_;
