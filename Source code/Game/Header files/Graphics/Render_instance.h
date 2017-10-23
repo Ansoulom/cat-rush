@@ -13,7 +13,7 @@ namespace Game
 		{
 		public:
 			Render_instance(
-				Texture* texture,
+				Texture& texture,
 				Geometry::Vector<double> destination,
 				int layer,
 				const std::optional<Geometry::Rectangle<int>> source = {},

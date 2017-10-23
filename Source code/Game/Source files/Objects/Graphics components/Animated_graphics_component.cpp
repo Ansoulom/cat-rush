@@ -121,7 +121,7 @@ namespace Game
 			auto frame = animations_.at(current_animation_).get_current_frame(tm);
 			auto clip = frame.get_clip();
 			return Graphics::Render_instance{
-				&frame.get_texture(),
+				frame.get_texture(),
 				camera.get_coordinates_on_screen(game_object().position()),
 				layer_,
 				clip,

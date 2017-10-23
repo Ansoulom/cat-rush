@@ -6,7 +6,7 @@ namespace Game
 	namespace Graphics
 	{
 		Render_instance::Render_instance(
-			Texture* texture,
+			Texture& texture,
 			Geometry::Vector<double> destination,
 			int layer,
 			const std::optional<Geometry::Rectangle<int>> source,
@@ -15,11 +15,11 @@ namespace Game
 			bool flipped_x,
 			bool flipped_y,
 			Geometry::Vector<double> scaling)
-			: texture_{texture},
+			: texture_{&texture},
 			  source_{
 				  source ?
 					  *source :
-					  Geometry::Rectangle<int>{{0, 0}, texture->get_width(), texture->get_height(), Geometry::Pivot_point::top_left}
+					  Geometry::Rectangle<int>{{0, 0}, texture.get_width(), texture.get_height(), Geometry::Pivot_point::top_left}
 			  },
 			  destination_{destination},
 			  scaling_{scaling},
@@ -38,7 +38,8 @@ namespace Game
 			  angle_{other.angle_},
 			  pivot_{other.pivot_},
 			  flipped_x_{other.flipped_x_},
-			  flipped_y_{other.flipped_y_} { }
+			  flipped_y_{other.flipped_y_},
+			  layer_{other.layer_} { }
 
 
 		Render_instance::Render_instance(Render_instance&& other) noexcept
@@ -49,7 +50,8 @@ namespace Game
 			  angle_{other.angle_},
 			  pivot_{other.pivot_},
 			  flipped_x_{other.flipped_x_},
-			  flipped_y_{other.flipped_y_} { }
+			  flipped_y_{other.flipped_y_},
+			  layer_{other.layer_} { }
 
 
 		Render_instance& Render_instance::operator=(const Render_instance& other)
@@ -62,6 +64,7 @@ namespace Game
 			flipped_x_ = other.flipped_x_;
 			flipped_y_ = other.flipped_y_;
 			scaling_ = other.scaling_;
+			layer_ = other.layer_;
 
 			return *this;
 		}
@@ -77,6 +80,7 @@ namespace Game
 			flipped_x_ = other.flipped_x_;
 			flipped_y_ = other.flipped_y_;
 			scaling_ = other.scaling_;
+			layer_ = other.layer_;
 
 			return *this;
 		}

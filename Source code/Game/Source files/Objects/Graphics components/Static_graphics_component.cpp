@@ -67,8 +67,8 @@ namespace Game
 			const Resources::Texture_manager& tm,
 			const Camera& camera) const
 		{
-			auto texture = tm.get_texture(texture_name_);
-			return {texture.get(), camera.get_coordinates_on_screen(game_object().position()), layer_};
+			const auto texture = tm.get_texture(texture_name_);
+			return {*texture, camera.get_coordinates_on_screen(game_object().position()), layer_};
 		}
 
 

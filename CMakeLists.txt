@@ -46,6 +46,7 @@ set(PROJ_INCLUDE_DIRS
 "${GAME_HEADER_DIR}/Physics"
 "${GAME_HEADER_DIR}/Text"
 "${GAME_HEADER_DIR}/Time"
+"${GAME_HEADER_DIR}/UI"
 "${GAME_HEADER_DIR}/Utility"
 "${GAME_HEADER_DIR}/Wrappers"
 )
@@ -92,6 +93,7 @@ set(PROJ_HEADERS
 "${GAME_HEADER_DIR}/Text/Text_functions.h"
 "${GAME_HEADER_DIR}/Time/Frame_timer.h"
 "${GAME_HEADER_DIR}/Time/Timer.h"
+"${GAME_HEADER_DIR}/UI/HUD.h"
 "${GAME_HEADER_DIR}/Utility/Communication.h"
 "${GAME_HEADER_DIR}/Wrappers/SDL_deleter.h"
 "${GAME_HEADER_DIR}/Wrappers/SDL_wrapper.h"
@@ -135,6 +137,7 @@ set(PROJ_SOURCES
 "${GAME_SOURCE_DIR}/Text/Text_functions.cpp"
 "${GAME_SOURCE_DIR}/Time/Frame_timer.cpp"
 "${GAME_SOURCE_DIR}/Time/Timer.cpp"
+"${GAME_SOURCE_DIR}/UI/HUD.cpp"
 "${GAME_SOURCE_DIR}/Wrappers/SDL_deleter.cpp"
 "${GAME_SOURCE_DIR}/Wrappers/SDL_wrapper.cpp"
 )
