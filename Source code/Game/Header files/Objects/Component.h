@@ -217,7 +217,7 @@ namespace Game
 		template<typename T>
 		T* Component_type_map::find_component() const
 		{
-			return dynamic_cast<T*>(find_component(T::type()));
+			return dynamic_cast<T*>(find_component(T::type())); // Does this work if object doesn't exist? TODO: Take a closer look at this
 		}
 	}
 }

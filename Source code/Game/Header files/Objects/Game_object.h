@@ -7,6 +7,7 @@
 #include <Component.h>
 #include <Communication.h>
 #include <unordered_set>
+#include <optional>
 
 
 namespace Game
@@ -25,7 +26,7 @@ namespace Game
 		class Game_object
 		{
 		public:
-			explicit Game_object(Geometry::Vector<double> position, Core::World& world);
+			explicit Game_object(Geometry::Vector<double> position, Core::World& world, std::optional<std::string> name = {});
 			~Game_object();
 
 			Game_object(const Game_object& other) = delete;
@@ -33,12 +34,13 @@ namespace Game
 			Game_object& operator=(const Game_object& other) = delete;
 			Game_object& operator=(Game_object&& other) noexcept = delete; // May not have to delete them anyway
 
+			std::optional<std::string> name() const;
 			Geometry::Vector<double>& position();
 			Geometry::Vector<double> position() const;
 			void send(const Events::Message& message);
 			void add_component(std::unique_ptr<Component>&& component);
 			Core::World& world();
-			void add_destroy_listener(Communication::Observer<Game_object&> function);
+			void add_destroy_listener(Communication::Receiver<Game_object&> function);
 			// Will return null if component does not exist
 			template<typename T>
 			T* find_component();
@@ -54,11 +56,6 @@ namespace Game
 			Io::json to_json() const;
 
 		private:
-			Geometry::Vector<double> position_;
-			std::vector<std::unique_ptr<Component>> components_{};
-			Component_type_map component_map_{};
-			Core::World& world_;
-
 			static void create_component(
 				Component_type_map& created_components,
 				std::vector<Io::json>& component_pool,
@@ -73,7 +70,13 @@ namespace Game
 				Game_object& game_object);
 			static Io::json pop_component_json(std::vector<Io::json>& component_pool, const std::string& type);
 
-			Communication::Subject<Game_object&> destroyed_event_; // TODO: Make this more legit
+			Geometry::Vector<double> position_;
+			std::optional<std::string> name_;
+			std::vector<std::unique_ptr<Component>> components_{};
+			Component_type_map component_map_{};
+			Core::World& world_;
+
+			Communication::Dispatcher<Game_object&> destroyed_dispatcher_; // TODO: Make this more legit
 		};
 
 

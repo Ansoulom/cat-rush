@@ -41,10 +41,10 @@ namespace Game
 				const Resources::Texture_manager& tm,
 				const Camera& camera,
 				const Graphics::Render_settings& render_settings) const = 0;
-			void add_destroy_listener(Communication::Observer<Graphics_component&> listener);
+			void add_destroy_listener(Communication::Receiver<Graphics_component&> listener);
 
 		private:
-			Communication::Subject<Graphics_component&> destroy_event_;
+			Communication::Dispatcher<Graphics_component&> destroy_event_;
 		};
 	}
 }

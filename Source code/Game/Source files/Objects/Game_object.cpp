@@ -8,13 +8,13 @@ namespace Game
 {
 	namespace Objects
 	{
-		Game_object::Game_object(Geometry::Vector<double> position, Core::World& world)
-			: position_{position}, world_{world} { }
+		Game_object::Game_object(Geometry::Vector<double> position, Core::World& world, std::optional<std::string> name)
+			: position_{position}, world_{world}, name_{name} { }
 
 
 		Game_object::~Game_object()
 		{
-			destroyed_event_.notify(*this);
+			destroyed_dispatcher_.dispatch(*this);
 		}
 
 
@@ -33,6 +33,12 @@ namespace Game
 			{
 				component->handle_input(time_passed, input);
 			}
+		}
+
+
+		std::optional<std::string> Game_object::name() const
+		{
+			return name_;
 		}
 
 
@@ -70,9 +76,9 @@ namespace Game
 		}
 
 
-		void Game_object::add_destroy_listener(Communication::Observer<Game_object&> listener)
+		void Game_object::add_destroy_listener(Communication::Receiver<Game_object&> listener)
 		{
-			destroyed_event_.add_observer(listener);
+			destroyed_dispatcher_.add_receiver(listener);
 		}
 
 
@@ -90,7 +96,7 @@ namespace Game
 				};
 			}
 
-			const auto j = move(*json_iter);
+			const auto j = std::move(*json_iter);
 			component_pool.erase(json_iter);
 
 			return j;
@@ -157,9 +163,13 @@ namespace Game
 
 		Game_object* Game_object::from_json(const Io::json& json, Core::World& world)
 		{
+			const auto name_iter = json.find("name");
+			const auto name = name_iter == json.end() || name_iter->is_null() ?
+								  std::optional<std::string>{} :
+								  std::optional<std::string>{name_iter->get<std::string>()};
 			const auto x = json.at("x_position").get<double>();
 			const auto y = json.at("y_position").get<double>();
-			const auto object = new Game_object{{x, y}, world};
+			const auto object = new Game_object{{x, y}, world, name};
 
 			// Load all components while managing dependencies between components
 			auto load_queue = json.at("components").get<std::vector<Io::json>>();
@@ -186,7 +196,10 @@ namespace Game
 			{
 				components_json.emplace_back(component->to_json());
 			}
-			return {{"x_position", position_.get_x()}, {"y_position", position_.get_y()}, {"components", components_json}};
+			return {
+				{"x_position", position_.get_x()}, {"y_position", position_.get_y()}, {"components", components_json},
+				{"name", name_.has_value() ? Io::json{name_.value()} : Io::json{nullptr}}
+			};
 		}
 	}
 }

@@ -10,101 +10,100 @@ namespace Game
 	{
 		// Observer with templates and function callbacks
 
-		template <typename... Args>
-		class Subject;
+		template<typename... Args>
+		class Dispatcher;
+
 
 		// Takes a function argument with Args arguments. Not meant to be inherited from.
-		template <typename... Args>
-		class Observer
+		template<typename... Args>
+		class Receiver
 		{
 		public:
-			Observer(std::function<void(Args ...)> function);
-			~Observer();
+			explicit Receiver(std::function<void(Args ...)> function);
+			~Receiver();
 
-			void on_notify(Args ... args);
+			void receive(Args ... args);
 
 		private:
 			std::function<void(Args ...)> function_;
-			std::vector<Subject<Args...>*> subjects_;
+			std::vector<Dispatcher<Args...>*> dispatchers_;
 
-			friend class Subject<Args...>;
+			friend class Dispatcher<Args...>;
 		};
 
 
 		// To be used together with Subjects of the same template type
-		template <typename... Args>
-		class Subject
+		template<typename... Args>
+		class Dispatcher
 		{
 		public:
-			~Subject();
+			~Dispatcher();
 
-			void add_observer(Observer<Args...>& observer);
-			void remove_observer(Observer<Args...>& observer);
-			void notify(Args ... args);
+			void add_receiver(Receiver<Args...>& receiver);
+			void remove_receiver(Receiver<Args...>& receiver);
+			void dispatch(Args ... args);
 
 		private:
-			std::vector<Observer<Args...>*> observers_;
+			std::vector<Receiver<Args...>*> receivers_;
 		};
 
 
-		template <typename... Args>
-		Observer<Args...>::Observer(std::function<void(Args ...)> function) : function_{ function }
-		{
-		}
+		template<typename... Args>
+		Receiver<Args...>::Receiver(std::function<void(Args ...)> function) : function_{function} { }
 
 
-		// Remove observer from all subjects when it gets destroyed
-		template <typename ... Args>
-		Observer<Args...>::~Observer()
+		// Remove receiver from all subjects when it gets destroyed
+		template<typename ... Args>
+		Receiver<Args...>::~Receiver()
 		{
-			while (subjects_.size() > 0)
+			while(dispatchers_.size() > 0)
 			{
-				subjects_[0]->remove_observer(*this);
+				dispatchers_[0]->remove_receiver(*this);
 			}
 		}
 
 
-		template <typename ... Args>
-		void Observer<Args...>::on_notify(Args ... args)
+		template<typename ... Args>
+		void Receiver<Args...>::receive(Args ... args)
 		{
 			function_(args...);
 		}
 
 
-		template <typename ... Args>
-		Subject<Args...>::~Subject()
+		template<typename ... Args>
+		Dispatcher<Args...>::~Dispatcher()
 		{
-			for (auto observer : observers_)
+			for(auto observer : receivers_)
 			{
-				observer->subjects_.erase(std::remove(observer->subjects_.begin(), observer->subjects_.end(), this),
-					observer->subjects_.end());
+				observer->dispatchers_.erase(std::remove(observer->dispatchers_.begin(), observer->dispatchers_.end(), this),
+											 observer->dispatchers_.end());
 			}
 		}
 
 
-		template <typename ... Args>
-		void Subject<Args...>::add_observer(Observer<Args...>& observer)
+		template<typename ... Args>
+		void Dispatcher<Args...>::add_receiver(Receiver<Args...>& receiver)
 		{
-			observers_.push_back(&observer);
-			observer.subjects_.push_back(this);
+			receivers_.push_back(&receiver);
+			receiver.dispatchers_.push_back(this);
 		}
 
 
-		template <typename ... Args>
-		void Subject<Args...>::remove_observer(Observer<Args...>& observer)
+		template<typename ... Args>
+		void Dispatcher<Args...>::remove_receiver(Receiver<Args...>& receiver)
 		{
-			observers_.erase(std::remove(observers_.begin(), observers_.end(), &observer), observers_.end());
-			observer.subjects_.erase(std::remove(observer.subjects_.begin(), observer.subjects_.end(), this),
-				observer.subjects_.end());
+			receivers_.erase(std::remove(receivers_.begin(), receivers_.end(), &receiver), receivers_.end());
+			receiver.dispatchers_.erase(std::remove(receiver.dispatchers_.begin(), receiver.dispatchers_.end(), this),
+										receiver.dispatchers_.end());
 		}
 
 
-		template <typename ... Args>
-		void Subject<Args...>::notify(Args ... args)
+		template<typename ... Args>
+		void Dispatcher<Args...>::dispatch(Args ... args)
 		{
-			for (auto observer : observers_)
+			for(auto observer : receivers_)
 			{
-				observer->on_notify(args...);
+				observer->receive(args...);
 			}
 		}
 	}

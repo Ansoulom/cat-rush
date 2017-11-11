@@ -44,6 +44,7 @@ namespace Game
 
 			const auto loader = Objects::Component_loader{renderer_};
 			world_ = std::unique_ptr<World>{load_world("LevelFileTest", *this, loader)};
+			hud_.connect_with_world(*world_);
 
 			running_ = true;
 

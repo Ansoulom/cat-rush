@@ -60,7 +60,7 @@ namespace Game
 			const double grid_cell_size_ = 10.0; // Very temporary and random number for now
 			const Core::Settings& settings_;
 			std::unique_ptr<SDL_Renderer, Sdl_deleter> sdl_renderer_;
-			Communication::Observer<Objects::Graphics_component&> component_destroyed_listener_;
+			Communication::Receiver<Objects::Graphics_component&> component_destroyed_receiver_;
 
 			friend class Texture;
 		};

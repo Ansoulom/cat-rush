@@ -72,6 +72,7 @@ namespace Game
 
 		void World::add_object(std::unique_ptr<Objects::Game_object>&& object)
 		{
+			if(object->name()) object_name_map_.emplace(object->name().value(), object.get());
 			objects_.push_back(move(object));
 		}
 
@@ -91,6 +92,20 @@ namespace Game
 		const Camera& World::camera() const
 		{
 			return camera_;
+		}
+
+
+		Objects::Game_object* World::find_object_by_name(const std::string& name)
+		{
+			const auto iter = object_name_map_.find(name);
+			return iter == object_name_map_.end() ? nullptr : iter->second;
+		}
+
+
+		const Objects::Game_object* World::find_object_by_name(const std::string& name) const
+		{
+			const auto iter = object_name_map_.find(name);
+			return iter == object_name_map_.end() ? nullptr : iter->second;
 		}
 
 

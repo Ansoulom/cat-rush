@@ -36,6 +36,8 @@ namespace Game
 			const Objects::Component_loader& component_loader() const;
 			Physics::Collision_system& collision_system();
 			const Camera& camera() const;
+			Objects::Game_object* find_object_by_name(const std::string& name);
+			const Objects::Game_object* find_object_by_name(const std::string& name) const;
 
 			// Should only be used from main loop
 			void handle_input(Timer::Seconds time_passed, const Input::Input_handler& input);
@@ -49,6 +51,7 @@ namespace Game
 
 		private:
 			std::vector<std::unique_ptr<Objects::Game_object>> objects_;
+			std::unordered_map<std::string, Objects::Game_object*> object_name_map_;
 			Physics::Collision_system collision_system_;
 			const Objects::Component_loader component_loader_;
 			Game_core& game_context_;

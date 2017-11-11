@@ -2,6 +2,7 @@
 	"objects":
 	[
 		{
+			"name": "player",
 			"x_position": -0.5,
 			"y_position": 0.0,
 			"components":
@@ -123,6 +124,7 @@
 			]
 		},
 		{
+			"name": "boss",
 			"x_position": 0.0,
 			"y_position": 0.0,
 			"components":

@@ -36,12 +36,36 @@ namespace Game
 		}
 
 
+		int Combat_component::max_health() const
+		{
+			return max_health_;
+		}
+
+
+		int Combat_component::current_health() const
+		{
+			return health_;
+		}
+
+
 		const Component::Deserializer Combat_component::add_to_map{type(), from_json};
 
 
 		void Combat_component::damage(int damage)
 		{
 			health_ -= damage;
+			if (health_ <= 0)
+			{
+				health_ = 0;
+				// TODO: Make it die
+			}
+			health_changed_event_.dispatch(health_);
+		}
+
+
+		void Combat_component::add_health_changed_listener(Communication::Receiver<int>& listener)
+		{
+			health_changed_event_.add_receiver(listener);
 		}
 	}
 }

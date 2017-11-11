@@ -10,7 +10,7 @@ namespace Game
 
 		Graphics_component::~Graphics_component()
 		{
-			destroy_event_.notify(*this);
+			destroy_event_.dispatch(*this);
 		}
 
 
@@ -20,9 +20,9 @@ namespace Game
 		}
 
 
-		void Graphics_component::add_destroy_listener(Communication::Observer<Graphics_component&> listener)
+		void Graphics_component::add_destroy_listener(Communication::Receiver<Graphics_component&> listener)
 		{
-			destroy_event_.add_observer(listener);
+			destroy_event_.add_receiver(listener);
 		}
 	}
 }

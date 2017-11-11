@@ -4,6 +4,14 @@
 #include "Render_instance.h"
 #include "Resource_managers.h"
 #include "Renderer.h"
+#include "Combat_component.h"
+
+
+namespace Game {
+	namespace Core {
+		class World;
+	}
+}
 
 
 namespace Game
@@ -24,15 +32,20 @@ namespace Game
 		public:
 			Health_bar(Geometry::Rectangle<double> bounds, bool flipped);
 
+			void set_max_health(int max_health);
+			void set_health(int health);
+			void connect_with_object(Objects::Combat_component& object);
+
 			std::vector<Graphics::Render_instance> get_render_instances(
 				const Resources::Texture_manager& tm,
 				const Graphics::Render_settings& render_settings) const;
 
 		private:
-			int max_health_;
-			int health_;
+			int max_health_{1};
+			int health_{max_health_};
 			Geometry::Rectangle<double> bounds_;
 			bool flipped_;
+			Communication::Receiver<int> health_changed_receiver_;
 		};
 
 
@@ -40,6 +53,8 @@ namespace Game
 		{
 		public:
 			explicit Hud(Graphics::Aspect_ratio aspect_ratio);
+
+			void connect_with_world(Core::World& world);
 
 			std::vector<Graphics::Render_instance> get_render_instances(
 				const Resources::Texture_manager& tm,

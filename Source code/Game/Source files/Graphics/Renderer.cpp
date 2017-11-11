@@ -33,7 +33,7 @@ namespace Game
 					  -1,
 					  SDL_RENDERER_ACCELERATED | (settings.user_settings().vsync() ? SDL_RENDERER_PRESENTVSYNC : 0)),
 				  Sdl_deleter{}
-			  }, component_destroyed_listener_{bind(&Renderer::remove_component, this, std::placeholders::_1)}
+			  }, component_destroyed_receiver_{bind(&Renderer::remove_component, this, std::placeholders::_1)}
 		{
 			if(!sdl_renderer_)
 			{
@@ -93,7 +93,7 @@ namespace Game
 
 			grid_[cell_pos].push_back(&gc);
 
-			gc.add_destroy_listener(component_destroyed_listener_);
+			gc.add_destroy_listener(component_destroyed_receiver_);
 		}
 
 
