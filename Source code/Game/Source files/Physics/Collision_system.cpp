@@ -22,8 +22,7 @@ namespace Game
 					const auto iter = grid_.find(cell_pos);
 					if(iter != grid_.end())
 					{
-						auto& layers = collider.get_check_layers();
-						for(auto& layer : layers)
+						for(auto& layer : collider.get_check_layers())
 						{
 							auto layer_iter = iter->second.find(layer);
 							if(layer_iter != iter->second.end())
@@ -33,8 +32,44 @@ namespace Game
 									if(&collider == component) continue;
 									if(intersects(collider, *component))
 									{
-										colliders.emplace_back(component, layer); 
+										colliders.emplace_back(component, layer);
 									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return colliders;
+		}
+
+
+		std::vector<Objects::Collider_component*> Collision_system::get_collisions(
+			const Geometry::Shape<double>& collider,
+			const std::string& layer) const
+		{
+			auto colliders = std::vector<Objects::Collider_component*>{};
+
+			auto start = get_grid_cell_position(collider.position()) - Geometry::Vector<int>{1, 1};
+			auto end = get_grid_cell_position(collider.position()) + Geometry::Vector<int>{1, 1};
+			for(auto x = start.get_x(); x <= end.get_x(); ++x)
+			{
+				for(auto y = start.get_y(); y <= end.get_y(); ++y)
+				{
+					const auto cell_pos = Geometry::Vector<int>{x, y};
+					const auto iter = grid_.find(cell_pos);
+					if(iter != grid_.end())
+					{
+						auto layer_iter = iter->second.find(layer);
+						if(layer_iter != iter->second.end())
+						{
+							for(auto component : layer_iter->second)
+							{
+								const auto shape = shape_from_collider(*component);
+								if(intersects(collider, *shape))
+								{
+									colliders.emplace_back(component);
 								}
 							}
 						}

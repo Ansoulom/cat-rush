@@ -7,6 +7,8 @@
 #include <chrono>
 #include "Movement_component.h"
 #include "Collider_component.h"
+#include "World.h"
+#include "Combat_component.h"
 
 
 namespace Game
@@ -41,12 +43,28 @@ namespace Game
 			attacking_ = true;
 			old_state_ = "Attacking";
 			game_object().send(Events::State_changed{old_state_});
+
+			// EXPERIMENTAL
+			const auto damage = 3;
+			const auto offset = Geometry::Vector<double>{static_cast<int>(direction_) * 0.2f, 0.0};
+			const auto width = 0.2f;
+			const auto height = 0.2f;
+			auto collisions = game_object().world().collision_system().get_collisions(
+				Geometry::Rectangle<double>{game_object().position() + offset, width, height},
+				"enemies");
+			for(auto collider : collisions)
+			{
+				if(auto combat_component = collider->game_object().find_component<Combat_component>())
+				{
+					combat_component->damage(damage);
+				}
+			}
 		}
 
 
 		void Player_input_component::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
 		{
-			while(state_->handle_input(time_passed, input));
+			while(state_->handle_input(time_passed, input)) {}
 			if(!attacking_ && state_->state() != old_state_)
 			{
 				old_state_ = state_->state();
@@ -122,7 +140,6 @@ namespace Game
 		void Player_input_component::update_rotation(Direction_x direction)
 		{
 			direction_ = direction;
-
 			game_object().send(Events::Direction_changed{direction});
 		}
 

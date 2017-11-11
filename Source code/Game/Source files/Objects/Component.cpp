@@ -97,5 +97,12 @@ namespace Game
 		{
 			map_.insert_or_assign(component.component_type(), &component);
 		}
+
+
+		Component* Component_type_map::find_component(const std::string& type) const
+		{
+			const auto iter = map_.find(type);
+			return iter == map_.end() ? nullptr : iter->second;
+		}
 	}
 }

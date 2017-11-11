@@ -185,9 +185,14 @@ namespace Game
 		{
 		public:
 			template<typename T>
+			bool contains() const;
+			template<typename T>
 			T& get_component() const;
-			Component& get_component(const std::string& type) const;
+			template<typename T>
+			T* find_component() const;
 			bool contains(const std::string& type) const;
+			Component& get_component(const std::string& type) const;
+			Component* find_component(const std::string& type) const;
 			void add_component(Component& component);
 
 		private:
@@ -196,9 +201,23 @@ namespace Game
 
 
 		template<typename T>
+		bool Component_type_map::contains() const
+		{
+			return contains(T::type());
+		}
+
+
+		template<typename T>
 		T& Component_type_map::get_component() const
 		{
 			return *dynamic_cast<T*>(map_.at(T::type()));
+		}
+
+
+		template<typename T>
+		T* Component_type_map::find_component() const
+		{
+			return dynamic_cast<T*>(find_component(T::type()));
 		}
 	}
 }

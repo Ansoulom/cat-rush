@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include "SDL.h"
 #include "Settings.h"
+#include "Communication.h"
+#include "Graphics_component.h"
 
 
 namespace Game
@@ -58,6 +60,7 @@ namespace Game
 			const double grid_cell_size_ = 10.0; // Very temporary and random number for now
 			const Core::Settings& settings_;
 			std::unique_ptr<SDL_Renderer, Sdl_deleter> sdl_renderer_;
+			Communication::Observer<Objects::Graphics_component&> component_destroyed_listener_;
 
 			friend class Texture;
 		};

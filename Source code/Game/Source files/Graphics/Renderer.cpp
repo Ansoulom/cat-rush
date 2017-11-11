@@ -33,7 +33,7 @@ namespace Game
 					  -1,
 					  SDL_RENDERER_ACCELERATED | (settings.user_settings().vsync() ? SDL_RENDERER_PRESENTVSYNC : 0)),
 				  Sdl_deleter{}
-			  }
+			  }, component_destroyed_listener_{bind(&Renderer::remove_component, this, std::placeholders::_1)}
 		{
 			if(!sdl_renderer_)
 			{
@@ -72,11 +72,11 @@ namespace Game
 				render_queue.begin(),
 				render_queue.end(),
 				[this](const Render_instance& a, const Render_instance& b)
-			{
-				return a.layer_ != b.layer_ ?
-						   a.layer_ < b.layer_ :
-						   a.destination_.bottom() < b.destination_.bottom();
-			});
+				{
+					return a.layer_ != b.layer_ ?
+							   a.layer_ < b.layer_ :
+							   a.destination_.bottom() < b.destination_.bottom();
+				});
 
 			for(const auto& instance : render_queue)
 			{
@@ -93,7 +93,7 @@ namespace Game
 
 			grid_[cell_pos].push_back(&gc);
 
-			gc.add_destroy_listener(bind(&Renderer::remove_component, this, std::placeholders::_1));
+			gc.add_destroy_listener(component_destroyed_listener_);
 		}
 
 

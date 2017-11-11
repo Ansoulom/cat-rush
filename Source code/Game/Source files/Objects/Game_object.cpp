@@ -59,6 +59,7 @@ namespace Game
 
 		void Game_object::add_component(std::unique_ptr<Component>&& component)
 		{
+			component_map_.add_component(*component);
 			components_.emplace_back(move(component));
 		}
 
@@ -69,9 +70,9 @@ namespace Game
 		}
 
 
-		void Game_object::add_destroy_listener(std::function<void(Game_object&)> function)
+		void Game_object::add_destroy_listener(Communication::Observer<Game_object&> listener)
 		{
-			destroyed_event_.add_listener(function);
+			destroyed_event_.add_observer(listener);
 		}
 
 

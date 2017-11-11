@@ -38,18 +38,25 @@ namespace Game
 			void send(const Events::Message& message);
 			void add_component(std::unique_ptr<Component>&& component);
 			Core::World& world();
-			void add_destroy_listener(std::function<void(Game_object&)> function);
+			void add_destroy_listener(Communication::Observer<Game_object&> function);
+			// Will return null if component does not exist
+			template<typename T>
+			T* find_component();
+			template<typename T>
+			const T* find_component() const;
 
 			// Only call from enclosing world
 			void handle_input(Timer::Seconds time_passed, const Input::Input_handler& input);
 			void update(Timer::Seconds time_passed);
 
+			// Serialization and deserialization
 			static Game_object* from_json(const Io::json& json, Core::World& world);
 			Io::json to_json() const;
 
 		private:
 			Geometry::Vector<double> position_;
-			std::vector<std::unique_ptr<Component>> components_;
+			std::vector<std::unique_ptr<Component>> components_{};
+			Component_type_map component_map_{};
 			Core::World& world_;
 
 			static void create_component(
@@ -66,7 +73,21 @@ namespace Game
 				Game_object& game_object);
 			static Io::json pop_component_json(std::vector<Io::json>& component_pool, const std::string& type);
 
-			Communication::Event<Game_object&> destroyed_event_; // TODO: Make this more legit
+			Communication::Subject<Game_object&> destroyed_event_; // TODO: Make this more legit
 		};
+
+
+		template<typename T>
+		T* Game_object::find_component()
+		{
+			return component_map_.find_component<T>();
+		}
+
+
+		template<typename T>
+		const T* Game_object::find_component() const
+		{
+			return component_map_.find_component<T>();
+		}
 	}
 }

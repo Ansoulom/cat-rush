@@ -115,6 +115,10 @@
 					[
 						"Movement_component"
 					]
+				},
+				{
+					"type": "Combat_component",
+					"max_health": 100
 				}
 			]
 		},
@@ -146,11 +150,15 @@
 						"y_position": -0.012,
 						"radius": 0.204
 					},
-					"layers": ["solid", "Enemy"],
+					"layers": ["solid", "enemies"],
 					"check_layers": ["solid", "triggers", "player"]
 				},
 				{
 					"type": "Movement_component"
+				},
+				{
+					"type": "Combat_component",
+					"max_health": 100
 				}
 			]
 		},

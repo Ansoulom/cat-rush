@@ -2,15 +2,13 @@
 
 #include <json.hpp>
 #include "Component.h"
-#include "Component.h"
-#include "Component.h"
 
 
 namespace Game
 {
 	namespace Geometry
 	{
-		template<typename type>
+		template<typename T>
 		class Shape;
 	}
 

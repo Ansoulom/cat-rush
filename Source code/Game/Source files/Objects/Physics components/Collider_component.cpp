@@ -48,7 +48,7 @@ namespace Game
 			shape_ = std::unique_ptr<Geometry::Shape<double>>{shape.clone()};
 		}
 
-		 
+
 		Collider_component* Collider_component::from_json(
 			const Io::json& j,
 			Game_object& game_object,
@@ -117,7 +117,6 @@ namespace Game
 				}
 				game_object().send(Events::Collided{message.axis, direction, *this, *col_pair.first, std::string{col_pair.second}});
 			}
-
 
 			if(game_object().position() != old_pos)
 			{

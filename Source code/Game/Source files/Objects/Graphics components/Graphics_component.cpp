@@ -20,9 +20,9 @@ namespace Game
 		}
 
 
-		void Graphics_component::add_destroy_listener(std::function<void(Graphics_component&)> function)
+		void Graphics_component::add_destroy_listener(Communication::Observer<Graphics_component&> listener)
 		{
-			destroy_event_.add_listener(function);
+			destroy_event_.add_observer(listener);
 		}
 	}
 }
