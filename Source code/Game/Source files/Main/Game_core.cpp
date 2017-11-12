@@ -28,7 +28,9 @@ namespace Game
 			  },
 			  renderer_{settings_, window_},
 			  world_{},
-			  hud_{{settings_.constants().source_width(), settings_.constants().source_height()}}
+			  hud_{{settings_.constants().source_width(), settings_.constants().source_height()}},
+			  boss_died_receiver_{std::bind(&Game_core::go_to_win_screen, this)},
+			  player_died_receiver_{std::bind(&Game_core::go_to_death_screen, this)}
 		{
 			SDL_DisplayMode dm;
 			if(SDL_GetCurrentDisplayMode(0, &dm) != 0)
@@ -44,7 +46,7 @@ namespace Game
 
 			const auto loader = Objects::Component_loader{renderer_};
 			world_ = std::unique_ptr<World>{load_world("LevelFileTest", *this, loader)};
-			hud_.connect_with_world(*world_);
+			add_world_event_receivers();
 
 			running_ = true;
 
@@ -115,6 +117,35 @@ namespace Game
 			// Render GUI here maybe?
 
 			renderer_.show();
+		}
+
+
+		void Game_core::add_world_event_receivers()
+		{
+			hud_.connect_with_world(*world_);
+
+			if (auto player = world_->find_object_by_name("player"))
+			{
+				if (const auto player_combat = player->find_component<Objects::Combat_component>())
+					player_combat->add_died_receiver(player_died_receiver_);
+			}
+			if (auto boss = world_->find_object_by_name("boss"))
+			{
+				if (const auto boss_combat = boss->find_component<Objects::Combat_component>())
+					boss_combat->add_died_receiver(boss_died_receiver_);
+			}
+		}
+
+
+		void Game_core::go_to_win_screen()
+		{
+			Logger::log("You won!");
+		}
+
+
+		void Game_core::go_to_death_screen()
+		{
+			Logger::log("You lost...");
 		}
 	}
 }

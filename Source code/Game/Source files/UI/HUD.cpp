@@ -31,7 +31,7 @@ namespace Game
 		{
 			set_max_health(object.max_health());
 			set_health(object.current_health());
-			object.add_health_changed_listener(health_changed_receiver_);
+			object.add_health_changed_receiver(health_changed_receiver_);
 		}
 
 

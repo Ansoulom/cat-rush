@@ -115,8 +115,13 @@ namespace Game
 			};
 
 
+			struct Died
+			{
+			};
+
+
 			using Message = std::variant<Object_moved, Direction_changed, Position_changed, Collided, State_changed,
-										 Animation_finished>;
+										 Animation_finished, Died>;
 		}
 
 

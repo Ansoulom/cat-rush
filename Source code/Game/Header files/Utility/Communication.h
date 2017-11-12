@@ -73,10 +73,10 @@ namespace Game
 		template<typename ... Args>
 		Dispatcher<Args...>::~Dispatcher()
 		{
-			for(auto observer : receivers_)
+			for(auto receiver : receivers_)
 			{
-				observer->dispatchers_.erase(std::remove(observer->dispatchers_.begin(), observer->dispatchers_.end(), this),
-											 observer->dispatchers_.end());
+				receiver->dispatchers_.erase(std::remove(receiver->dispatchers_.begin(), receiver->dispatchers_.end(), this),
+											 receiver->dispatchers_.end());
 			}
 		}
 
