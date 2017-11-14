@@ -14,7 +14,8 @@ namespace Game
 			Combat_component(Game_object& game_object, int max_health);
 
 			// Serialization
-			static Combat_component* from_json(const Io::json& json, Game_object& game_object, const Component_type_map& component_map);
+			static Combat_component* from_json(const Io::json& json, Game_object& game_object,
+											   const Component_type_map& component_map);
 			Io::json to_json() const override;
 			static std::string type();
 			std::string component_type() const override;
@@ -25,7 +26,8 @@ namespace Game
 			void damage(int damage);
 			void die();
 
-			void add_health_changed_receiver(Communication::Receiver<int>& receiver); // TODO: Make this possible to do on const objects
+			void add_health_changed_receiver(Communication::Receiver<int>& receiver);
+			// TODO: Make this possible to do on const objects
 			void add_died_receiver(Communication::Receiver<>& receiver);
 
 		private:
@@ -39,43 +41,32 @@ namespace Game
 		};
 
 
-		class Boss_death_component : public Component
+		class Projectile_component : public Component
 		{
 		public:
-			explicit Boss_death_component(Game_object& game_object);
-
-			void receive(const Events::Message& message) override;
+			Projectile_component(Game_object& game_object, int damage, std::string hit_layer);
 
 			// Serialization
-			static Boss_death_component* from_json(const Io::json& json, Game_object& game_object, const Component_type_map& component_map);
+			static Projectile_component* from_json(const Io::json& json, Game_object& game_object,
+												   const Component_type_map& component_map);
 			Io::json to_json() const override;
 			static std::string type();
 			std::string component_type() const override;
-			
+
+			// Overridden functions
+			void receive(const Events::Message& message) override;
+
 		private:
 			template<typename T>
 			void handle_event(const T& message) {}
 
 
-			void handle_event(const Events::Died& message);
+			void handle_event(const Events::Collided& message);
 
 			static const Deserializer add_to_map;
-		};
 
-
-		class Player_death_component : public Component
-		{
-		public:
-			explicit Player_death_component(Game_object& game_object);
-
-			// Serialization
-			static Player_death_component* from_json(const Io::json& json, Game_object& game_object, const Component_type_map& component_map);
-			Io::json to_json() const override;
-			static std::string type();
-			std::string component_type() const override;
-
-		private:
-			static const Deserializer add_to_map;
+			int damage_;
+			std::string hit_layer_;
 		};
 	}
 }

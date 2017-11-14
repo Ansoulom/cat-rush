@@ -51,16 +51,26 @@ namespace Game
 			void set_render_scale(double x, double y);
 			void render(const Resources::Texture_manager& tm, const Camera& camera) const;
 			void render(const Render_instance& instance) const;
-			void register_component(Objects::Graphics_component& gc);
-			void remove_component(Objects::Graphics_component& gc);
 			Render_settings render_settings() const;
 
+			void register_component(Objects::Graphics_component& gc);
+			void remove_component(Objects::Graphics_component& gc);
+			void update_grid_position(Objects::Graphics_component& component, Geometry::Vector<double> old_position);
+
 		private:
+			void put_in_grid(Objects::Graphics_component& comp, Geometry::Vector<int> grid_cell_position);
+			void remove_from_grid(Objects::Graphics_component& comp, Geometry::Vector<int> grid_cell_pos);
+
+			static Geometry::Vector<int> get_grid_cell_position(Geometry::Vector<double> object_position);
+
 			std::unordered_map<Geometry::Vector<int>, std::list<Objects::Graphics_component*>> grid_;
-			const double grid_cell_size_ = 10.0; // Very temporary and random number for now
 			const Core::Settings& settings_;
 			std::unique_ptr<SDL_Renderer, Sdl_deleter> sdl_renderer_;
+
 			Communication::Receiver<Objects::Graphics_component&> component_destroyed_receiver_;
+			Communication::Receiver<Objects::Graphics_component&, Geometry::Vector<double>> component_moved_receiver_;
+
+			static const double grid_cell_size; // Very temporary and random number for now
 
 			friend class Texture;
 		};

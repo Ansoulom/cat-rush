@@ -108,7 +108,6 @@ namespace Game
 			const auto layer = json.at("layer").get<int>();
 
 			const auto component = new Animated_graphics_component{game_object, layer, animations};
-			game_object.world().component_loader().register_component(*component);
 
 			return component;
 		}

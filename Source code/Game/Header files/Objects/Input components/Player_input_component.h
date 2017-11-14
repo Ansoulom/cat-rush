@@ -26,6 +26,7 @@ namespace Game
 				Geometry::Rectangle<double> stand_hitbox,
 				Geometry::Rectangle<double> crouch_hitbox);
 
+			// Serialization
 			static Player_input_component* from_json(
 				const Io::json& json,
 				Game_object& game_object,
@@ -34,15 +35,18 @@ namespace Game
 			std::string component_type() const override;
 			static std::string type();
 
+			// Overridden functions
 			void receive(const Events::Message& message) override;
 			void handle_input(Timer::Seconds time_passed, const Input::Input_handler& input) override;
 
+			// Player functions
 			void jump();
 			void attack();
 			void switch_state(std::unique_ptr<Player_state>&& state);
 			static double get_x_input(const Input::Input_handler& input);
 
 		private:
+			// Required for serialization
 			static const Deserializer add_to_map;
 
 

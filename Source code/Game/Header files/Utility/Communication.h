@@ -41,6 +41,7 @@ namespace Game
 
 			void add_receiver(Receiver<Args...>& receiver);
 			void remove_receiver(Receiver<Args...>& receiver);
+			void clear();
 			void dispatch(Args ... args);
 
 		private:
@@ -95,6 +96,18 @@ namespace Game
 			receivers_.erase(std::remove(receivers_.begin(), receivers_.end(), &receiver), receivers_.end());
 			receiver.dispatchers_.erase(std::remove(receiver.dispatchers_.begin(), receiver.dispatchers_.end(), this),
 										receiver.dispatchers_.end());
+		}
+
+
+		template<typename ... Args>
+		void Dispatcher<Args...>::clear()
+		{
+			for (auto receiver : receivers_)
+			{
+				receiver->dispatchers_.erase(std::remove(receiver->dispatchers_.begin(), receiver->dispatchers_.end(), this),
+					receiver->dispatchers_.end());
+			}
+			receivers_.clear();
 		}
 
 

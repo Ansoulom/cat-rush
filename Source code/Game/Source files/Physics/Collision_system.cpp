@@ -83,13 +83,13 @@ namespace Game
 
 		void Collision_system::register_component(Objects::Collider_component& comp)
 		{
-			register_component(comp, get_grid_cell_position(comp.game_object().position()));
+			put_in_grid(comp, get_grid_cell_position(comp.game_object().position()));
 		}
 
 
 		void Collision_system::remove_component(Objects::Collider_component& comp)
 		{
-			remove_component(comp, get_grid_cell_position(comp.game_object().position()));
+			remove_from_grid(comp, get_grid_cell_position(comp.game_object().position()));
 		}
 
 
@@ -100,13 +100,13 @@ namespace Game
 
 			if(old_cell_pos != cell_pos)
 			{
-				remove_component(comp, old_cell_pos);
-				register_component(comp, cell_pos);
+				remove_from_grid(comp, old_cell_pos);
+				put_in_grid(comp, cell_pos);
 			}
 		}
 
 
-		void Collision_system::register_component(Objects::Collider_component& comp, Geometry::Vector<int> grid_cell_pos)
+		void Collision_system::put_in_grid(Objects::Collider_component& comp, Geometry::Vector<int> grid_cell_pos)
 		{
 			for(auto& layer : comp.get_layers())
 			{
@@ -115,7 +115,7 @@ namespace Game
 		}
 
 
-		void Collision_system::remove_component(Objects::Collider_component& comp, Geometry::Vector<int> grid_cell_pos)
+		void Collision_system::remove_from_grid(Objects::Collider_component& comp, Geometry::Vector<int> grid_cell_pos)
 		{
 			auto iter = grid_.find(grid_cell_pos);
 			if(iter != grid_.end())
@@ -126,21 +126,22 @@ namespace Game
 					auto layer_iter = iter->second.find(layer);
 					if(layer_iter != iter->second.end())
 					{
-						layer_iter->second.erase(remove(layer_iter->second.begin(), layer_iter->second.end(), &comp));
+						layer_iter->second.erase(remove(layer_iter->second.begin(), layer_iter->second.end(), &comp), layer_iter->second.end());
 					}
 				}
 			}
+			// TODO: Remove lists if empty
 		}
 
 
 		Geometry::Vector<int> Collision_system::get_grid_cell_position(Geometry::Vector<double> object_position)
 		{
-			auto cell_x = static_cast<int>(object_position.get_x() / grid_cell_size_);
-			auto cell_y = static_cast<int>(object_position.get_y() / grid_cell_size_);
+			auto cell_x = static_cast<int>(object_position.get_x() / grid_cell_size);
+			auto cell_y = static_cast<int>(object_position.get_y() / grid_cell_size);
 			return {cell_x, cell_y};
 		}
 
 
-		const double Collision_system::grid_cell_size_{10.0}; // VERY TEMPORARY VALUE
+		const double Collision_system::grid_cell_size{10.0}; // VERY TEMPORARY VALUE
 	}
 }

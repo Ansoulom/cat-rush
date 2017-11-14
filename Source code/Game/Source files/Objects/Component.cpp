@@ -99,6 +99,12 @@ namespace Game
 		}
 
 
+		void Component_type_map::clear()
+		{
+			map_.clear();
+		}
+
+
 		Component* Component_type_map::find_component(const std::string& type) const
 		{
 			const auto iter = map_.find(type);

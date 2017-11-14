@@ -9,7 +9,7 @@ namespace Game
 	namespace Objects
 	{
 		Game_object::Game_object(Geometry::Vector<double> position, Core::World& world, std::optional<std::string> name)
-			: position_{position}, world_{world}, name_{name} { }
+			: position_{position}, name_{name}, world_{world}, destroyed_{false} { }
 
 
 		Game_object::~Game_object()
@@ -33,6 +33,16 @@ namespace Game
 			{
 				component->handle_input(time_passed, input);
 			}
+		}
+
+
+		void Game_object::destroy()
+		{
+			/*destroyed_dispatcher_.dispatch(*this);
+			destroyed_dispatcher_.clear();
+			components_.clear();
+			component_map_.clear();*/
+			destroyed_ = true;
 		}
 
 

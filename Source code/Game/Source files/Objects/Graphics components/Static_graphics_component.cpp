@@ -4,7 +4,6 @@
 #include "Game_object.h"
 #include "Component.h"
 #include "Resource_managers.h"
-#include "World.h"
 
 
 namespace Game
@@ -45,7 +44,6 @@ namespace Game
 			const auto layer = json.at("layer").get<int>();
 
 			const auto component = new Static_graphics_component{game_object, texture, layer};
-			game_object.world().component_loader().register_component(*component);
 
 			return component;
 		}

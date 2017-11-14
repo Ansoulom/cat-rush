@@ -26,19 +26,26 @@ namespace Game
 
 		void World::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
 		{
+			add_new_objects();
 			for(auto& object : objects_)
 			{
-				object->handle_input(time_passed, input);
+				if(!object->destroyed_)
+					object->handle_input(time_passed, input);
 			}
+			remove_destroyed_objects();
 		}
 
 
 		void World::update(Timer::Seconds time_passed)
 		{
+			add_new_objects();
 			for(auto& object : objects_)
 			{
-				object->update(time_passed);
+				if(!object->destroyed_)
+					object->update(time_passed);
 			}
+			remove_destroyed_objects();
+
 			camera_.update(time_passed);
 		}
 
@@ -54,7 +61,6 @@ namespace Game
 			{
 				world->add_object(std::unique_ptr<Objects::Game_object>{Objects::Game_object::from_json(object_json, *world)});
 			}
-			// TODO: Set camera
 			return world;
 		}
 
@@ -70,10 +76,45 @@ namespace Game
 		}
 
 
+		void World::add_new_objects()
+		{
+			for(auto& object : to_add_)
+			{
+				objects_.push_back(move(object));
+			}
+			to_add_.clear();
+		}
+
+
+		void World::remove_destroyed_objects()
+		{
+			for(auto i = 0; i < objects_.size(); ++i)
+			{
+				if(objects_[i]->destroyed_)
+				{
+					objects_.erase(objects_.begin() + i);
+					--i;
+				}
+			}
+		}
+
+
 		void World::add_object(std::unique_ptr<Objects::Game_object>&& object)
 		{
 			if(object->name()) object_name_map_.emplace(object->name().value(), object.get());
-			objects_.push_back(move(object));
+
+			// Add to a temporary list until it can be put into the regular list
+			to_add_.push_back(move(object));
+		}
+
+
+		void World::destroy_object(Objects::Game_object& object)
+		{
+			object.destroy();
+			if(object.name())
+			{
+				object_name_map_.erase(object_name_map_.find(object.name().value()));
+			}
 		}
 
 

@@ -161,6 +161,9 @@
 				{
 					"type": "Combat_component",
 					"max_health": 100
+				},
+				{
+					"type": "Noodles_ai_component"
 				}
 			]
 		},

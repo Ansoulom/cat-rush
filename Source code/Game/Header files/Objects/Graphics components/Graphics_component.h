@@ -33,7 +33,8 @@ namespace Game
 		{
 		public:
 			explicit Graphics_component(Game_object& game_object);
-			virtual ~Graphics_component();
+
+			~Graphics_component() override;
 
 			void receive(const Events::Message& message) override;
 
@@ -41,10 +42,19 @@ namespace Game
 				const Resources::Texture_manager& tm,
 				const Camera& camera,
 				const Graphics::Render_settings& render_settings) const = 0;
-			void add_destroy_listener(Communication::Receiver<Graphics_component&> listener);
+
+			void add_destroy_receiver(Communication::Receiver<Graphics_component&>& receiver);
+			void add_moved_receiver(Communication::Receiver<Graphics_component&, Geometry::Vector<double>>& receiver);
 
 		private:
+			template<typename T>
+			void handle_event(const T& message) {}
+
+
+			void handle_event(const Events::Position_changed& message);
+
 			Communication::Dispatcher<Graphics_component&> destroy_event_;
+			Communication::Dispatcher<Graphics_component&, Geometry::Vector<double>> moved_event_;
 		};
 	}
 }

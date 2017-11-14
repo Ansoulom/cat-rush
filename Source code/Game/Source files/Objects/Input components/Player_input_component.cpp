@@ -44,7 +44,7 @@ namespace Game
 			old_state_ = "Attacking";
 			game_object().send(Events::State_changed{old_state_});
 
-			// EXPERIMENTAL
+			// EXPERIMENTAL TODO: Remove magic numbers and shit
 			const auto damage = 3;
 			const auto offset = Geometry::Vector<double>{static_cast<int>(direction_) * 0.2f, 0.0};
 			const auto width = 0.2f;

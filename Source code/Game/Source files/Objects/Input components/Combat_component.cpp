@@ -1,4 +1,6 @@
 #include "Combat_component.h"
+#include "Collider_component.h"
+#include "World.h"
 
 
 namespace Game
@@ -86,75 +88,55 @@ namespace Game
 		}
 
 
-		// Boss death component
+		Projectile_component::
+			Projectile_component(Game_object& game_object, int damage, std::string hit_layer) : Component{game_object},
+																								damage_{damage}, hit_layer_{hit_layer} {}
 
-		Boss_death_component::Boss_death_component(Game_object& game_object) : Component{game_object} {}
+
+		Projectile_component* Projectile_component::from_json(const Io::json& json, Game_object& game_object,
+															  const Component_type_map& component_map)
+		{
+			return new Projectile_component{game_object, json.at("damage").get<int>(), json.at("hit_layer").get<std::string>()};
+		}
 
 
-		void Boss_death_component::receive(const Events::Message& message)
+		Io::json Projectile_component::to_json() const
+		{
+			return {{"type", type()}, {"damage", damage_}, {"hit_layer", hit_layer_}};
+		}
+
+
+		std::string Projectile_component::type()
+		{
+			return "Projectile_component";
+		}
+
+
+		std::string Projectile_component::component_type() const
+		{
+			return type();
+		}
+
+
+		void Projectile_component::receive(const Events::Message& message)
 		{
 			visit([this](const auto& msg) { handle_event(msg); }, message);
 		}
 
 
-		Boss_death_component* Boss_death_component::from_json(const Io::json& json, Game_object& game_object,
-															  const Component_type_map& component_map)
+		void Projectile_component::handle_event(const Events::Collided& message)
 		{
-			return new Boss_death_component{game_object};
+			if(message.layer == hit_layer_)
+			{
+				if(auto combat_comp = message.collided_with.game_object().find_component<Combat_component>())
+				{
+					combat_comp->damage(damage_);
+				}
+			}
+			game_object().world().destroy_object(game_object());
 		}
 
 
-		Io::json Boss_death_component::to_json() const
-		{
-			return {{"type", type()}};
-		}
-
-
-		std::string Boss_death_component::type()
-		{
-			return "Boss_death_component";
-		}
-
-
-		std::string Boss_death_component::component_type() const
-		{
-			return type();
-		}
-
-
-		void Boss_death_component::handle_event(const Events::Died& message)
-		{
-			// Should this even be here?
-		}
-
-
-		// Player death component
-
-		Player_death_component::Player_death_component(Game_object& game_object) : Component{game_object} {}
-
-
-		Player_death_component* Player_death_component::from_json(const Io::json& json, Game_object& game_object,
-																  const Component_type_map& component_map)
-		{
-			return new Player_death_component{game_object};
-		}
-
-
-		Io::json Player_death_component::to_json() const
-		{
-			return {{"type", type()}};
-		}
-
-
-		std::string Player_death_component::type()
-		{
-			return "Player_death_component";
-		}
-
-
-		std::string Player_death_component::component_type() const
-		{
-			return type();
-		}
+		const Component::Deserializer Projectile_component::add_to_map{type(), from_json};
 	}
 }

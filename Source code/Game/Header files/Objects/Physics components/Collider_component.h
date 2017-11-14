@@ -45,20 +45,23 @@ namespace Game
 				std::vector<std::string> layers,
 				std::vector<std::string> check_layers);
 
-			void update(Timer::Seconds time_passed) override;
-			void receive(const Events::Message& message) override;
+			~Collider_component() override;
 
-			const std::vector<std::string>& get_layers() const;
-			const std::vector<std::string>& get_check_layers() const;
-			void set_shape(const Geometry::Shape<double>& shape);
-
-			static Collider_component* from_json(
-				const Io::json& j,
-				Game_object& game_object,
+			// Serialization
+			static Collider_component* from_json(const Io::json& j, Game_object& game_object,
 				const Component_type_map& component_map);
 			Io::json to_json() const override;
 			std::string component_type() const override;
 			static std::string type();
+
+			// Overridden functions
+			void update(Timer::Seconds time_passed) override;
+			void receive(const Events::Message& message) override;
+
+			// Collider functions
+			const std::vector<std::string>& get_layers() const;
+			const std::vector<std::string>& get_check_layers() const;
+			void set_shape(const Geometry::Shape<double>& shape);
 
 		private:
 			template<typename T>
@@ -75,6 +78,7 @@ namespace Game
 			std::unique_ptr<Geometry::Shape<double>> shape_;
 			std::vector<std::string> layers_, check_layers_;
 
+			// Required for serialization
 			static const Deserializer add_to_map;
 
 			friend std::unique_ptr<Geometry::Shape<double>> Physics::shape_from_collider(const Collider_component& collider);

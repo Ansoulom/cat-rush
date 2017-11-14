@@ -96,6 +96,7 @@ set(PROJ_HEADERS
 "${GAME_HEADER_DIR}/Time/Timer.h"
 "${GAME_HEADER_DIR}/UI/HUD.h"
 "${GAME_HEADER_DIR}/Utility/Communication.h"
+"${GAME_HEADER_DIR}/Utility/Randomness.h"
 "${GAME_HEADER_DIR}/Wrappers/SDL_deleter.h"
 "${GAME_HEADER_DIR}/Wrappers/SDL_wrapper.h"
 )
@@ -140,6 +141,7 @@ set(PROJ_SOURCES
 "${GAME_SOURCE_DIR}/Time/Frame_timer.cpp"
 "${GAME_SOURCE_DIR}/Time/Timer.cpp"
 "${GAME_SOURCE_DIR}/UI/HUD.cpp"
+"${GAME_SOURCE_DIR}/Utility/Randomness.cpp"
 "${GAME_SOURCE_DIR}/Wrappers/SDL_deleter.cpp"
 "${GAME_SOURCE_DIR}/Wrappers/SDL_wrapper.cpp"
 )

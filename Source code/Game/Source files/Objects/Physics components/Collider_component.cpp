@@ -19,7 +19,16 @@ namespace Game
 			: Component{game_object},
 			  shape_{move(shape)},
 			  layers_{layers},
-			  check_layers_{check_layers} { }
+			  check_layers_{check_layers}
+		{
+			game_object.world().collision_system().register_component(*this);
+		}
+
+
+		Collider_component::~Collider_component()
+		{
+			game_object().world().collision_system().remove_component(*this);
+		}
 
 
 		void Collider_component::update(Timer::Seconds time_passed) { }
@@ -60,7 +69,6 @@ namespace Game
 				j.at("layers").get<std::vector<std::string>>(),
 				j.at("check_layers").get<std::vector<std::string>>()
 			};
-			game_object.world().collision_system().register_component(*component);
 			return component;
 		}
 

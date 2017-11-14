@@ -70,13 +70,18 @@ namespace Game
 				Game_object& game_object);
 			static Io::json pop_component_json(std::vector<Io::json>& component_pool, const std::string& type);
 
+			void destroy();
+
 			Geometry::Vector<double> position_;
 			std::optional<std::string> name_;
 			std::vector<std::unique_ptr<Component>> components_{};
 			Component_type_map component_map_{};
 			Core::World& world_;
+			bool destroyed_;
 
 			Communication::Dispatcher<Game_object&> destroyed_dispatcher_; // TODO: Make this more legit
+
+			friend class Core::World;
 		};
 
 

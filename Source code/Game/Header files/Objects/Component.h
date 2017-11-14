@@ -199,6 +199,7 @@ namespace Game
 			Component& get_component(const std::string& type) const;
 			Component* find_component(const std::string& type) const;
 			void add_component(Component& component);
+			void clear();
 
 		private:
 			std::unordered_map<std::string, Component*> map_;

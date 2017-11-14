@@ -33,6 +33,7 @@ namespace Game
 			World& operator=(World&& other) = delete;
 
 			void add_object(std::unique_ptr<Objects::Game_object>&& object);
+			void destroy_object(Objects::Game_object& object);
 			const Objects::Component_loader& component_loader() const;
 			Physics::Collision_system& collision_system();
 			const Camera& camera() const;
@@ -50,12 +51,17 @@ namespace Game
 			Io::json to_json() const;
 
 		private:
-			std::vector<std::unique_ptr<Objects::Game_object>> objects_;
-			std::unordered_map<std::string, Objects::Game_object*> object_name_map_;
+			void add_new_objects();
+			void remove_destroyed_objects();
+
 			Physics::Collision_system collision_system_;
 			const Objects::Component_loader component_loader_;
-			Game_core& game_context_;
 			Camera camera_;
+			std::vector<std::unique_ptr<Objects::Game_object>> objects_;
+			std::vector<std::unique_ptr<Objects::Game_object>> to_add_;
+			std::unordered_map<std::string, Objects::Game_object*> object_name_map_;
+			Game_core& game_context_;
+			
 		};
 
 

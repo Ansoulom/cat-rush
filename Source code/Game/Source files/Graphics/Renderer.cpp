@@ -33,7 +33,10 @@ namespace Game
 					  -1,
 					  SDL_RENDERER_ACCELERATED | (settings.user_settings().vsync() ? SDL_RENDERER_PRESENTVSYNC : 0)),
 				  Sdl_deleter{}
-			  }, component_destroyed_receiver_{bind(&Renderer::remove_component, this, std::placeholders::_1)}
+			  }, component_destroyed_receiver_{bind(&Renderer::remove_component, this, std::placeholders::_1)},
+			  component_moved_receiver_{
+				  bind(&Renderer::update_grid_position, this, std::placeholders::_1, std::placeholders::_2)
+			  }
 		{
 			if(!sdl_renderer_)
 			{
@@ -47,10 +50,10 @@ namespace Game
 		{
 			auto render_queue = std::vector<Render_instance>{};
 			auto camera_box = camera.bounding_box();
-			const auto start_x = static_cast<int>(camera_box.left() / grid_cell_size_) - 1;
-			const auto end_x = static_cast<int>(camera_box.right() / grid_cell_size_) + 1;
-			const auto start_y = static_cast<int>(camera_box.top() / grid_cell_size_) - 1;
-			const auto end_y = static_cast<int>(camera_box.bottom() / grid_cell_size_) + 1;
+			const auto start_x = static_cast<int>(camera_box.left() / grid_cell_size) - 1;
+			const auto end_x = static_cast<int>(camera_box.right() / grid_cell_size) + 1;
+			const auto start_y = static_cast<int>(camera_box.top() / grid_cell_size) - 1;
+			const auto end_y = static_cast<int>(camera_box.bottom() / grid_cell_size) + 1;
 
 			for(auto x = start_x; x <= end_x; ++x)
 			{
@@ -87,32 +90,56 @@ namespace Game
 
 		void Renderer::register_component(Objects::Graphics_component& gc)
 		{
-			auto cell_x = static_cast<int>(gc.game_object().position().get_x() / grid_cell_size_);
-			auto cell_y = static_cast<int>(gc.game_object().position().get_y() / grid_cell_size_);
-			auto cell_pos = Geometry::Vector<int>{cell_x, cell_y};
-
-			grid_[cell_pos].push_back(&gc);
-
-			gc.add_destroy_listener(component_destroyed_receiver_);
+			put_in_grid(gc, get_grid_cell_position(gc.game_object().position()));
+			gc.add_destroy_receiver(component_destroyed_receiver_);
 		}
 
 
 		void Renderer::remove_component(Objects::Graphics_component& gc)
 		{
-			auto cell_x = static_cast<int>(gc.game_object().position().get_x() / grid_cell_size_);
-			auto cell_y = static_cast<int>(gc.game_object().position().get_y() / grid_cell_size_);
-			auto cell_pos = Geometry::Vector<int>{cell_x, cell_y};
-			auto iter = grid_.find(cell_pos);
-			if(iter != grid_.end())
+			remove_from_grid(gc, get_grid_cell_position(gc.game_object().position()));
+		}
+
+
+		void Renderer::update_grid_position(Objects::Graphics_component& component,
+											const Geometry::Vector<double> old_position)
+		{
+			const auto old_cell_pos = get_grid_cell_position(old_position);
+			const auto cell_pos = get_grid_cell_position(component.game_object().position());
+
+			if(old_cell_pos != cell_pos)
 			{
-				iter->second.erase(remove(iter->second.begin(), iter->second.end(), &gc));
+				remove_from_grid(component, old_cell_pos);
+				put_in_grid(component, cell_pos);
 			}
+		}
+
+
+		void Renderer::put_in_grid(Objects::Graphics_component& comp, const Geometry::Vector<int> grid_cell_position)
+		{
+			grid_[grid_cell_position].push_back(&comp);
+		}
+
+
+		void Renderer::remove_from_grid(Objects::Graphics_component& comp, const Geometry::Vector<int> grid_cell_pos)
+		{
+			auto iter = grid_.find(grid_cell_pos);
+			assert(iter != grid_.end());
+			iter->second.erase(remove(iter->second.begin(), iter->second.end(), &comp), iter->second.end());
 		}
 
 
 		Render_settings Renderer::render_settings() const
 		{
 			return {{settings_.constants().source_width(), settings_.constants().source_height()}};
+		}
+
+
+		Geometry::Vector<int> Renderer::get_grid_cell_position(Geometry::Vector<double> object_position)
+		{
+			const auto cell_x = static_cast<int>(object_position.get_x() / grid_cell_size);
+			const auto cell_y = static_cast<int>(object_position.get_y() / grid_cell_size);
+			return {cell_x, cell_y};
 		}
 
 
@@ -190,5 +217,8 @@ namespace Game
 		{
 			SDL_RenderSetScale(sdl_renderer_.get(), static_cast<float>(x), static_cast<float>(y));
 		}
+
+
+		const double Renderer::grid_cell_size{10.0}; // VERY TEMPORARY VALUE
 	}
 }
