@@ -53,7 +53,9 @@ namespace Game
 			auto frame_timer = Frame_timer{};
 			while(running_)
 			{
-				const auto time_passed = frame_timer.update();
+				auto time_passed = frame_timer.update();
+				const auto max_time = std::chrono::nanoseconds{std::chrono::seconds{1}} / 10; // TODO: Cleanup
+				if(time_passed > max_time) time_passed = max_time;
 				const auto fps = frame_timer.get_framerate();
 				const auto title = settings().constants().name() + std::string{"    FPS: "} + std::to_string(fps);
 				window_.set_title(title);
@@ -124,14 +126,14 @@ namespace Game
 		{
 			hud_.connect_with_world(*world_);
 
-			if (auto player = world_->find_object_by_name("player"))
+			if(auto player = world_->find_object_by_name("player"))
 			{
-				if (const auto player_combat = player->find_component<Objects::Combat_component>())
+				if(const auto player_combat = player->find_component<Objects::Combat_component>())
 					player_combat->add_died_receiver(player_died_receiver_);
 			}
-			if (auto boss = world_->find_object_by_name("boss"))
+			if(auto boss = world_->find_object_by_name("boss"))
 			{
-				if (const auto boss_combat = boss->find_component<Objects::Combat_component>())
+				if(const auto boss_combat = boss->find_component<Objects::Combat_component>())
 					boss_combat->add_died_receiver(boss_died_receiver_);
 			}
 		}
