@@ -1,0 +1,41 @@
+{
+	"x_position": 0.0,
+	"y_position": 0.0,
+	"components":
+	[
+		{
+			"type": "Collider_component",
+			"shape":
+			{
+				"type": "Circle",
+				"x_position": 0.0,
+				"y_position": 0.028,
+				"radius": 0.056
+			},
+			"layers": ["projectiles"],
+			"check_layers": ["player", "solid"]
+		},
+		{
+			"type": "Static_graphics_component",
+			"texture": "Mini_noodles",
+			"layer": 2
+		},
+		{
+			"type": "Projectile_component",
+			"damage": 5,
+			"hit_layer": "player"
+		},
+		{
+			"type": "Movement_component"
+		},
+		{
+			"type": "Acceleration_component",
+			"x_acceleration": 0.0,
+			"y_acceleration": 9.82,
+			"requires":
+			[
+				"Movement_component"
+			]
+		}
+	]
+}

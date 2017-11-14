@@ -116,24 +116,21 @@ namespace Game
 
 		void Noodles_ai_component::Noodle_proj_state::create_projectile()
 		{
-			// TODO: Fix like all this code, get rid of magic numbers etc.
-			auto object = std::make_unique<Game_object>(randomize_position(), boss_->game_object().world());
-			auto collider = std::make_unique<Collider_component>(*object,
-																 std::make_unique<Geometry::Circle<double>>(Geometry::Vector<double>{0.0, 0.028}, 0.056),
-																 std::vector<std::string>{"projectiles"}, std::vector<std::string>{"player", "solid"});
-			auto graphics = std::make_unique<Static_graphics_component>(*object, "Mini_noodles", 2);
-			auto projectile = std::make_unique<Projectile_component>(*object, 5, "player");
-			auto movement = std::make_unique<Movement_component>(*object);
-			auto gravity = std::make_unique<Acceleration_component>(*object, Geometry::Vector<double>{0.0, 9.82}, *movement);
+			// TODO: Put this in its own function
+			auto file = boost::filesystem::path{std::string{"Prefabs/Noodle_projectile.json"}};
+			std::ifstream in{file.string()};
+			if(!in.is_open())
+			{
+				throw std::runtime_error{std::string{"Could not open level file"} + file.string()};
+			}
 
-			object->add_component(move(collider));
-			object->add_component(move(graphics));
-			object->add_component(move(projectile));
-			object->add_component(move(movement));
-			object->add_component(move(gravity));
-			// TODO: Add movement and acceleration components
-
-			boss_->game_object().world().add_object(move(object));
+			auto object_json = Io::json{};
+			in >> object_json;
+			auto projectile = std::unique_ptr<Game_object>{
+				Game_object::from_json(object_json, boss_->game_object().world())
+			};
+			projectile->position() = randomize_position(); // TODO: Make sure that a position changed event fires
+			boss_->game_object().world().add_object(move(projectile));
 		}
 
 

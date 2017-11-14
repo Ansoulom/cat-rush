@@ -209,3 +209,9 @@ add_custom_command(TARGET ${PROJ_NAME} POST_BUILD
 					COMMAND ${CMAKE_COMMAND} -E copy_directory
 						"${PROJ_PATH}/World"
 						$<TARGET_FILE_DIR:${PROJ_NAME}>/World)
+						
+# Copy world files to the build directory
+add_custom_command(TARGET ${PROJ_NAME} POST_BUILD
+					COMMAND ${CMAKE_COMMAND} -E copy_directory
+						"${PROJ_PATH}/Prefabs"
+						$<TARGET_FILE_DIR:${PROJ_NAME}>/Prefabs)
