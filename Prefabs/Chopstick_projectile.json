@@ -7,22 +7,23 @@
 			"type": "Collider_component",
 			"shape":
 			{
-				"type": "Circle",
+				"type": "Rectangle",
 				"x_position": 0.0,
-				"y_position": 0.028,
-				"radius": 0.056
+				"y_position": 0.0,
+				"width": 0.216,
+				"height": 0.204
 			},
 			"layers": ["projectiles"],
 			"check_layers": ["player", "solid"]
 		},
 		{
 			"type": "Static_graphics_component",
-			"texture": "Mini_noodles",
+			"texture": "Chopsticks",
 			"layer": 2
 		},
 		{
 			"type": "Projectile_component",
-			"damage": 5,
+			"damage": 25,
 			"hit_layer": "player"
 		},
 		{

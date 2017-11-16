@@ -99,8 +99,8 @@ namespace Game
 			}
 			if(projectile_timer_.update(time_passed))
 			{
-				create_projectile();
 				projectile_timer_.reset_to_surplus();
+				create_projectile();
 			}
 
 			return false;
@@ -109,7 +109,8 @@ namespace Game
 
 		void Noodles_ai_component::Noodle_proj_state::choose_new_state()
 		{
-			boss_->switch_state(std::make_unique<Chopstick_rain_state>(*boss_, Timer::Seconds{3.0}));
+			boss_->switch_state(std::make_unique<Chopstick_rain_state>(*boss_, Timer::Seconds{0.2}, 7,
+																	   Geometry::Vector<double>{-0.7, -0.35}, 0.2));
 			// TODO: Get rid of magic number
 		}
 
@@ -121,7 +122,7 @@ namespace Game
 			std::ifstream in{file.string()};
 			if(!in.is_open())
 			{
-				throw std::runtime_error{std::string{"Could not open level file"} + file.string()};
+				throw std::runtime_error{std::string{"Could not open prefab file"} + file.string()};
 			}
 
 			auto object_json = Io::json{};
@@ -144,7 +145,12 @@ namespace Game
 		// Chopstick_rain_state
 
 		Noodles_ai_component::Chopstick_rain_state::Chopstick_rain_state(Noodles_ai_component& boss,
-																		 Timer::Seconds time_in_state) : State{boss}, state_timer_{time_in_state} {}
+																		 const Timer::Seconds time_between_projectiles, const int number_of_projectiles,
+																		 const Geometry::Vector<double> start_position, const double projectile_spacing) : State{boss},
+																																						  projectile_timer_{time_between_projectiles},
+																																						  num_projectiles_{number_of_projectiles},
+																																						  start_position_{start_position},
+																																						  projectile_spacing_{projectile_spacing} {}
 
 
 		void Noodles_ai_component::Chopstick_rain_state::enter() {}
@@ -155,9 +161,14 @@ namespace Game
 
 		bool Noodles_ai_component::Chopstick_rain_state::handle_input(Timer::Seconds time_passed)
 		{
-			if(state_timer_.update(time_passed))
+			if(projectile_timer_.update(time_passed))
 			{
-				choose_new_state();
+				projectile_timer_.reset_to_surplus();
+				create_projectile();
+				if(++projectiles_shot_ >= num_projectiles_)
+				{
+					choose_new_state();
+				}
 			}
 			return false;
 		}
@@ -166,6 +177,27 @@ namespace Game
 		void Noodles_ai_component::Chopstick_rain_state::choose_new_state()
 		{
 			boss_->switch_state(std::make_unique<Noodle_proj_state>(*boss_, Timer::Seconds{3.0}, Timer::Seconds{0.2}));
+		}
+
+
+		void Noodles_ai_component::Chopstick_rain_state::create_projectile()
+		{
+			// TODO: Put this in its own function
+			auto file = boost::filesystem::path{std::string{"Prefabs/Chopstick_projectile.json"}};
+			std::ifstream in{file.string()};
+			if(!in.is_open())
+			{
+				throw std::runtime_error{std::string{"Could not open level file"} + file.string()};
+			}
+
+			auto object_json = Io::json{};
+			in >> object_json;
+			auto projectile = std::unique_ptr<Game_object>{
+				Game_object::from_json(object_json, boss_->game_object().world())
+			};
+			projectile->position() = start_position_ + Geometry::Vector<double>{projectile_spacing_ * projectiles_shot_, 0.0};
+			// TODO: Make sure that a position changed event fires
+			boss_->game_object().world().add_object(move(projectile));
 		}
 	}
 }

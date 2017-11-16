@@ -77,7 +77,7 @@ namespace Game
 			class Chopstick_rain_state : public State
 			{
 			public:
-				Chopstick_rain_state(Noodles_ai_component& boss, Timer::Seconds time_in_state);
+				Chopstick_rain_state(Noodles_ai_component& boss, Timer::Seconds time_between_projectiles, int number_of_projectiles, Geometry::Vector<double> start_position, double projectile_spacing);
 
 				void enter() override;
 				void exit() override;
@@ -86,7 +86,13 @@ namespace Game
 				void choose_new_state();
 
 			private:
-				Timer state_timer_;
+				void create_projectile();
+
+				Timer projectile_timer_;
+				const int num_projectiles_;
+				int projectiles_shot_{};
+				Geometry::Vector<double> start_position_;
+				double projectile_spacing_;
 			};
 		};
 	}
