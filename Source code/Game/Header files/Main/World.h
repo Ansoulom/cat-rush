@@ -32,6 +32,8 @@ namespace Game
 			World& operator=(const World& other) = delete;
 			World& operator=(World&& other) = delete;
 
+			Objects::Game_object& add_object_from_prefab(const std::string& prefab_name);
+			Objects::Game_object& add_object_from_prefab(const std::string& prefab_name, Geometry::Vector<double> position);
 			void add_object(std::unique_ptr<Objects::Game_object>&& object);
 			void destroy_object(Objects::Game_object& object);
 			const Objects::Component_loader& component_loader() const;

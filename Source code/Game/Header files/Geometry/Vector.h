@@ -20,6 +20,7 @@ namespace Game
 			Vector& operator+=(const Vector& other);
 			Vector& operator-=(const Vector& other);
 			Vector& operator*=(T other);
+			Vector& operator/=(T other);
 
 			T get_magnitude() const; // Returns the length.
 			T get_angle() const; // Returns the angle in degrees, from the positive x axis towards the positive y axis.
@@ -79,6 +80,16 @@ namespace Game
 			y_ *= other;
 			return *this;
 		}
+
+
+		template<typename T>
+		Vector<T>& Vector<T>::operator/=(T other)
+		{
+			x_ /= other;
+			y_ /= other;
+			return *this;
+		}
+
 
 
 		template<typename T>
@@ -181,6 +192,14 @@ namespace Game
 		Vector<T> operator*(T left, Vector<T> right)
 		{
 			return right * left;
+		}
+
+
+		template<typename T>
+		Vector<T> operator/(Vector<T> left, T right)
+		{
+			left /= right;
+			return left;
 		}
 
 

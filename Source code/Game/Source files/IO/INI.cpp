@@ -49,7 +49,7 @@ namespace Game
 			std::ifstream in{file.string()};
 			if(!in.is_open())
 			{
-				throw std::runtime_error{std::string{"Could not open settings file"} + file.string()};
+				throw std::runtime_error{std::string{"Could not open ini file"} + file.string()};
 			}
 			auto document = std::string{};
 			in.seekg(0, std::ios::end);

@@ -173,13 +173,17 @@ namespace Game
 
 		Game_object* Game_object::from_json(const Io::json& json, Core::World& world)
 		{
+			return from_json(json, world, {json.at("x_position").get<double>() , json.at("y_position").get<double>()});
+		}
+
+
+		Game_object* Game_object::from_json(const Io::json& json, Core::World& world, const Geometry::Vector<double> position)
+		{
 			const auto name_iter = json.find("name");
 			const auto name = name_iter == json.end() || name_iter->is_null() ?
 								  std::optional<std::string>{} :
 								  std::optional<std::string>{name_iter->get<std::string>()};
-			const auto x = json.at("x_position").get<double>();
-			const auto y = json.at("y_position").get<double>();
-			const auto object = new Game_object{{x, y}, world, name};
+			const auto object = new Game_object{position, world, name};
 
 			// Load all components while managing dependencies between components
 			auto load_queue = json.at("components").get<std::vector<Io::json>>();

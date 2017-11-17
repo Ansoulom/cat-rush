@@ -5,6 +5,7 @@
 #include "json.hpp"
 #include <fstream>
 #include "Settings.h"
+#include "JSON_extensions.h"
 
 
 namespace Game
@@ -99,6 +100,33 @@ namespace Game
 		}
 
 
+		Objects::Game_object& World::add_object_from_prefab(const std::string& prefab_name)
+		{
+			const auto object_json = Io::load_json_from_file({std::string{"Prefabs/"} + prefab_name + ".json"});
+			auto obj_ptr = std::unique_ptr<Objects::Game_object>{
+				Objects::Game_object::from_json(object_json, *this)
+			};
+			auto& object = *obj_ptr;
+			add_object(move(obj_ptr));
+
+			return object;
+		}
+
+
+		Objects::Game_object& World::
+			add_object_from_prefab(const std::string& prefab_name, const Geometry::Vector<double> position)
+		{
+			const auto object_json = Io::load_json_from_file({std::string{"Prefabs/"} + prefab_name + ".json"});
+			auto obj_ptr = std::unique_ptr<Objects::Game_object>{
+				Objects::Game_object::from_json(object_json, *this, position)
+			};
+			auto& object = *obj_ptr;
+			add_object(move(obj_ptr));
+
+			return object;
+		}
+
+
 		void World::add_object(std::unique_ptr<Objects::Game_object>&& object)
 		{
 			if(object->name()) object_name_map_.emplace(object->name().value(), object.get());
@@ -152,18 +180,8 @@ namespace Game
 
 		World* load_world(const std::string& name, Game_core& game_context, const Objects::Component_loader& component_loader)
 		{
-			auto file = boost::filesystem::path{std::string{"World/"} + name + std::string{".json"}};
-			std::ifstream in{file.string()};
-			if(!in.is_open())
-			{
-				// TODO: Use a better exception
-				throw std::runtime_error{std::string{"Could not open level file"} + file.string()};
-			}
-
-			auto world_json = Io::json{};
-			in >> world_json;
-
-			return World::from_json(world_json, game_context, component_loader);
+			return World::from_json(Io::load_json_from_file({std::string{"World/"} + name + std::string{".json"}}), game_context,
+									component_loader);
 		}
 	}
 }

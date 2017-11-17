@@ -13,11 +13,23 @@ namespace Game
 		{
 			class State;
 		public:
-			explicit Noodles_ai_component(Game_object& game_object);
+			explicit Noodles_ai_component(
+				Game_object& game_object,
+				Timer::Seconds min_noodle_rain_time,
+				Timer::Seconds max_noodle_rain_time,
+				Timer::Seconds time_between_noodles,
+				Geometry::Vector<double> noodles_spawn_start,
+				Geometry::Vector<double> noodles_spawn_end,
+				int number_of_chopsticks,
+				Timer::Seconds time_between_chopsticks,
+				Geometry::Vector<double> chopsticks_spawn_start,
+				Geometry::Vector<double> chopsticks_spawn_end);
 
 			// Serialization
-			static Noodles_ai_component* from_json(const Io::json& j, Game_object& game_object,
-																	const Component_type_map& component_map);
+			static Noodles_ai_component* from_json(
+				const Io::json& j,
+				Game_object& game_object,
+				const Component_type_map& component_map);
 			Io::json to_json() const override;
 			std::string component_type() const override;
 			static std::string type();
@@ -31,6 +43,14 @@ namespace Game
 		private:
 			// Required for serialization
 			static const Deserializer add_to_map;
+
+
+			Timer::Seconds min_noodle_rain_time_, max_noodle_rain_time_;
+			Timer::Seconds time_between_noodle_projectiles_;
+			Geometry::Vector<double> noodles_spawn_start_, noodles_spawn_end_;
+			int num_chopstick_projectiles_;
+			Timer::Seconds time_between_chopstick_projectiles_;
+			Geometry::Vector<double> chopsticks_spawn_start_, chopsticks_spawn_end_;
 
 			std::unique_ptr<State> state_;
 
@@ -56,7 +76,12 @@ namespace Game
 			class Noodle_proj_state : public State
 			{
 			public:
-				Noodle_proj_state(Noodles_ai_component& boss, Timer::Seconds time_in_state, Timer::Seconds time_between_projectiles);
+				Noodle_proj_state(
+					Noodles_ai_component& boss,
+					Timer::Seconds time_in_state,
+					Timer::Seconds time_between_projectiles,
+					Geometry::Vector<double> spawn_start,
+					Geometry::Vector<double> spawn_end);
 
 				void enter() override;
 				void exit() override;
@@ -67,17 +92,24 @@ namespace Game
 			private:
 				void create_projectile();
 
-				static Geometry::Vector<double> randomize_position();
+				Geometry::Vector<double> randomize_position();
 
 				Timer state_timer_;
 				Timer projectile_timer_;
+				Geometry::Vector<double> spawn_start_;
+				Geometry::Vector<double> spawn_end_;
 			};
 
 
 			class Chopstick_rain_state : public State
 			{
 			public:
-				Chopstick_rain_state(Noodles_ai_component& boss, Timer::Seconds time_between_projectiles, int number_of_projectiles, Geometry::Vector<double> start_position, double projectile_spacing);
+				Chopstick_rain_state(
+					Noodles_ai_component& boss,
+					Timer::Seconds time_between_projectiles,
+					int number_of_projectiles,
+					Geometry::Vector<double> spawn_start,
+					Geometry::Vector<double> spawn_end);
 
 				void enter() override;
 				void exit() override;
@@ -90,9 +122,9 @@ namespace Game
 
 				Timer projectile_timer_;
 				const int num_projectiles_;
+				Geometry::Vector<double> spawn_start_;
+				Geometry::Vector<double> spawn_end_;
 				int projectiles_shot_{};
-				Geometry::Vector<double> start_position_;
-				double projectile_spacing_;
 			};
 		};
 	}

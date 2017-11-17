@@ -53,6 +53,7 @@ namespace Game
 
 			// Serialization and deserialization
 			static Game_object* from_json(const Io::json& json, Core::World& world);
+			static Game_object* from_json(const Io::json& json, Core::World& world, Geometry::Vector<double> position);
 			Io::json to_json() const;
 
 		private:

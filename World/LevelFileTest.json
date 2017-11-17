@@ -163,7 +163,20 @@
 					"max_health": 100
 				},
 				{
-					"type": "Noodles_ai_component"
+					"type": "Noodles_ai_component",
+					"min_noodles_rain_time": 2.0,
+					"max_noodles_rain_time": 4.0,
+					"time_between_noodles": 0.23,
+					"noodles_spawn_start_x": -0.8,
+					"noodles_spawn_start_y": -0.45,
+					"noodles_spawn_end_x": 0.7,
+					"noodles_spawn_end_y": -0.45,
+					"number_of_chopsticks": 7,
+					"time_between_chopsticks": 0.2,
+					"chopsticks_spawn_start_x": -0.7,
+					"chopsticks_spawn_start_y": -0.35,
+					"chopsticks_spawn_end_x": 0.7,
+					"chopsticks_spawn_end_y": -0.35
 				}
 			]
 		},
