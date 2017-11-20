@@ -38,6 +38,7 @@ namespace Game
 			Geometry::Vector<int> pivot_;
 
 			friend class Renderer;
+			friend class Render_grid;
 		};
 	}
 }

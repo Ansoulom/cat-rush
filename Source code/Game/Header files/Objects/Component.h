@@ -18,6 +18,7 @@ namespace Game
 
 	namespace Graphics
 	{
+		class Render_grid;
 		class Renderer;
 	}
 
@@ -115,9 +116,7 @@ namespace Game
 			};
 
 
-			struct Died
-			{
-			};
+			struct Died { };
 
 
 			using Message = std::variant<Object_moved, Direction_changed, Position_changed, Collided, State_changed,
@@ -177,12 +176,12 @@ namespace Game
 		class Component_loader
 		{
 		public:
-			explicit Component_loader(Graphics::Renderer& renderer);
+			explicit Component_loader(Graphics::Render_grid& render_grid);
 
 			void register_component(Graphics_component& comp) const;
 
 		private:
-			Graphics::Renderer& renderer_;
+			Graphics::Render_grid* render_grid_;
 		};
 
 
@@ -223,7 +222,8 @@ namespace Game
 		template<typename T>
 		T* Component_type_map::find_component() const
 		{
-			return dynamic_cast<T*>(find_component(T::type())); // Does this work if object doesn't exist? TODO: Take a closer look at this
+			return dynamic_cast<T*>(find_component(T::type()));
+			// Does this work if object doesn't exist? TODO: Take a closer look at this
 		}
 	}
 }

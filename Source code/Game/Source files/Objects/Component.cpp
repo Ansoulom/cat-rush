@@ -71,13 +71,13 @@ namespace Game
 		}
 
 
-		Component_loader::Component_loader(Graphics::Renderer& renderer)
-			: renderer_{renderer} { }
+		Component_loader::Component_loader(Graphics::Render_grid& render_grid)
+			: render_grid_{&render_grid} { }
 
 
 		void Component_loader::register_component(Graphics_component& comp) const
 		{
-			renderer_.register_component(comp);
+			render_grid_->register_component(comp);
 		}
 
 

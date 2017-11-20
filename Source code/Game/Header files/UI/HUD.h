@@ -52,15 +52,16 @@ namespace Game
 		class Hud
 		{
 		public:
-			explicit Hud(Graphics::Aspect_ratio aspect_ratio);
-
-			void connect_with_world(Core::World& world);
+			explicit Hud(Graphics::Aspect_ratio aspect_ratio, Core::World& world);
 
 			std::vector<Graphics::Render_instance> get_render_instances(
 				const Resources::Texture_manager& tm,
-				const Graphics::Render_settings& render_settings);
+				const Graphics::Render_settings& render_settings) const;
 
 		private:
+			void connect_with_world(Core::World& world);
+
+
 			Graphics::Aspect_ratio aspect_ratio_;
 			Health_bar player_bar_, boss_bar_;
 		};

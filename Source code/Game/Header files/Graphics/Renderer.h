@@ -6,6 +6,7 @@
 #include "Settings.h"
 #include "Communication.h"
 #include "Graphics_component.h"
+#include "Resource_managers.h"
 
 
 namespace Game
@@ -41,17 +42,12 @@ namespace Game
 		};
 
 
-		class Renderer
+		class Render_grid
 		{
 		public:
-			explicit Renderer(const Core::Settings& settings, Core::Window& window);
+			Render_grid();
 
-			void clear(Color clear_color);
-			void show();
-			void set_render_scale(double x, double y);
-			void render(const Resources::Texture_manager& tm, const Camera& camera) const;
-			void render(const Render_instance& instance) const;
-			Render_settings render_settings() const;
+			std::vector<Render_instance> get_render_instances(const Resources::Texture_manager& tm, const Render_settings& render_settings, const Camera& camera) const;
 
 			void register_component(Objects::Graphics_component& gc);
 			void remove_component(Objects::Graphics_component& gc);
@@ -63,14 +59,29 @@ namespace Game
 
 			static Geometry::Vector<int> get_grid_cell_position(Geometry::Vector<double> object_position);
 
-			std::unordered_map<Geometry::Vector<int>, std::list<Objects::Graphics_component*>> grid_;
-			const Core::Settings& settings_;
-			std::unique_ptr<SDL_Renderer, Sdl_deleter> sdl_renderer_;
+			std::unordered_map<Geometry::Vector<int>, std::list<Objects::Graphics_component*>> grid_{};
 
 			Communication::Receiver<Objects::Graphics_component&> component_destroyed_receiver_;
 			Communication::Receiver<Objects::Graphics_component&, Geometry::Vector<double>> component_moved_receiver_;
 
 			static const double grid_cell_size; // Very temporary and random number for now
+		};
+
+
+		class Renderer
+		{
+		public:
+			explicit Renderer(const Core::Settings& settings, Core::Window& window);
+
+			void clear(Color clear_color);
+			void show();
+			void set_render_scale(double x, double y);
+			void render(const Render_instance& instance) const;
+			Render_settings render_settings() const;
+
+		private:
+			const Core::Settings& settings_;
+			std::unique_ptr<SDL_Renderer, Sdl_deleter> sdl_renderer_;
 
 			friend class Texture;
 		};
@@ -88,5 +99,8 @@ namespace Game
 		private:
 			int x_, y_;
 		};
+
+
+		std::vector<Render_instance> merge_render_lists(std::initializer_list<std::vector<Render_instance>> lists);
 	}
 }

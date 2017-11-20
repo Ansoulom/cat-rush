@@ -6,7 +6,8 @@ namespace Game
 {
 	namespace Resources
 	{
-		Texture_manager::Texture_manager() : textures_{} { }
+		Texture_manager::Texture_manager()
+			: textures_{} { }
 
 
 		void Texture_manager::load_all_textures(const boost::filesystem::path& texture_path, Graphics::Renderer& renderer)
@@ -28,6 +29,27 @@ namespace Game
 		const Graphics::Texture& Texture_manager::get_texture(std::string texture_name) const
 		{
 			return textures_.at(texture_name); // TODO: Decide what to do if texture does not exist
+		}
+
+
+		void Font_manager::load_all_fonts(const boost::filesystem::path& font_path)
+		{
+			if(exists(font_path) && is_directory(font_path))
+			{
+				for(auto&& x : boost::filesystem::recursive_directory_iterator{font_path})
+				{
+					if(x.path().extension().string() == ".ttf")
+					{
+						fonts_.emplace(x.path().stem().string(), Text::Font{x.path().string(), 30}); // TODO: Get rid of magic number
+					}
+				}
+			}
+		}
+
+
+		const Text::Font& Font_manager::get_font(const std::string& font_name) const
+		{
+			return fonts_.at(font_name);
 		}
 
 

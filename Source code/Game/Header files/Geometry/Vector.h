@@ -38,21 +38,17 @@ namespace Game
 
 
 		template<typename T>
-		Vector<T>::Vector() : x_{}, y_{}
-		{
-		}
+		Vector<T>::Vector()
+			: x_{}, y_{} { }
 
 
 		template<typename T>
-		Vector<T>::Vector(T x, T y) : x_{ x }, y_{ y }
-		{
-		}
+		Vector<T>::Vector(T x, T y)
+			: x_{x}, y_{y} { }
 
 
 		template<typename T>
-		Vector<T>::~Vector()
-		{
-		}
+		Vector<T>::~Vector() { }
 
 
 		template<typename T>
@@ -89,7 +85,6 @@ namespace Game
 			y_ /= other;
 			return *this;
 		}
-
 
 
 		template<typename T>
@@ -160,7 +155,7 @@ namespace Game
 		template<typename T>
 		void Vector<T>::normalize()
 		{
-			if (get_magnitude() > 1.0) set_magnitude(1.0);
+			if(get_magnitude() > 1.0) set_magnitude(1.0);
 		}
 
 

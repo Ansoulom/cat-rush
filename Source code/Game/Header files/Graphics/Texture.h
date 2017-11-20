@@ -27,7 +27,12 @@ namespace Game
 		{
 		public:
 			Texture(Renderer& renderer, const boost::filesystem::path& file_path);
-			Texture(Renderer& renderer, const std::string& text, Color text_color, Text::Font& font);
+			Texture(Renderer& renderer, const std::string& text, Color text_color, const Text::Font& font);
+			Texture(const Texture& other) = delete;
+			Texture(Texture&& other) noexcept;
+			
+			Texture& operator=(const Texture& other) = delete;
+			Texture& operator=(Texture&& other) noexcept;
 
 			int width() const;
 			int height() const;

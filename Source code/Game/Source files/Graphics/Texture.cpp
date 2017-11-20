@@ -16,7 +16,7 @@ namespace Game
 			} { }
 
 
-		Texture::Texture(Renderer& renderer, const std::string& text, Color text_color, Text::Font& font)
+		Texture::Texture(Renderer& renderer, const std::string& text, Color text_color, const Text::Font& font)
 			: Texture{
 				std::unique_ptr<SDL_Surface, Sdl_deleter>{
 					TTF_RenderText_Blended(
@@ -27,6 +27,20 @@ namespace Game
 				},
 				renderer
 			} { }
+
+
+		Texture::Texture(Texture&& other) noexcept
+			: texture_{move(other.texture_)}, width_{other.width_}, height_{other.height_} { }
+
+
+		Texture& Texture::operator=(Texture&& other) noexcept
+		{
+			texture_ = move(other.texture_);
+			width_ = other.width_;
+			height_ = other.height_;
+
+			return *this;
+		}
 
 
 		Texture::Texture(std::unique_ptr<SDL_Surface, Sdl_deleter> surface, Renderer& renderer)

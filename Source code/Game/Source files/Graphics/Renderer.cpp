@@ -33,9 +33,6 @@ namespace Game
 					  -1,
 					  SDL_RENDERER_ACCELERATED | (settings.user_settings().vsync() ? SDL_RENDERER_PRESENTVSYNC : 0)),
 				  Sdl_deleter{}
-			  }, component_destroyed_receiver_{bind(&Renderer::remove_component, this, std::placeholders::_1)},
-			  component_moved_receiver_{
-				  bind(&Renderer::update_grid_position, this, std::placeholders::_1, std::placeholders::_2)
 			  }
 		{
 			if(!sdl_renderer_)
@@ -45,105 +42,14 @@ namespace Game
 		}
 
 
-		void Renderer::render(const Resources::Texture_manager& tm, const Camera& camera) const
-		// Don't really like having SDL_Renderer as a parameter. TODO: Wrap SDL_Renderer in Renderer
-		{
-			auto render_queue = std::vector<Render_instance>{};
-			auto camera_box = camera.bounding_box();
-			const auto start_x = static_cast<int>(camera_box.left() / grid_cell_size) - 1;
-			const auto end_x = static_cast<int>(camera_box.right() / grid_cell_size) + 1;
-			const auto start_y = static_cast<int>(camera_box.top() / grid_cell_size) - 1;
-			const auto end_y = static_cast<int>(camera_box.bottom() / grid_cell_size) + 1;
-
-			for(auto x = start_x; x <= end_x; ++x)
-			{
-				for(auto y = start_y; y <= end_y; ++y)
-				{
-					const auto cell_pos = Geometry::Vector<int>{x, y};
-					auto iter = grid_.find(cell_pos);
-					if(iter != grid_.end())
-					{
-						for(auto component : iter->second)
-						{
-							render_queue.push_back(component->get_render_instance(tm, camera, render_settings()));
-						}
-					}
-				}
-			}
-
-			sort(
-				render_queue.begin(),
-				render_queue.end(),
-				[this](const Render_instance& a, const Render_instance& b)
-				{
-					return a.layer_ != b.layer_ ?
-							   a.layer_ < b.layer_ :
-							   a.destination_.bottom() < b.destination_.bottom();
-				});
-
-			for(const auto& instance : render_queue)
-			{
-				render(instance);
-			}
-		}
-
-
-		void Renderer::register_component(Objects::Graphics_component& gc)
-		{
-			put_in_grid(gc, get_grid_cell_position(gc.game_object().position()));
-			gc.add_destroy_receiver(component_destroyed_receiver_);
-		}
-
-
-		void Renderer::remove_component(Objects::Graphics_component& gc)
-		{
-			remove_from_grid(gc, get_grid_cell_position(gc.game_object().position()));
-		}
-
-
-		void Renderer::update_grid_position(Objects::Graphics_component& component,
-											const Geometry::Vector<double> old_position)
-		{
-			const auto old_cell_pos = get_grid_cell_position(old_position);
-			const auto cell_pos = get_grid_cell_position(component.game_object().position());
-
-			if(old_cell_pos != cell_pos)
-			{
-				remove_from_grid(component, old_cell_pos);
-				put_in_grid(component, cell_pos);
-			}
-		}
-
-
-		void Renderer::put_in_grid(Objects::Graphics_component& comp, const Geometry::Vector<int> grid_cell_position)
-		{
-			grid_[grid_cell_position].push_back(&comp);
-		}
-
-
-		void Renderer::remove_from_grid(Objects::Graphics_component& comp, const Geometry::Vector<int> grid_cell_pos)
-		{
-			auto iter = grid_.find(grid_cell_pos);
-			assert(iter != grid_.end());
-			iter->second.erase(remove(iter->second.begin(), iter->second.end(), &comp), iter->second.end());
-		}
-
-
 		Render_settings Renderer::render_settings() const
 		{
 			return {{settings_.constants().source_width(), settings_.constants().source_height()}};
 		}
 
 
-		Geometry::Vector<int> Renderer::get_grid_cell_position(Geometry::Vector<double> object_position)
-		{
-			const auto cell_x = static_cast<int>(object_position.get_x() / grid_cell_size);
-			const auto cell_y = static_cast<int>(object_position.get_y() / grid_cell_size);
-			return {cell_x, cell_y};
-		}
-
-
-		Aspect_ratio::Aspect_ratio(int x, int y) : x_{x}, y_{y} { }
+		Aspect_ratio::Aspect_ratio(int x, int y)
+			: x_{x}, y_{y} { }
 
 
 		int Aspect_ratio::x() const
@@ -167,6 +73,120 @@ namespace Game
 		double Aspect_ratio::y_multiplier() const
 		{
 			return 1.0;
+		}
+
+
+		Render_grid::Render_grid()
+			: component_destroyed_receiver_{bind(&Render_grid::remove_component, this, std::placeholders::_1)},
+			  component_moved_receiver_{
+				  bind(&Render_grid::update_grid_position, this, std::placeholders::_1, std::placeholders::_2)
+			  } { }
+
+
+		std::vector<Render_instance> Render_grid::get_render_instances(
+			const Resources::Texture_manager& tm,
+			const Render_settings& render_settings,
+			const Camera& camera) const
+		{
+			auto render_queue = std::vector<Render_instance>{};
+			auto camera_box = camera.bounding_box();
+			const auto start_x = static_cast<int>(camera_box.left() / grid_cell_size) - 1;
+			const auto end_x = static_cast<int>(camera_box.right() / grid_cell_size) + 1;
+			const auto start_y = static_cast<int>(camera_box.top() / grid_cell_size) - 1;
+			const auto end_y = static_cast<int>(camera_box.bottom() / grid_cell_size) + 1;
+
+			for(auto x = start_x; x <= end_x; ++x)
+			{
+				for(auto y = start_y; y <= end_y; ++y)
+				{
+					const auto cell_pos = Geometry::Vector<int>{x, y};
+					auto iter = grid_.find(cell_pos);
+					if(iter != grid_.end())
+					{
+						for(auto component : iter->second)
+						{
+							render_queue.push_back(component->get_render_instance(tm, camera, render_settings));
+						}
+					}
+				}
+			}
+
+			sort(
+				render_queue.begin(),
+				render_queue.end(),
+				[this](const Render_instance& a, const Render_instance& b)
+				{
+					return a.layer_ != b.layer_ ?
+							   a.layer_ < b.layer_ :
+							   a.destination_.bottom() < b.destination_.bottom();
+				});
+
+			return render_queue;
+		}
+
+
+		void Render_grid::register_component(Objects::Graphics_component& gc)
+		{
+			put_in_grid(gc, get_grid_cell_position(gc.game_object().position()));
+			gc.add_destroy_receiver(component_destroyed_receiver_);
+		}
+
+
+		void Render_grid::remove_component(Objects::Graphics_component& gc)
+		{
+			remove_from_grid(gc, get_grid_cell_position(gc.game_object().position()));
+		}
+
+
+		void Render_grid::update_grid_position(
+			Objects::Graphics_component& component,
+			Geometry::Vector<double> old_position)
+		{
+			const auto old_cell_pos = get_grid_cell_position(old_position);
+			const auto cell_pos = get_grid_cell_position(component.game_object().position());
+
+			if(old_cell_pos != cell_pos)
+			{
+				remove_from_grid(component, old_cell_pos);
+				put_in_grid(component, cell_pos);
+			}
+		}
+
+
+		void Render_grid::put_in_grid(Objects::Graphics_component& comp, Geometry::Vector<int> grid_cell_position)
+		{
+			grid_[grid_cell_position].push_back(&comp);
+		}
+
+
+		void Render_grid::remove_from_grid(Objects::Graphics_component& comp, Geometry::Vector<int> grid_cell_pos)
+		{
+			auto iter = grid_.find(grid_cell_pos);
+			assert(iter != grid_.end());
+			iter->second.erase(remove(iter->second.begin(), iter->second.end(), &comp), iter->second.end());
+		}
+
+
+		Geometry::Vector<int> Render_grid::get_grid_cell_position(Geometry::Vector<double> object_position)
+		{
+			const auto cell_x = static_cast<int>(object_position.get_x() / grid_cell_size);
+			const auto cell_y = static_cast<int>(object_position.get_y() / grid_cell_size);
+			return {cell_x, cell_y};
+		}
+
+
+		const double Render_grid::grid_cell_size{10.0}; // VERY TEMPORARY VALUE
+
+
+		std::vector<Render_instance> merge_render_lists(std::initializer_list<std::vector<Render_instance>> lists)
+		{
+			auto instances = std::vector<Render_instance>{};
+			for(auto list : lists)
+			{
+				instances.insert(instances.end(), list.begin(), list.end());
+			}
+
+			return instances;
 		}
 
 
@@ -217,8 +237,5 @@ namespace Game
 		{
 			SDL_RenderSetScale(sdl_renderer_.get(), static_cast<float>(x), static_cast<float>(y));
 		}
-
-
-		const double Renderer::grid_cell_size{10.0}; // VERY TEMPORARY VALUE
 	}
 }

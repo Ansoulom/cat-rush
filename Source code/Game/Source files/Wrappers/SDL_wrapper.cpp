@@ -80,19 +80,19 @@ namespace Game
 		}
 
 
-		TTF_Font& Sdl_wrapper::get_font(Text::Font& font)
+		TTF_Font& Sdl_wrapper::get_font(const Text::Font& font)
 		{
 			return *font.sdl_font_;
 		}
 
 
-		Mix_Chunk& Sdl_wrapper::get_sound_chunk(Audio::Sound_effect& sound)
+		Mix_Chunk& Sdl_wrapper::get_sound_chunk(const Audio::Sound_effect& sound)
 		{
 			return *sound.sdl_sound_;
 		}
 
 
-		Mix_Music& Sdl_wrapper::get_music(Audio::Music_track& music)
+		Mix_Music& Sdl_wrapper::get_music(const Audio::Music_track& music)
 		{
 			return *music.sdl_music_;
 		}

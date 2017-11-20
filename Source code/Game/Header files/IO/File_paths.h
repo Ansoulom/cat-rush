@@ -11,6 +11,7 @@ namespace Game
 		{
 			extern const std::string resources;
 			extern const std::string textures;
+			extern const std::string fonts;
 			extern const std::string preferences;
 
 			extern const std::string user_settings_file;

@@ -8,7 +8,8 @@ namespace Game
 	namespace Gui
 	{
 		Health_bar::Health_bar(Geometry::Rectangle<double> bounds, bool flipped)
-			: bounds_{bounds}, flipped_{flipped},
+			: bounds_{bounds},
+			  flipped_{flipped},
 			  health_changed_receiver_{std::bind(&Health_bar::set_health, this, std::placeholders::_1)} {}
 
 
@@ -73,10 +74,13 @@ namespace Game
 		}
 
 
-		Hud::Hud(Graphics::Aspect_ratio aspect_ratio)
+		Hud::Hud(Graphics::Aspect_ratio aspect_ratio, Core::World& world)
 			: aspect_ratio_{aspect_ratio},
 			  player_bar_{{{0.5, 0.2}, 0.4, 0.05, Geometry::Pivot_point::center_right}, false},
-			  boss_bar_{{{0.8, 0.2}, 0.4, 0.05, Geometry::Pivot_point::center_left}, true} { }
+			  boss_bar_{{{0.8, 0.2}, 0.4, 0.05, Geometry::Pivot_point::center_left}, true}
+		{
+			connect_with_world(world);
+		}
 
 
 		void Hud::connect_with_world(Core::World& world)
@@ -96,13 +100,10 @@ namespace Game
 
 		std::vector<Graphics::Render_instance> Hud::get_render_instances(
 			const Resources::Texture_manager& tm,
-			const Graphics::Render_settings& render_settings)
+			const Graphics::Render_settings& render_settings) const
 		{
-			auto instances = player_bar_.get_render_instances(tm, render_settings);
-			auto boss_bar_instances = boss_bar_.get_render_instances(tm, render_settings);
-			instances.insert(instances.end(), boss_bar_instances.begin(), boss_bar_instances.end());
-
-			return instances;
+			return Graphics::merge_render_lists(
+				{player_bar_.get_render_instances(tm, render_settings), boss_bar_.get_render_instances(tm, render_settings)});
 		}
 	}
 }
