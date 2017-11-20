@@ -104,6 +104,13 @@ namespace Game
 			};
 
 
+			struct Collisions_done
+			{
+				std::unordered_map<std::string, std::vector<Collider_component*>> results;
+				Axis axis;
+			};
+
+
 			struct State_changed
 			{
 				std::string state;
@@ -119,7 +126,7 @@ namespace Game
 			struct Died { };
 
 
-			using Message = std::variant<Object_moved, Direction_changed, Position_changed, Collided, State_changed,
+			using Message = std::variant<Object_moved, Direction_changed, Position_changed, Collided, Collisions_done, State_changed,
 										 Animation_finished, Died>;
 		}
 

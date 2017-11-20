@@ -172,7 +172,8 @@ namespace Game
 
 		// Player_state
 
-		Player_input_component::Player_state::Player_state(Player_input_component& player) : player_{&player} { }
+		Player_input_component::Player_state::Player_state(Player_input_component& player)
+			: player_{&player} { }
 
 
 		Player_input_component::Player_state::~Player_state() {}
@@ -183,7 +184,8 @@ namespace Game
 
 		// Air_state
 
-		Player_input_component::Air_state::Air_state(Player_input_component& player) : Player_state{player} { }
+		Player_input_component::Air_state::Air_state(Player_input_component& player)
+			: Player_state{player} { }
 
 
 		void Player_input_component::Air_state::receive(const Events::Message& message)
@@ -227,7 +229,8 @@ namespace Game
 
 		// Ground_state
 
-		Player_input_component::Ground_state::Ground_state(Player_input_component& player) : Player_state{player} {}
+		Player_input_component::Ground_state::Ground_state(Player_input_component& player)
+			: Player_state{player} {}
 
 
 		bool Player_input_component::Ground_state::handle_input(
@@ -246,7 +249,14 @@ namespace Game
 
 		// Walk_state
 
-		Player_input_component::Walk_state::Walk_state(Player_input_component& player) : Ground_state{player} {}
+		Player_input_component::Walk_state::Walk_state(Player_input_component& player)
+			: Ground_state{player} {}
+
+
+		void Player_input_component::Walk_state::receive(const Events::Message& message)
+		{
+			visit([this](const auto& msg) { handle_event(msg); }, message);
+		}
 
 
 		void Player_input_component::Walk_state::enter() {}
@@ -294,9 +304,23 @@ namespace Game
 		}
 
 
+		void Player_input_component::Walk_state::handle_event(const Events::Collisions_done& message)
+		{
+			if(message.axis == Axis::y)
+			{
+				const auto iter = message.results.find("solid");
+				if(iter == message.results.end() || iter->second.size() == 0)
+				{
+					player_->switch_state(std::make_unique<Air_state>(*player_));
+				}
+			}
+		}
+
+
 		// Idle_state
 
-		Player_input_component::Idle_state::Idle_state(Player_input_component& player) : Ground_state{player} {}
+		Player_input_component::Idle_state::Idle_state(Player_input_component& player)
+			: Ground_state{player} {}
 
 
 		void Player_input_component::Idle_state::enter()
@@ -345,7 +369,8 @@ namespace Game
 
 		// Crouch_state
 
-		Player_input_component::Crouch_state::Crouch_state(Player_input_component& player) : Ground_state{player} {}
+		Player_input_component::Crouch_state::Crouch_state(Player_input_component& player)
+			: Ground_state{player} {}
 
 
 		void Player_input_component::Crouch_state::enter()

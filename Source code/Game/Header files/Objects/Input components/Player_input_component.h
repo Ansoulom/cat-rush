@@ -122,10 +122,19 @@ namespace Game
 			public:
 				explicit Walk_state(Player_input_component& player);
 
+				void receive(const Events::Message& message) override;
+
 				void enter() override;
 				void exit() override;
 				std::string state() const override;
 				bool handle_input(Timer::Seconds time_passed, const Input::Input_handler& input) override;
+
+			private:
+				template<typename T>
+				void handle_event(const T& message) {}
+
+
+				void handle_event(const Events::Collisions_done& message);
 			};
 
 

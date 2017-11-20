@@ -7,10 +7,11 @@ namespace Game
 {
 	namespace Physics
 	{
-		std::vector<std::pair<Objects::Collider_component*, std::string_view>> Collision_system::get_collisions(
+		std::unordered_map<std::string, std::vector<Objects::Collider_component*>> Collision_system::get_collisions(
 			const Objects::Collider_component& collider) const
 		{
-			auto colliders = std::vector<std::pair<Objects::Collider_component*, std::string_view>>{};
+			auto collisions = std::unordered_map<std::string, std::vector<Objects::Collider_component*>>{};
+			//auto colliders = std::vector<std::pair<Objects::Collider_component*, std::string_view>>{};
 
 			auto start = get_grid_cell_position(collider.game_object().position()) - Geometry::Vector<int>{1, 1};
 			auto end = get_grid_cell_position(collider.game_object().position()) + Geometry::Vector<int>{1, 1};
@@ -32,7 +33,8 @@ namespace Game
 									if(&collider == component) continue;
 									if(intersects(collider, *component))
 									{
-										colliders.emplace_back(component, layer);
+										collisions[layer].push_back(component);
+										//colliders.emplace_back(component, layer);
 									}
 								}
 							}
@@ -41,7 +43,7 @@ namespace Game
 				}
 			}
 
-			return colliders;
+			return collisions;
 		}
 
 

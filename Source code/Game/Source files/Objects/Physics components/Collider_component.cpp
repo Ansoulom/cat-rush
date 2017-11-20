@@ -103,33 +103,46 @@ namespace Game
 
 			for(auto& col_pair : collisions)
 			{
-				if(col_pair.second == "solid")
+				for(auto col : col_pair.second)
 				{
-					switch(message.axis)
+					if(col_pair.first == "solid")
 					{
-						case Axis::x:
+						switch(message.axis)
 						{
-							handle_x_collision(
-								message.start_position.get_x(),
-								*col_pair.first);
-							break;
-						}
-						case Axis::y:
-						{
-							handle_y_collision(
-								message.start_position.get_y(),
-								*col_pair.first);
-							break;
+							case Axis::x:
+							{
+								handle_x_collision(
+									message.start_position.get_x(),
+									*col);
+								break;
+							}
+							case Axis::y:
+							{
+								handle_y_collision(
+									message.start_position.get_y(),
+									*col);
+								break;
+							}
 						}
 					}
+					game_object().send(Events::Collided{message.axis, direction, *this, *col, std::string{col_pair.first}});
 				}
-				game_object().send(Events::Collided{message.axis, direction, *this, *col_pair.first, std::string{col_pair.second}});
 			}
 
 			if(game_object().position() != old_pos)
 			{
 				game_object().send(Events::Position_changed{old_pos});
 			}
+
+			for(auto layer : check_layers_)
+			{
+				auto iter = collisions.find(layer);
+				if(iter == collisions.end())
+				{
+					collisions.emplace(layer, std::vector<Collider_component*>{});
+				}
+			}
+			game_object().send(Events::Collisions_done{collisions, message.axis});
 		}
 
 
