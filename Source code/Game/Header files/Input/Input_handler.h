@@ -18,8 +18,10 @@ namespace Game
 			Input_handler();
 			~Input_handler();
 
+			void set_active_contexts(std::initializer_list<std::string> context_names);
 			void handle_event(const SDL_Event& event);
 			void update(Timer::Seconds time_passed);
+
 			bool get_action(Action action, std::string context) const;
 			bool get_state(State state, std::string context) const;
 			double get_range(Range range, std::string context) const;

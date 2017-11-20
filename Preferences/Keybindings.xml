@@ -69,4 +69,14 @@
 			<value type="state">movement_right</value>
 		</mapping>
 	</game>
+	<menu>
+		<mapping>
+			<key type="key">Return</key>
+			<value type="action">start</value>
+		</mapping>
+		<mapping>
+			<key type="key">Escape</key>
+			<value type="action">exit</value>
+		</mapping>
+	</menu>
 </contexts>

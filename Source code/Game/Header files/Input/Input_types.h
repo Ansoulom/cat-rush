@@ -33,7 +33,9 @@ namespace Game
 		enum class Action
 		{
 			jump,
-			attack
+			attack,
+			start,
+			exit
 		};
 
 

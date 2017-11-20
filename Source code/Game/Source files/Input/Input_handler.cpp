@@ -27,11 +27,16 @@ namespace Game
 				}
 			}
 			initialize_contexts();
-			active_contexts_.emplace_back(std::string{"game"});
 		}
 
 
 		Input_handler::~Input_handler() { }
+
+
+		void Input_handler::set_active_contexts(const std::initializer_list<std::string> context_names)
+		{
+			active_contexts_ = context_names;
+		}
 
 
 		void Input_handler::handle_event(const SDL_Event& event)
@@ -246,24 +251,6 @@ namespace Game
 					}
 				}
 			}
-
-			// TODO: Move to data file
-			/*auto context_name = std::string{ "game" };
-			keyboard_contexts[context_name].add_mapping(Button{ SDLK_w }, State::movement_up);
-			keyboard_contexts[context_name].add_mapping(Button{ SDLK_a }, State::movement_left);
-			keyboard_contexts[context_name].add_mapping(Button{ SDLK_s }, State::movement_down);
-			keyboard_contexts[context_name].add_mapping(Button{ SDLK_d }, State::movement_right);
-			keyboard_contexts[context_name].add_mapping(Button{ SDLK_UP }, State::movement_up);
-			keyboard_contexts[context_name].add_mapping(Button{ SDLK_LEFT }, State::movement_left);
-			keyboard_contexts[context_name].add_mapping(Button{ SDLK_DOWN }, State::movement_down);
-			keyboard_contexts[context_name].add_mapping(Button{ SDLK_RIGHT }, State::movement_right);
-
-			controller_contexts[context_name].add_mapping(Button{ SDL_CONTROLLER_BUTTON_DPAD_UP }, State::movement_up);
-			controller_contexts[context_name].add_mapping(Button{ SDL_CONTROLLER_BUTTON_DPAD_LEFT }, State::movement_left);
-			controller_contexts[context_name].add_mapping(Button{ SDL_CONTROLLER_BUTTON_DPAD_DOWN }, State::movement_down);
-			controller_contexts[context_name].add_mapping(Button{ SDL_CONTROLLER_BUTTON_DPAD_RIGHT }, State::movement_right);
-			controller_contexts[context_name].add_mapping(Axis::controller_stick_left_x, Range::movement_x);
-			controller_contexts[context_name].add_mapping(Axis::controller_stick_left_y, Range::movement_y);*/
 		}
 
 
@@ -326,6 +313,7 @@ namespace Game
 		{
 			for(auto context : active_contexts_)
 			{
+
 				(controller_mode_ ? controller_contexts_ : keyboard_contexts_).at(context).handle_event(event);
 			}
 		}
@@ -407,8 +395,10 @@ namespace Game
 
 		Action Input_handler::get_action_from_name(std::string name)
 		{
-			if (name == "attack") return Action::attack;
-			if (name == "jump") return Action::jump;
+			if(name == "attack") return Action::attack;
+			if(name == "jump") return Action::jump;
+			if(name == "start") return Action::start;
+			if(name == "exit") return Action::exit;
 			return Action{};
 		}
 

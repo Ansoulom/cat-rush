@@ -1,10 +1,8 @@
 #include "Game_core.h"
 #include "Timer.h"
-#include <boost/filesystem.hpp>
 #include "Frame_timer.h"
 #include "Component.h"
 #include "File_paths.h"
-#include "Logger.h"
 #include "Playing_state.h"
 #include "Text_state.h"
 
@@ -18,7 +16,7 @@ namespace Game
 			  settings_{Io::Paths::game_constants_file, Io::Paths::user_settings_file},
 			  running_{false},
 			  input_{},
-			  resources_{},
+			  resources_{renderer_},
 			  window_{
 				  settings_.constants().name(),
 				  0,
@@ -29,14 +27,22 @@ namespace Game
 				  false
 			  },
 			  renderer_{settings_, window_},
-			  state_{std::make_unique<Game_states::Playing_state>(*this, "LevelFileTest")}
+			  state_{
+				  std::make_unique<Game_states::Text_state>(
+					  Graphics::Texture{
+						  renderer_,
+						  "Press ENTER to play or ESCAPE to exit.",
+						  {0xff, 0xff, 0xff},
+						  resources_.fonts().get_font("Gill")
+					  },
+					  *this)
+			  }
 		{
 			SDL_DisplayMode dm;
 			if(SDL_GetCurrentDisplayMode(0, &dm) != 0)
 				throw std::runtime_error{std::string{"Could not retrieve display mode: "} + SDL_GetError()};
 			window_.set_position({dm.w / 2 - window_.get_size().get_x() / 2, dm.h / 2 - window_.get_size().get_y() / 2});
-			resources_.textures().load_all_textures(boost::filesystem::path{Io::Paths::textures}, renderer_);
-			resources_.fonts().load_all_fonts(boost::filesystem::path{ Io::Paths::fonts });
+			input_.set_active_contexts({"menu"});
 		}
 
 
@@ -56,6 +62,7 @@ namespace Game
 				const auto title = settings().constants().name() + std::string{"    FPS: "} + std::to_string(fps);
 				window_.set_title(title);
 
+				if(new_state_) state_ = move(new_state_);
 				handle_events(time_passed);
 				update(time_passed);
 				render();
@@ -120,34 +127,42 @@ namespace Game
 
 		void Game_core::go_to_win_screen()
 		{
-			Logger::log("Player won!");
-			/*
-			state_ = std::make_unique<Game_states::Text_state>(
+			new_state_ = std::make_unique<Game_states::Text_state>(
 				Graphics::Texture{
 					renderer_,
 					"You won! Press ENTER to play again or ESCAPE to exit.",
-					Graphics::Color{0xff, 0xff, 0xff},
-					resources_.fonts().get_font("zsynorEBO")
-				});*/ // TODO: Must fix so that this function is not called while the game is in the middle of updating
+					{0xff, 0xff, 0xff},
+					resources_.fonts().get_font("Gill")
+				},
+				*this);
+			input_.set_active_contexts({"menu"});
 		}
 
 
 		void Game_core::go_to_death_screen()
 		{
-			Logger::log("Player lost...");
-			/*state_ = std::make_unique<Game_states::Text_state>(
+			new_state_ = std::make_unique<Game_states::Text_state>(
 				Graphics::Texture{
 					renderer_,
 					"You lost... Press ENTER to try again or ESCAPE to exit.",
-					Graphics::Color{0xff, 0xff, 0xff},
-					resources_.fonts().get_font("zsynorEBO")
-				});*/ // TODO: Must fix so that this function is not called while the game is in the middle of updating
+					{0xff, 0xff, 0xff},
+					resources_.fonts().get_font("Gill")
+				},
+				*this);
+			input_.set_active_contexts({"menu"});
 		}
 
 
 		void Game_core::play_game()
 		{
 			state_ = std::make_unique<Game_states::Playing_state>(*this, "LevelFileTest");
+			input_.set_active_contexts({"game"});
+		}
+
+
+		void Game_core::exit()
+		{
+			running_ = false;
 		}
 	}
 

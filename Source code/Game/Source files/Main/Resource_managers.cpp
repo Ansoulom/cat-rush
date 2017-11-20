@@ -1,13 +1,18 @@
 #include "Resource_managers.h"
 #include <boost/filesystem/operations.hpp>
+#include "Renderer.h"
+#include "File_paths.h"
 
 
 namespace Game
 {
 	namespace Resources
 	{
-		Texture_manager::Texture_manager()
-			: textures_{} { }
+		Texture_manager::Texture_manager(Graphics::Renderer& renderer)
+			: textures_{}
+		{
+			load_all_textures(boost::filesystem::path{Io::Paths::textures}, renderer);
+		}
 
 
 		void Texture_manager::load_all_textures(const boost::filesystem::path& texture_path, Graphics::Renderer& renderer)
@@ -32,6 +37,12 @@ namespace Game
 		}
 
 
+		Font_manager::Font_manager()
+		{
+			load_all_fonts(boost::filesystem::path{Io::Paths::fonts});
+		}
+
+
 		void Font_manager::load_all_fonts(const boost::filesystem::path& font_path)
 		{
 			if(exists(font_path) && is_directory(font_path))
@@ -40,7 +51,7 @@ namespace Game
 				{
 					if(x.path().extension().string() == ".ttf")
 					{
-						fonts_.emplace(x.path().stem().string(), Text::Font{x.path().string(), 30}); // TODO: Get rid of magic number
+						fonts_.emplace(x.path().stem().string(), Text::Font{x.path().string(), 12}); // TODO: Get rid of magic number
 					}
 				}
 			}
@@ -51,6 +62,10 @@ namespace Game
 		{
 			return fonts_.at(font_name);
 		}
+
+
+		Resource_manager::Resource_manager(Graphics::Renderer& renderer)
+			: textures_{renderer} {}
 
 
 		Texture_manager& Resource_manager::textures()

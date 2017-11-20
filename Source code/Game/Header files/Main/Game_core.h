@@ -39,6 +39,7 @@ namespace Game
 			void go_to_win_screen();
 			void go_to_death_screen();
 			void play_game();
+			void exit();
 
 			const Settings& settings() const;
 
@@ -49,13 +50,15 @@ namespace Game
 
 			Wrappers::Sdl_wrapper sdl_wrapper_;
 			Settings settings_;
-			bool running_;
-			Input::Input_handler input_;
-			Resources::Resource_manager resources_;
+			bool running_; 
 			Window window_;
 			Graphics::Renderer renderer_;
+			Input::Input_handler input_;
+			Resources::Resource_manager resources_;
+			
 
 			std::unique_ptr<Game_states::Game_state> state_;
+			std::unique_ptr<Game_states::Game_state> new_state_{};
 		};
 	}
 }
