@@ -76,8 +76,8 @@ namespace Game
 
 		Hud::Hud(Graphics::Aspect_ratio aspect_ratio, Core::World& world)
 			: aspect_ratio_{aspect_ratio},
-			  player_bar_{{{0.5, 0.2}, 0.4, 0.05, Geometry::Pivot_point::center_right}, false},
-			  boss_bar_{{{0.8, 0.2}, 0.4, 0.05, Geometry::Pivot_point::center_left}, true}
+			  player_bar_{{{0.3, 0.2}, 0.4, 0.05}, false},
+			  boss_bar_{{{1.48, 0.2}, 0.4, 0.05}, true}
 		{
 			connect_with_world(world);
 		}
