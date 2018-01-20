@@ -1,6 +1,9 @@
 [requires]
 Boost.Filesystem/1.65.1@bincrafters/stable
-sdl2/2.0.7@bincrafters/stable
 
 [generators]
 cmake
+
+[imports]
+bin, *.dll -> ./bin # Copies all dll files from packages bin folder to my "bin" folder
+lib, *.dylib* -> ./bin # Copies all dylib files from packages lib folder to my "bin" folder

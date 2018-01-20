@@ -3,28 +3,25 @@ cmake_minimum_required(VERSION 3.6.2 FATAL_ERROR)
 set(PROJ_NAME "CatRush")
 project(${PROJ_NAME} VERSION 0.1 LANGUAGES CXX)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
 conan_basic_setup()
 
 set(CMAKE_CXX_STANDARD 17)
-
-if(MSVC)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
-	file(COPY "${PROJ_NAME}.sln.DotSettings" DESTINATION ${CMAKE_BINARY_DIR})
-endif(MSVC)
 
 set(PROJ_PATH ${CMAKE_SOURCE_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJ_PATH}/cmake")
 
 #set(CMAKE_BINARY_DIR "${PROJ_PATH}/Build")
-#set(PROJ_OUT_PATH ${CMAKE_BINARY_DIR})
 #set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+#set(PROJ_OUT_PATH ${CMAKE_BINARY_DIR})
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") # GCC specific commands
 	set(PROJ_LIBRARY_PATH "${PROJ_PATH}/Libraries/mingw")
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC") # MSVC specific commands
 	set(PROJ_LIBRARY_PATH "${PROJ_PATH}/Libraries/msvc")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17") # MSVC does not support CMAKE_CXX_STANDARD
+	file(COPY "${PROJ_NAME}.sln.DotSettings" DESTINATION ${CMAKE_BINARY_DIR}) # Resharper C++ config file
 endif()
 
 set(GAME_HEADER_DIR "${PROJ_PATH}/Source code/Game/Header files")
@@ -157,20 +154,28 @@ set(PROJ_SOURCES
 add_executable(${PROJ_NAME} ${PROJ_SOURCES} ${PROJ_HEADERS})
 include_directories("${PROJ_INCLUDE_DIRS}")
 
+
 target_link_libraries(${PROJ_NAME} ${CONAN_LIBS})
+
 
 message("LIB PATH: ${PROJ_LIBRARY_PATH}")
 # SDL stuff
+set(SDL2_PATH "${PROJ_LIBRARY_PATH}/SDL2")
 set(SDL2_IMAGE_PATH "${PROJ_LIBRARY_PATH}/SDL2_image")
 set(SDL2_TTF_PATH "${PROJ_LIBRARY_PATH}/SDL2_ttf")
 set(SDL2_MIXER_PATH "${PROJ_LIBRARY_PATH}/SDL2_mixer")
+find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_mixer REQUIRED)
-include_directories(${SDL2_IMAGE_INCLUDE_DIR}
+message("SDL found: ${SDL2_FOUND}")
+message(${SDL2_INCLUDE_DIR})
+message(${SDL2_LIBRARY})
+include_directories(${SDL2_INCLUDE_DIR}
+                    ${SDL2_IMAGE_INCLUDE_DIR}
                     ${SDL2_TTF_INCLUDE_DIR}
 					${SDL2_MIXER_INCLUDE_DIR})
-target_link_libraries(${PROJ_NAME}
+target_link_libraries(${PROJ_NAME} ${SDL2_LIBRARY}
                              ${SDL2_IMAGE_LIBRARIES}
                              ${SDL2_TTF_LIBRARIES}
 							 ${SDL2_MIXER_LIBRARIES})

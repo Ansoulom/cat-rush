@@ -1,6 +1,0 @@
-@echo off
-conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-mkdir Build && cd Build
-conan install .. -s compiler="Clang" --build missing
-cmake .. -G "Clang"
-cmake --build . --config Release
