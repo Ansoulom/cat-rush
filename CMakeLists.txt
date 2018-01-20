@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.6.2 FATAL_ERROR)
 set(PROJ_NAME "CatRush")
 project(${PROJ_NAME} VERSION 0.1 LANGUAGES CXX)
 
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
 set(CMAKE_CXX_STANDARD 17)
 
 if(MSVC)
@@ -12,17 +15,16 @@ endif(MSVC)
 
 set(PROJ_PATH ${CMAKE_SOURCE_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJ_PATH}/cmake")
-set(CMAKE_BINARY_DIR "${PROJ_PATH}/Build")
-set(PROJ_OUT_PATH ${CMAKE_BINARY_DIR})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+#set(CMAKE_BINARY_DIR "${PROJ_PATH}/Build")
+#set(PROJ_OUT_PATH ${CMAKE_BINARY_DIR})
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	set(PROJ_LIBRARY_PATH "${PROJ_PATH}/Libraries/mingw")
-	set(Boost_COMPILER "-mgw71") # Boost was compiled with -mgw71 for Windows
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-	set(PROJ_LIBRARY_PATH "${PROJ_PATH}/Libraries/msvc") # Boost directory for -vc140 for Windows
-	set(Boost_COMPILER "-vc140")
+	set(PROJ_LIBRARY_PATH "${PROJ_PATH}/Libraries/msvc")
 endif()
 
 set(GAME_HEADER_DIR "${PROJ_PATH}/Source code/Game/Header files")
@@ -155,35 +157,20 @@ set(PROJ_SOURCES
 add_executable(${PROJ_NAME} ${PROJ_SOURCES} ${PROJ_HEADERS})
 include_directories("${PROJ_INCLUDE_DIRS}")
 
-
-# Boost stuff
-add_definitions(-DBOOST_ALL_NO_LIB)
-set(BOOST_ROOT "${PROJ_LIBRARY_PATH}/boost")
-set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
-set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
-set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.60.0 REQUIRED COMPONENTS filesystem system)
-include_directories(${Boost_INCLUDE_DIRS})
-target_link_libraries(${PROJ_NAME} ${Boost_LIBRARIES})
+target_link_libraries(${PROJ_NAME} ${CONAN_LIBS})
 
 message("LIB PATH: ${PROJ_LIBRARY_PATH}")
 # SDL stuff
-set(SDL2_PATH "${PROJ_LIBRARY_PATH}/SDL2")
 set(SDL2_IMAGE_PATH "${PROJ_LIBRARY_PATH}/SDL2_image")
 set(SDL2_TTF_PATH "${PROJ_LIBRARY_PATH}/SDL2_ttf")
 set(SDL2_MIXER_PATH "${PROJ_LIBRARY_PATH}/SDL2_mixer")
-find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_mixer REQUIRED)
-message("SDL found: ${SDL2_FOUND}")
-message(${SDL2_INCLUDE_DIR})
-message(${SDL2_LIBRARY})
-include_directories(${SDL2_INCLUDE_DIR}
-                    ${SDL2_IMAGE_INCLUDE_DIR}
+include_directories(${SDL2_IMAGE_INCLUDE_DIR}
                     ${SDL2_TTF_INCLUDE_DIR}
 					${SDL2_MIXER_INCLUDE_DIR})
-target_link_libraries(${PROJ_NAME} ${SDL2_LIBRARY}
+target_link_libraries(${PROJ_NAME}
                              ${SDL2_IMAGE_LIBRARIES}
                              ${SDL2_TTF_LIBRARIES}
 							 ${SDL2_MIXER_LIBRARIES})

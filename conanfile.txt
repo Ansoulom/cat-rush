@@ -1,0 +1,6 @@
+[requires]
+Boost.Filesystem/1.65.1@bincrafters/stable
+sdl2/2.0.7@bincrafters/stable
+
+[generators]
+cmake
