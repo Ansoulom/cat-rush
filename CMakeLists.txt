@@ -68,7 +68,6 @@ set(PROJ_HEADERS
 "${GAME_HEADER_DIR}/IO/INI.h"
 "${GAME_HEADER_DIR}/IO/JSON_extensions.h"
 "${GAME_HEADER_DIR}/Libraries/INIReader.h"
-"${GAME_HEADER_DIR}/Libraries/json.hpp"
 "${GAME_HEADER_DIR}/Libraries/tinyxml2.h"
 "${GAME_HEADER_DIR}/Main/Camera.h"
 "${GAME_HEADER_DIR}/Main/Game_core.h"

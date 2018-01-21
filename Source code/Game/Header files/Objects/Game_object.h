@@ -2,7 +2,7 @@
 
 #include <memory>
 #include "Timer.h"
-#include <json.hpp>
+#include "JSON_extensions.h"
 #include <Vector.h>
 #include <Component.h>
 #include <Communication.h>

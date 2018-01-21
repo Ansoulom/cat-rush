@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Graphics_component.h"
-#include <json.hpp>
+#include "JSON_extensions.h"
 
 
 namespace Game

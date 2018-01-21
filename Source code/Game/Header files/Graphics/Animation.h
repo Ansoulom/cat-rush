@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Timer.h"
-#include <json.hpp>
+#include "JSON_extensions.h"
 #include <Texture.h>
 #include <Shapes.h>
 

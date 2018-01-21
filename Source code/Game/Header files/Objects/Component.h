@@ -1,7 +1,7 @@
 #pragma once
 
 #include <variant>
-#include "json.hpp"
+#include "JSON_extensions.h"
 #include "Timer.h"
 #include "Vector.h"
 #include <functional>

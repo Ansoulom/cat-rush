@@ -1,5 +1,5 @@
 #include "Settings.h"
-#include "json.hpp"
+#include "JSON_extensions.h"
 #include "IO/INI.h"
 
 

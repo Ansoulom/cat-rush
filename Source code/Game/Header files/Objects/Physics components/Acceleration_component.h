@@ -2,6 +2,7 @@
 
 #include "Component.h"
 #include "Movement_component.h"
+#include "JSON_extensions.h"
 
 
 namespace Game

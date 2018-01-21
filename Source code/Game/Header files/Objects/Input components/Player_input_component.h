@@ -1,6 +1,6 @@
 #pragma once
 
-#include <json.hpp>
+#include "JSON_extensions.h"
 #include "Component.h"
 #include <chrono>
 #include "Shapes.h"

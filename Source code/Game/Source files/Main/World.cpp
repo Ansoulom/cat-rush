@@ -2,7 +2,6 @@
 #include "Game_object.h"
 #include "Camera.h"
 #include "Game_core.h"
-#include "json.hpp"
 #include <fstream>
 #include "Settings.h"
 #include "JSON_extensions.h"
@@ -13,16 +12,16 @@ namespace Game
 	namespace Core
 	{
 		World::World(Game_core& game_context, const Objects::Component_loader component_loader)
-			: objects_{},
-			  component_loader_{component_loader},
-			  game_context_{game_context},
+			: component_loader_{component_loader},
 			  camera_{
 				  {0.0, 0.0},
 				  Graphics::Aspect_ratio{
 					  game_context.settings().constants().source_width(),
 					  game_context.settings().constants().source_height()
 				  }
-			  } { }
+			  },
+			  objects_{},
+			  game_context_{game_context} { }
 
 
 		void World::handle_input(Timer::Seconds time_passed, const Input::Input_handler& input)
