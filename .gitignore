@@ -1,9 +1,8 @@
 .idea/
 .vs/
-Build/
+/Build/
 cmake-build-debug/
-Visual Studio/
-x64/
+/Visual Studio/
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
