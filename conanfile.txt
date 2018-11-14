@@ -1,6 +1,13 @@
 [requires]
-Boost.Filesystem/1.65.1@bincrafters/stable
-jsonformoderncpp/3.0.1@vthiery/stable 
+boost_filesystem/1.65.1@bincrafters/stable
+jsonformoderncpp/3.0.1@vthiery/stable
+sdl2/2.0.9@bincrafters/stable
+sdl2_image/2.0.3@bincrafters/stable
+sdl2_ttf/2.0.14@bincrafters/stable
+
+[options]
+sdl2:shared=True
+sdl2_image:shared=True
 
 [generators]
 cmake

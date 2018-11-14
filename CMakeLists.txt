@@ -151,7 +151,7 @@ set(PROJ_SOURCES
 )
 
 add_executable(${PROJ_NAME} ${PROJ_SOURCES} ${PROJ_HEADERS})
-include_directories("${PROJ_INCLUDE_DIRS}")
+target_include_directories(${PROJ_NAME} PRIVATE "${PROJ_INCLUDE_DIRS}")
 
 
 target_link_libraries(${PROJ_NAME} ${CONAN_LIBS})
@@ -159,25 +159,10 @@ target_link_libraries(${PROJ_NAME} ${CONAN_LIBS})
 
 message("LIB PATH: ${PROJ_LIBRARY_PATH}")
 # SDL stuff
-set(SDL2_PATH "${PROJ_LIBRARY_PATH}/SDL2")
-set(SDL2_IMAGE_PATH "${PROJ_LIBRARY_PATH}/SDL2_image")
-set(SDL2_TTF_PATH "${PROJ_LIBRARY_PATH}/SDL2_ttf")
 set(SDL2_MIXER_PATH "${PROJ_LIBRARY_PATH}/SDL2_mixer")
-find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
-find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_mixer REQUIRED)
-message("SDL found: ${SDL2_FOUND}")
-message(${SDL2_INCLUDE_DIR})
-message(${SDL2_LIBRARY})
-include_directories(${SDL2_INCLUDE_DIR}
-                    ${SDL2_IMAGE_INCLUDE_DIR}
-                    ${SDL2_TTF_INCLUDE_DIR}
-					${SDL2_MIXER_INCLUDE_DIR})
-target_link_libraries(${PROJ_NAME} ${SDL2_LIBRARY}
-                             ${SDL2_IMAGE_LIBRARIES}
-                             ${SDL2_TTF_LIBRARIES}
-							 ${SDL2_MIXER_LIBRARIES})
+target_include_directories(${PROJ_NAME} PRIVATE ${SDL2_MIXER_INCLUDE_DIR})		
+target_link_libraries(${PROJ_NAME} ${SDL2_MIXER_LIBRARIES})
 
 							 
 # Place dll files next to the executable
