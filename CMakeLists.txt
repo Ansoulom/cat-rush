@@ -1,12 +1,7 @@
-cmake_minimum_required(VERSION 3.6.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12.4 FATAL_ERROR)
 
 set(PROJ_NAME "CatRush")
 project(${PROJ_NAME} VERSION 0.1 LANGUAGES CXX)
-
-include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-conan_basic_setup()
-
-set(CMAKE_CXX_STANDARD 17)
 
 set(PROJ_PATH ${CMAKE_SOURCE_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJ_PATH}/cmake")
@@ -20,7 +15,6 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") # GCC specific commands
 	set(PROJ_LIBRARY_PATH "${PROJ_PATH}/Libraries/mingw")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC") # MSVC specific commands
 	set(PROJ_LIBRARY_PATH "${PROJ_PATH}/Libraries/msvc")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17") # MSVC does not support CMAKE_CXX_STANDARD
 	file(COPY "${PROJ_NAME}.sln.DotSettings" DESTINATION ${CMAKE_BINARY_DIR}) # Resharper C++ config file
 endif()
 
@@ -151,20 +145,26 @@ set(PROJ_SOURCES
 )
 
 add_executable(${PROJ_NAME} ${PROJ_SOURCES} ${PROJ_HEADERS})
+target_compile_features(${PROJ_NAME} PUBLIC cxx_std_17)
+
 target_include_directories(${PROJ_NAME} PRIVATE "${PROJ_INCLUDE_DIRS}")
 
-
-target_link_libraries(${PROJ_NAME} ${CONAN_LIBS})
-
-
-message("LIB PATH: ${PROJ_LIBRARY_PATH}")
-# SDL stuff
 set(SDL2_MIXER_PATH "${PROJ_LIBRARY_PATH}/SDL2_mixer")
-find_package(SDL2_mixer REQUIRED)
-target_include_directories(${PROJ_NAME} PRIVATE ${SDL2_MIXER_INCLUDE_DIR})		
-target_link_libraries(${PROJ_NAME} ${SDL2_MIXER_LIBRARIES})
 
-							 
+find_package(nlohmann_json REQUIRED)
+find_package(SDL2 REQUIRED)
+find_package(SDL2_mixer REQUIRED)
+find_package(SDL2_image REQUIRED)
+find_package(SDL2_ttf REQUIRED)
+
+target_link_libraries(${PROJ_NAME} PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(${PROJ_NAME} PRIVATE SDL2::SDL2)
+target_link_libraries(${PROJ_NAME} PRIVATE SDL2::SDL2_image)
+target_link_libraries(${PROJ_NAME} PRIVATE SDL2::SDL2_ttf)
+target_link_libraries(${PROJ_NAME} PRIVATE ${SDL2_MIXER_LIBRARIES})
+
+#target_include_directories(${PROJ_NAME} PRIVATE ${SDL2_MIXER_INCLUDE_DIR})		
+						 
 # Place dll files next to the executable
 file(GLOB_RECURSE DLL_FILES "${PROJ_LIBRARY_PATH}/*.dll")
 foreach(DLL_FILE ${DLL_FILES})

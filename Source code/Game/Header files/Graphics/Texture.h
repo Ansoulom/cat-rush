@@ -3,7 +3,7 @@
 #include <SDL.h>
 #include <memory>
 #include "SDL_deleter.h"
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 
 
 namespace Game
@@ -26,7 +26,7 @@ namespace Game
 		class Texture
 		{
 		public:
-			Texture(Renderer& renderer, const boost::filesystem::path& file_path);
+			Texture(Renderer& renderer, const std::filesystem::path& file_path);
 			Texture(Renderer& renderer, const std::string& text, Color text_color, const Text::Font& font);
 			Texture(const Texture& other) = delete;
 			Texture(Texture&& other) noexcept;

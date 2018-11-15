@@ -2,7 +2,7 @@
 #include "Logger.h"
 #include <string>
 #include <algorithm>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "tinyxml2.h"
 
 
@@ -151,7 +151,7 @@ namespace Game
 
 		void Input_handler::initialize_contexts()
 		{
-			auto map_file = canonical(boost::filesystem::path{"Preferences/Keybindings.xml"});
+			auto map_file = canonical(std::filesystem::path{"Preferences/Keybindings.xml"});
 
 			// TODO: Make all of this more safe
 			tinyxml2::XMLDocument map_doc{};

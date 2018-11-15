@@ -5,7 +5,7 @@ namespace Game
 {
 	namespace Audio
 	{
-		Sound_effect::Sound_effect(const boost::filesystem::path& file_path)
+		Sound_effect::Sound_effect(const std::filesystem::path& file_path)
 			: sdl_sound_{Mix_LoadWAV(file_path.string().c_str())}
 		{
 			if(!sdl_sound_)
@@ -15,7 +15,7 @@ namespace Game
 		}
 
 
-		Music_track::Music_track(const boost::filesystem::path& file_path)
+		Music_track::Music_track(const std::filesystem::path& file_path)
 			: sdl_music_{Mix_LoadMUS(file_path.string().c_str())}
 		{
 			if(!sdl_music_)

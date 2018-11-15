@@ -2,7 +2,7 @@
 #include <memory>
 #include <SDL_mixer.h>
 #include "SDL_deleter.h"
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 
 
 namespace Game
@@ -18,7 +18,7 @@ namespace Game
 		class Sound_effect
 		{
 		public:
-			explicit Sound_effect(const boost::filesystem::path& file_path);
+			explicit Sound_effect(const std::filesystem::path& file_path);
 
 		private:
 			std::unique_ptr<Mix_Chunk, Sdl_deleter> sdl_sound_;
@@ -30,7 +30,7 @@ namespace Game
 		class Music_track
 		{
 		public:
-			explicit Music_track(const boost::filesystem::path& file_path);
+			explicit Music_track(const std::filesystem::path& file_path);
 
 		private:
 			std::unique_ptr<Mix_Music, Sdl_deleter> sdl_music_;

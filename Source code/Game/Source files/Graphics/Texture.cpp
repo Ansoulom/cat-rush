@@ -9,7 +9,7 @@ namespace Game
 {
 	namespace Graphics
 	{
-		Texture::Texture(Renderer& renderer, const boost::filesystem::path& file_path)
+		Texture::Texture(Renderer& renderer, const std::filesystem::path& file_path)
 			: Texture{
 				std::unique_ptr<SDL_Surface, Sdl_deleter>{IMG_Load(file_path.string().c_str()), Sdl_deleter{}},
 				renderer

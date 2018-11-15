@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "Window.h"
 
 
@@ -11,7 +11,7 @@ namespace Game
 		class User_settings
 		{
 		public:
-			explicit User_settings(const boost::filesystem::path& file);
+			explicit User_settings(const std::filesystem::path& file);
 			int resolution_width() const;
 			int resolution_height() const;
 			Window_fullscreen_mode fullscreen_mode() const;
@@ -27,7 +27,7 @@ namespace Game
 		class Game_constants
 		{
 		public:
-			explicit Game_constants(const boost::filesystem::path& file);
+			explicit Game_constants(const std::filesystem::path& file);
 
 			std::string name() const;
 			int source_width() const;
@@ -43,7 +43,7 @@ namespace Game
 		class Settings
 		{
 		public:
-			Settings(const boost::filesystem::path& game_constants_file, const boost::filesystem::path& user_settings_file);
+			Settings(const std::filesystem::path& game_constants_file, const std::filesystem::path& user_settings_file);
 
 			Game_constants& constants();
 			const Game_constants& constants() const;

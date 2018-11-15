@@ -5,7 +5,7 @@
 #include "Logger.h"
 #include <memory>
 #include "SDL_deleter.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 
 namespace Game
@@ -45,7 +45,7 @@ namespace Game
 				}
 				auto path = std::unique_ptr<char, Sdl_deleter>{SDL_GetBasePath(), Sdl_deleter{}};
 				// Would prefer std::filesystem::current_path, but doesn't return consistent path
-				boost::filesystem::current_path(path.get());
+				std::filesystem::current_path(path.get());
 			}
 		}
 

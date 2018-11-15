@@ -2,6 +2,7 @@
 #include <sstream>
 #include "IO/INI.h"
 #include "Text_functions.h"
+#include <fstream>
 
 
 namespace Game
@@ -44,7 +45,7 @@ namespace Game
 		}
 
 
-		Ini load_ini_from_file(const boost::filesystem::path& file)
+		Ini load_ini_from_file(const std::filesystem::path& file)
 		{
 			std::ifstream in{file.string()};
 			if(!in.is_open())

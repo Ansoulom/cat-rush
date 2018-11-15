@@ -1,5 +1,5 @@
 #include "Resource_managers.h"
-#include <boost/filesystem/operations.hpp>
+#include <filesystem>
 #include "Renderer.h"
 #include "File_paths.h"
 
@@ -11,16 +11,16 @@ namespace Game
 		Texture_manager::Texture_manager(Graphics::Renderer& renderer)
 			: textures_{}
 		{
-			load_all_textures(boost::filesystem::path{Io::Paths::textures}, renderer);
+			load_all_textures(std::filesystem::path{Io::Paths::textures}, renderer);
 		}
 
 
-		void Texture_manager::load_all_textures(const boost::filesystem::path& texture_path, Graphics::Renderer& renderer)
+		void Texture_manager::load_all_textures(const std::filesystem::path& texture_path, Graphics::Renderer& renderer)
 		{
 			// TODO: Be careful about error handling
 			if(exists(texture_path) && is_directory(texture_path))
 			{
-				for(auto&& x : boost::filesystem::recursive_directory_iterator{texture_path})
+				for(auto&& x : std::filesystem::recursive_directory_iterator{texture_path})
 				{
 					if(x.path().extension().string() == ".png")
 					{
@@ -39,15 +39,15 @@ namespace Game
 
 		Font_manager::Font_manager()
 		{
-			load_all_fonts(boost::filesystem::path{Io::Paths::fonts});
+			load_all_fonts(std::filesystem::path{Io::Paths::fonts});
 		}
 
 
-		void Font_manager::load_all_fonts(const boost::filesystem::path& font_path)
+		void Font_manager::load_all_fonts(const std::filesystem::path& font_path)
 		{
 			if(exists(font_path) && is_directory(font_path))
 			{
-				for(auto&& x : boost::filesystem::recursive_directory_iterator{font_path})
+				for(auto&& x : std::filesystem::recursive_directory_iterator{font_path})
 				{
 					if(x.path().extension().string() == ".ttf")
 					{

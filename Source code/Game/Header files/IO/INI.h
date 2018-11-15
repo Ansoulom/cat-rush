@@ -1,7 +1,7 @@
 #pragma once
 
 #include <unordered_map>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 
 namespace Game
@@ -48,6 +48,6 @@ namespace Game
 		}
 
 
-		Ini load_ini_from_file(const boost::filesystem::path& file);
+		Ini load_ini_from_file(const std::filesystem::path& file);
 	}
 }

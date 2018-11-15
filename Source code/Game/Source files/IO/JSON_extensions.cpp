@@ -6,7 +6,7 @@ namespace Game
 {
 	namespace Io
 	{
-		json load_json_from_file(const boost::filesystem::path file)
+		json load_json_from_file(const std::filesystem::path file)
 		{
 			std::ifstream in{file.string()};
 			if(!in.is_open())

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <json.hpp>
 
 
@@ -10,6 +10,6 @@ namespace Game
 	{
 		using namespace nlohmann;
 
-		json load_json_from_file(const boost::filesystem::path file);
+		json load_json_from_file(const std::filesystem::path file);
 	}
 }

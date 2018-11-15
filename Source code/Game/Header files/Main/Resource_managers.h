@@ -38,7 +38,7 @@ namespace Game
 			const Graphics::Texture& get_texture(std::string texture_name) const;
 
 		private:
-			void load_all_textures(const boost::filesystem::path& texture_path, Graphics::Renderer& renderer);
+			void load_all_textures(const std::filesystem::path& texture_path, Graphics::Renderer& renderer);
 
 			std::unordered_map<std::string, Graphics::Texture> textures_;
 		};
@@ -52,7 +52,7 @@ namespace Game
 			const Text::Font& get_font(const std::string& font_name) const;
 
 		private:
-			void load_all_fonts(const boost::filesystem::path& font_path);
+			void load_all_fonts(const std::filesystem::path& font_path);
 
 			std::unordered_map<std::string, Text::Font> fonts_;
 		};

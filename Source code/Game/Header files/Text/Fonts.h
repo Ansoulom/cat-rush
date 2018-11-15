@@ -2,7 +2,7 @@
 #include <memory>
 #include <SDL_ttf.h>
 #include "SDL_deleter.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 
 namespace Game
@@ -18,7 +18,7 @@ namespace Game
 		class Font
 		{
 		public:
-			Font(const boost::filesystem::path& file_path, int size);
+			Font(const std::filesystem::path& file_path, int size);
 
 		private:
 			std::unique_ptr<TTF_Font, Sdl_deleter> sdl_font_;

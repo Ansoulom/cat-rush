@@ -7,7 +7,7 @@ namespace Game
 {
 	namespace Core
 	{
-		User_settings::User_settings(const boost::filesystem::path& file)
+		User_settings::User_settings(const std::filesystem::path& file)
 		{
 			auto ini = Io::load_ini_from_file(file);
 			resolution_width_ = ini.value<int>("graphics", "resolution_width");
@@ -38,7 +38,7 @@ namespace Game
 		} 
 
 
-		Game_constants::Game_constants(const boost::filesystem::path& file)
+		Game_constants::Game_constants(const std::filesystem::path& file)
 		{
 			auto ini = Io::load_ini_from_file(file);
 			name_ = ini.value<std::string>("window", "name");
@@ -66,8 +66,8 @@ namespace Game
 
 
 		Settings::Settings(
-			const boost::filesystem::path& game_constants_file,
-			const boost::filesystem::path& user_settings_file)
+			const std::filesystem::path& game_constants_file,
+			const std::filesystem::path& user_settings_file)
 			: constants_{game_constants_file}, settings_{user_settings_file} { }
 
 
